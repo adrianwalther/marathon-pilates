@@ -1,0 +1,46 @@
+# Marathon Pilates — Platform Project Rules
+
+## Project Context
+We are building a custom booking and client management platform for Marathon Pilates, a Pilates studio that also offers sauna and cold plunge wellness amenities. This is a full-stack product encompassing a web platform, admin dashboard, and companion mobile app.
+
+## Studio Overview
+- **Studio:** Marathon Pilates | Owner: Ruby Ramdhan (CPI, CET)
+- **Locations:** Two Nashville locations — Charlotte Park + Green Hills
+- **Brand:** "Move + Restore" — inclusive, judgment-free, real-life wellness
+- **Mission:** "To use the benefits of Pilates to arm people, no matter where they are in life, with the tools they need to be their best selves out in the world."
+- **Services:** Group Reformer (Level 1, Elite, Stretch), Private Sessions (solo/duet/trio), Sauna (Sunlighten mPulse infrared), Cold Plunge (Plunge brand), Contrast Therapy, Neveskin, Teacher Training, On-Demand
+- **Current booking platform:** Arketa (group classes); private sessions booked via email — a known pain point
+- **Current site:** Wix (marathonpilates.com)
+- **Goal:** Build a custom platform that goes beyond what Arketa offers — unified booking for all services, client progress tracking, class+amenity bundle checkout, and a fully branded app
+
+## Core Platform Goals
+1. Multi-service booking (classes, private sessions, wellness amenities) in one unified flow
+2. Client journey tracking and progress visibility (milestones, streaks, instructor notes)
+3. Native wellness amenity management (sauna/cold plunge time-slots, capacity, membership access tiers)
+4. Seamless Wix website integration
+5. Branded mobile app (iOS + Android)
+6. Modern, intuitive admin UI (not Mindbody's complexity)
+
+## Folder Structure
+- `PLATFORM_IDEAS.md` — living requirements and ideas document (primary reference)
+- `research/` — competitive analysis and market research
+- `specs/` — feature specifications and user stories
+- `design/` — wireframes, mockups, brand assets
+- `src/` — application source code
+
+## Key Differentiators vs. Competitors
+- **vs. Mindbody:** Progress tracking, amenity-native booking, cross-service bundles, modern UX, no data lock-in
+- **vs. Arketa:** Deeper wellness integration, stronger client journey tools
+
+## Tech Preferences (TBD — update as decided)
+- Payment: Stripe
+- Notifications: Twilio (SMS) + SendGrid (email)
+- Mobile: TBD (React Native preferred for cross-platform)
+- Backend: TBD
+- Database: TBD
+
+## Communication Style
+- Keep responses focused and actionable
+- When suggesting features, reference the living ideas doc
+- Flag any decisions that could affect mobile app vs. web architecture
+- Prioritize client experience and instructor usability equally

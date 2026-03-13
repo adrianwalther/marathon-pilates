@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marathon Pilates — Web Platform Prototype</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&family=Raleway:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ── Brand Tokens (Marathon Pilates Brand Guidelines v.1) ── */
+    :root {
+      /* Earth palette */
+      --moss:       #4C5246;  /* Primary — Moss Gray */
+      --earth:      #302D27;  /* Secondary — Deep Earth */
+      --terracotta: #A76E58;  /* Secondary — Terracotta */
+      --roseclay:   #BC9C8E;  /* Secondary — Rose Clay */
+      --sandstone:  #DDD1BD;  /* Secondary — Sandstone */
+      /* Logo colors */
+      --logo-teal:  #87CEBF;  /* "MARATHON" wordmark teal */
+      --logo-gray:  #808282;  /* "PILATES" wordmark gray */
+      /* UI support */
+      --offwhite:   #F7F5F2;
+      --warm:       #E8E3DC;
+      --text-pri:   #302D27;
+      --text-sec:   #7A7570;
+      --text-light: #A8A39D;
+      --border:     #E5DFD8;
+      --white:      #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--offwhite);
+      color: var(--text-pri);
+      min-height: 100vh;
+    }
+
+    /* ── Meta nav ── */
+    .meta-nav {
+      background: #1a1714;
+      text-align: center;
+      padding: 11px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .meta-nav span {
+      font-family: 'Raleway', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(221,209,189,0.45);
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+    .meta-btn {
+      font-family: 'Raleway', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid rgba(221,209,189,0.18);
+      background: rgba(255,255,255,0.04);
+      color: rgba(221,209,189,0.6);
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.15s;
+    }
+    .meta-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(221,209,189,0.35);
+      color: var(--sandstone);
+    }
+    .meta-btn.active {
+      background: var(--moss);
+      border-color: var(--moss);
+      color: white;
+    }
+
+    /* ── Platform screens ── */
+    .platform { display: none; min-height: calc(100vh - 42px); }
+    .platform.active { display: block; }
+
+    /* ── Top Nav ── */
+    .top-nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav-logo img {
+      height: 30px;
+      width: auto;
+      display: block;
+    }
+    .nav-logo .accent { color: var(--terracotta); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-link {
+      font-family: 'Raleway', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-sec);
+      cursor: pointer;
+      padding-bottom: 3px;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .nav-link:hover { color: var(--earth); }
+    .nav-link.active { color: var(--earth); border-bottom-color: var(--moss); border-bottom-width: 2px; }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .location-toggle-nav {
+      display: flex;
+      background: var(--warm);
+      border-radius: 2px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .loc-btn {
+      font-family: 'Raleway', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 1px;
+      border: none;
+      background: transparent;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .loc-btn.active { background: var(--earth); color: white; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--terracotta); color: white;
+      font-size: 14px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: var(--earth); color: white; border: none;
+      padding: 10px 24px;
+      font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #1a1714; }
+    .btn-accent {
+      background: var(--terracotta); color: white; border: none;
+      padding: 10px 24px;
+      font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: background 0.15s;
+    }
+    .btn-accent:hover { background: #8f5c48; }
+    .btn-outline {
+      background: transparent; color: var(--earth);
+      border: 1px solid var(--sandstone);
+      padding: 10px 24px;
+      font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; border-radius: 2px; transition: all 0.15s;
+    }
+    .btn-outline:hover { border-color: var(--earth); }
+    .btn-sm { padding: 7px 16px; font-size: 11px; }
+
+    /* ══════════════════════════════════════
+       SCREEN 1: SCHEDULE
+    ══════════════════════════════════════ */
+    .schedule-layout {
+      max-width: 1280px; margin: 0 auto;
+      padding: 36px 40px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 40px;
+    }
+    .filter-sidebar { display: flex; flex-direction: column; gap: 28px; }
+    .filter-group h4 {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-light); margin-bottom: 10px;
+    }
+    .filter-options { display: flex; flex-direction: column; gap: 1px; }
+    .filter-opt {
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px; color: var(--text-sec);
+      padding: 8px 12px; border-radius: 0;
+      cursor: pointer; transition: all 0.15s;
+      display: flex; align-items: center; justify-content: space-between;
+      border-left: 2px solid transparent;
+    }
+    .filter-opt:hover { background: var(--warm); color: var(--earth); border-left-color: var(--sandstone); }
+    .filter-opt.active { background: rgba(76,82,70,0.07); color: var(--earth); border-left-color: var(--terracotta); font-weight: 500; }
+    .filter-opt .count { font-size: 11px; opacity: 0.6; }
+    .week-strip {
+      display: flex; gap: 4px; margin-bottom: 24px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 4px; padding: 8px;
+    }
+    .day-cell {
+      flex: 1; text-align: center; padding: 10px 8px;
+      border-radius: 2px; cursor: pointer; transition: all 0.15s;
+    }
+    .day-cell:hover { background: var(--warm); }
+    .day-cell.active { background: var(--moss); color: white; }
+    .day-cell .dow {
+      font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: inherit; opacity: 0.7; display: block;
+    }
+    .day-cell .date { font-size: 18px; font-weight: 500; display: block; margin: 2px 0; }
+    .day-cell .dot-row { display: flex; justify-content: center; gap: 3px; }
+    .day-cell .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--terracotta); }
+    .day-cell.active .dot { background: white; opacity: 0.6; }
+    .section-label {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--text-light); margin-bottom: 14px;
+    }
+    .class-rows { display: flex; flex-direction: column; gap: 6px; }
+    .class-row {
+      background: var(--white); border: 1px solid var(--border);
+      border-left: 3px solid var(--sandstone);
+      border-radius: 2px; padding: 14px 20px;
+      display: grid; grid-template-columns: 80px 1fr auto auto;
+      align-items: center; gap: 16px;
+      transition: background 0.12s, box-shadow 0.12s; cursor: pointer;
+    }
+    .class-row:hover { background: #faf8f5; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .class-row.type-group { border-left-color: var(--moss); }
+    .class-row.type-private { border-left-color: var(--terracotta); }
+    .class-row.type-amenity { border-left-color: var(--sandstone); }
+    .class-row.booked { border-left-color: var(--logo-teal); }
+    .class-time { font-size: 13px; font-weight: 500; }
+    .class-time .dur { font-size: 11px; color: var(--text-light); font-weight: 400; }
+    .class-info .cn-row { display: flex; align-items: center; gap: 8px; }
+    .class-info .cn {
+      font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--earth);
+    }
+    .type-pill {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 2px;
+    }
+    .pill-group { background: rgba(76,82,70,0.1); color: var(--moss); }
+    .pill-private { background: rgba(167,110,88,0.12); color: var(--terracotta); }
+    .pill-amenity { background: rgba(221,209,189,0.5); color: var(--text-sec); }
+    .class-info .cm { font-size: 12px; color: var(--text-sec); margin-top: 3px; }
+    .spots-badge {
+      font-family: 'Raleway', sans-serif;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+      padding: 4px 10px; border-radius: 2px; white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .spots-badge.few { background: #FEF3E2; color: #A05520; }
+    .spots-badge.open { color: #2D6B52; background: #E6F5EF; }
+    .spots-badge.full { background: var(--warm); color: var(--text-sec); }
+    .spots-badge.booked-badge { background: rgba(135,206,191,0.15); color: #2A7066; }
+
+    /* ══════════════════════════════════════
+       SCREEN 2: PRIVATE BOOKING
+    ══════════════════════════════════════ */
+
+    /* Private page hero header */
+    .private-hero {
+      background: var(--moss);
+      padding: 40px 40px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .private-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, rgba(135,206,191,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .private-hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 100;
+      font-size: 38px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: white;
+      line-height: 1.1;
+      position: relative;
+      z-index: 1;
+    }
+    .private-hero p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .private-layout { max-width: 900px; margin: 0 auto; padding: 36px 40px; }
+    .page-header { margin-bottom: 32px; }
+    .page-header h1 {
+      font-family: 'Poppins', sans-serif; font-size: 30px;
+      font-weight: 100; color: var(--earth);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .page-header p { font-size: 14px; color: var(--text-sec); margin-top: 6px; }
+    .progress-steps { display: flex; align-items: center; margin-bottom: 36px; }
+    .step { display: flex; align-items: center; gap: 8px; }
+    .step-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--border); color: var(--text-light); background: white;
+    }
+    .step.done .step-num { background: var(--earth); border-color: var(--earth); color: white; }
+    .step.active .step-num { background: var(--terracotta); border-color: var(--terracotta); color: white; }
+    .step-label {
+      font-family: 'Raleway', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-light);
+    }
+    .step.done .step-label, .step.active .step-label { color: var(--earth); }
+    .step-line { flex: 1; height: 1px; background: var(--border); margin: 0 12px; }
+    .step-content {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 2px; padding: 32px;
+    }
+    .step-content h3 {
+      font-family: 'Poppins', sans-serif; font-size: 16px;
+      font-weight: 400; color: var(--earth); margin-bottom: 20px;
+    }
+    .session-type-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 16px; margin-bottom: 28px;
+    }
+    .session-type-card {
+      border: 1.5px solid var(--border); border-radius: 2px;
+      padding: 24px 20px; cursor: pointer; transition: all 0.15s; text-align: center;
+    }
+    .session-type-card:hover { border-color: var(--roseclay); }
+    .session-type-card.selected { border-color: var(--terracotta); background: #FDF6F3; }
+    .session-type-card .icon { font-size: 28px; margin-bottom: 10px; }
+    .session-type-card h4 {
+      font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--earth); margin-bottom: 4px;
+    }
+    .session-type-card p { font-size: 12px; color: var(--text-sec); }
+    .booking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    .instructor-list { display: flex; flex-direction: column; gap: 8px; }
+    .instructor-card {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 2px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .instructor-card:hover { border-color: var(--roseclay); }
+    .instructor-card.selected { border-color: var(--terracotta); background: #FDF6F3; }
+    .instr-avatar {
+      width: 40px; height: 40px; border-radius: 50%; background: var(--sandstone);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 500; color: var(--earth); flex-shrink: 0;
+    }
+    .instr-name { font-size: 13px; font-weight: 500; color: var(--earth); }
+    .instr-creds { font-size: 11px; color: var(--text-sec); }
+    .mini-calendar {}
+    .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .cal-header h4 {
+      font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--earth);
+    }
+    .cal-nav { background: none; border: none; cursor: pointer; color: var(--text-sec); font-size: 16px; padding: 2px 6px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+    .cal-dow {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light);
+      text-align: center; padding: 6px 0;
+    }
+    .cal-day {
+      text-align: center; padding: 7px 4px; font-size: 12px;
+      border-radius: 2px; cursor: pointer; color: var(--text-pri); transition: all 0.15s;
+    }
+    .cal-day:hover { background: var(--warm); }
+    .cal-day.other-month { color: var(--text-light); }
+    .cal-day.has-slots::after {
+      content: ''; display: block; width: 4px; height: 4px;
+      border-radius: 50%; background: var(--terracotta); margin: 2px auto 0;
+    }
+    .cal-day.selected { background: var(--earth); color: white; }
+    .cal-day.selected::after { background: white; opacity: 0.6; }
+    .time-slots { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 16px; }
+    .time-slot {
+      border: 1px solid var(--border); border-radius: 2px;
+      padding: 10px; text-align: center; font-size: 13px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .time-slot:hover { border-color: var(--roseclay); }
+    .time-slot.selected { background: var(--terracotta); border-color: var(--terracotta); color: white; }
+    .time-slot.unavailable { background: var(--warm); color: var(--text-light); cursor: not-allowed; }
+    .confirm-summary {
+      background: var(--offwhite); border-radius: 2px;
+      padding: 20px 24px; margin-bottom: 24px;
+    }
+    .confirm-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-row .label { color: var(--text-sec); }
+    .confirm-row .value { font-weight: 500; color: var(--earth); }
+    .notes-field {
+      width: 100%; padding: 12px 16px;
+      border: 1px solid var(--border); border-radius: 2px;
+      font-family: 'Poppins', sans-serif; font-size: 13px; color: var(--earth);
+      background: white; resize: none; outline: none; margin-bottom: 20px;
+    }
+    .notes-field:focus { border-color: var(--roseclay); }
+    .step-actions { display: flex; justify-content: space-between; align-items: center; }
+
+    /* ══════════════════════════════════════
+       SCREEN 3: MEMBERSHIPS
+    ══════════════════════════════════════ */
+    .memberships-layout { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+    .memberships-layout .page-header { text-align: center; }
+    .memberships-layout .page-header h1 {
+      font-size: 36px; font-weight: 100; letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    .hsa-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #ECFDF5; color: #2D6B52;
+      border-radius: 2px; padding: 6px 14px;
+      font-family: 'Raleway', sans-serif;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      text-transform: uppercase; margin-top: 14px;
+    }
+    .mem-section-title {
+      font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-light);
+      margin: 40px 0 16px;
+    }
+    .membership-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .membership-card {
+      background: white; border: 1px solid var(--border); border-radius: 2px;
+      padding: 28px 24px; position: relative; transition: box-shadow 0.15s;
+    }
+    .membership-card:hover { box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .membership-card.featured {
+      border-color: transparent;
+      background: var(--moss);
+      box-shadow: 0 4px 24px rgba(76,82,70,0.3);
+    }
+    .membership-card.featured:hover { box-shadow: 0 8px 32px rgba(76,82,70,0.35); }
+    .featured-badge {
+      position: absolute; top: -1px; right: 20px;
+      background: var(--logo-teal); color: var(--earth);
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 0 0 2px 2px;
+    }
+    .card-label {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px;
+    }
+    .membership-card.featured .card-label { color: rgba(221,209,189,0.55); }
+    .card-name { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 400; color: var(--earth); }
+    .membership-card.featured .card-name { color: white; }
+    .card-price { font-size: 28px; font-weight: 600; color: var(--earth); margin: 12px 0 4px; }
+    .membership-card.featured .card-price { font-size: 52px; font-weight: 300; color: white; letter-spacing: -0.01em; }
+    .card-price span { font-size: 14px; font-weight: 400; color: var(--text-sec); }
+    .membership-card.featured .card-price span { color: rgba(221,209,189,0.65); font-size: 15px; }
+    .card-desc { font-size: 13px; color: var(--text-sec); margin-bottom: 16px; min-height: 36px; }
+    .membership-card.featured .card-desc { color: rgba(221,209,189,0.75); }
+    .card-divider { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+    .membership-card.featured .card-divider { border-top-color: rgba(255,255,255,0.12); }
+    .card-perks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .perk { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-sec); }
+    .perk::before { content: '✓'; color: var(--terracotta); font-weight: 600; font-size: 13px; }
+    .membership-card.featured .perk { color: rgba(221,209,189,0.85); }
+    .membership-card.featured .perk::before { color: var(--logo-teal); }
+    .membership-card.featured .btn-accent {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      letter-spacing: 0.12em;
+    }
+    .membership-card.featured .btn-accent:hover {
+      background: rgba(255,255,255,0.22);
+    }
+    .pack-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    .pack-card {
+      background: white; border: 1px solid var(--border); border-radius: 2px;
+      padding: 20px; text-align: center; cursor: pointer; transition: all 0.15s;
+    }
+    .pack-card:hover { border-color: var(--roseclay); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .pack-count { font-size: 36px; font-weight: 600; color: var(--earth); display: block; }
+    .pack-label {
+      font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light);
+      display: block; margin-bottom: 12px;
+    }
+    .pack-price { font-size: 22px; font-weight: 600; color: var(--earth); display: block; }
+    .pack-per { font-size: 11px; color: var(--text-sec); margin-bottom: 16px; display: block; }
+
+    /* ══════════════════════════════════════
+       SCREEN 4: ADMIN DASHBOARD
+    ══════════════════════════════════════ */
+    .admin-layout { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 106px); }
+    .admin-sidebar { background: var(--earth); padding: 24px 0; }
+    .admin-section-label {
+      font-family: 'Raleway', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; color: var(--roseclay);
+      padding: 14px 28px 6px; display: block;
+    }
+    .admin-nav-section { padding: 0 16px; margin-bottom: 4px; }
+    .admin-nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 2px; font-size: 13px;
+      color: rgba(255,255,255,0.65); cursor: pointer; transition: all 0.15s;
+    }
+    .admin-nav-link:hover { background: rgba(255,255,255,0.08); color: white; }
+    .admin-nav-link.active { background: rgba(255,255,255,0.12); color: white; }
+    .admin-nav-link .icon { font-size: 15px; width: 20px; text-align: center; }
+    .admin-main { padding: 32px 40px; background: var(--offwhite); }
+    .admin-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+    .admin-header h1 { font-family: 'Poppins', sans-serif; font-size: 22px; font-weight: 300; color: var(--earth); letter-spacing: 0.01em; }
+    .admin-header .date { font-size: 13px; color: var(--text-sec); margin-top: 3px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi-card { background: white; border: 1px solid var(--border); border-radius: 2px; padding: 20px; }
+    .kpi-label {
+      font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-light); margin-bottom: 8px;
+    }
+    .kpi-value { font-size: 28px; font-weight: 600; color: var(--earth); line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--text-sec); margin-top: 4px; }
+    .kpi-delta { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; margin-top: 6px; font-weight: 500; }
+    .kpi-delta.up { color: #059669; }
+    .kpi-delta.down { color: #DC2626; }
+    .admin-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+    .panel { background: white; border: 1px solid var(--border); border-radius: 2px; }
+    .panel-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title {
+      font-family: 'Raleway', sans-serif; font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--earth);
+    }
+    .today-class-row {
+      display: grid; grid-template-columns: 70px 1fr 110px 90px;
+      align-items: center; gap: 12px; padding: 14px 20px;
+      border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s;
+    }
+    .today-class-row:last-child { border-bottom: none; }
+    .today-class-row:hover { background: var(--offwhite); }
+    .tcr-time { font-size: 13px; font-weight: 500; }
+    .tcr-name {
+      font-family: 'Raleway', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase; color: var(--earth);
+    }
+    .tcr-instr { font-size: 11px; color: var(--text-sec); margin-top: 1px; }
+    .occupancy-col { font-size: 12px; color: var(--text-sec); }
+    .occupancy-bar { height: 4px; background: var(--warm); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+    .occupancy-fill { height: 100%; border-radius: 2px; background: var(--terracotta); }
+    .status-pill { font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 2px; text-align: center; font-family: 'Raleway', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; font-size: 10px; }
+    .status-pill.upcoming { background: var(--warm); color: var(--text-sec); }
+    .status-pill.live { background: #ECFDF5; color: #065F46; }
+    .status-pill.done { background: var(--offwhite); color: var(--text-light); }
+    .status-pill.pill-full { background: #FEF3E2; color: #B45309; }
+    .quick-action {
+      display: flex; align-items: center; gap: 12px; padding: 14px 20px;
+      border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s;
+    }
+    .quick-action:last-child { border-bottom: none; }
+    .quick-action:hover { background: var(--offwhite); }
+    .qa-icon {
+      width: 36px; height: 36px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; flex-shrink: 0;
+    }
+    .qa-icon.terra { background: rgba(167,110,88,0.1); }
+    .qa-icon.moss { background: rgba(76,82,70,0.1); }
+    .qa-icon.sand { background: rgba(221,209,189,0.4); }
+    .qa-label { font-size: 13px; font-weight: 500; color: var(--earth); }
+    .qa-sub { font-size: 11px; color: var(--text-sec); }
+    .alert-item { font-size: 13px; color: var(--earth); padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .alert-item:last-child { border-bottom: none; }
+
+    /* ── Role switcher ── */
+    .role-btn {
+      font-family: 'Raleway', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 2px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.45);
+      cursor: pointer; transition: all 0.15s;
+    }
+    .role-btn:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.08); }
+    .role-btn.active { background: var(--moss); border-color: var(--moss); color: white; }
+  </style>
+</head>
+<body>
+
+<!-- Meta nav -->
+<div class="meta-nav">
+  <span>Marathon Pilates — Web Platform · Click a screen to preview</span>
+  <button class="meta-btn active" onclick="showScreen('schedule')">Schedule</button>
+  <button class="meta-btn" onclick="showScreen('private')">Book Private</button>
+  <button class="meta-btn" onclick="showScreen('memberships')">Memberships</button>
+  <button class="meta-btn" onclick="showScreen('admin')">Admin Dashboard</button>
+</div>
+
+<!-- ══════════════════════════
+     SCREEN 1: SCHEDULE
+══════════════════════════ -->
+<div id="screen-schedule" class="platform active">
+  <nav class="top-nav">
+    <div class="nav-logo"><img src="assets/logo-horizontal.png" alt="Marathon Pilates"></div>
+    <div class="nav-links">
+      <span class="nav-link active" onclick="showScreen('schedule')">Schedule</span>
+      <span class="nav-link" onclick="showScreen('private')">Book Private</span>
+      <span class="nav-link" onclick="showScreen('memberships')">Memberships</span>
+      <span class="nav-link">On Demand</span>
+    </div>
+    <div class="nav-right">
+      <div class="location-toggle-nav">
+        <button class="loc-btn active">Charlotte Park</button>
+        <button class="loc-btn">Green Hills</button>
+      </div>
+      <div class="avatar">S</div>
+    </div>
+  </nav>
+
+  <div class="schedule-layout">
+    <aside class="filter-sidebar">
+      <div class="filter-group">
+        <h4>Class Type</h4>
+        <div class="filter-options">
+          <div class="filter-opt active">All Classes <span class="count">12</span></div>
+          <div class="filter-opt">Group Reformer <span class="count">8</span></div>
+          <div class="filter-opt">Private Session <span class="count">—</span></div>
+          <div class="filter-opt">Sauna <span class="count">2</span></div>
+          <div class="filter-opt">Cold Plunge <span class="count">1</span></div>
+          <div class="filter-opt">Contrast Therapy <span class="count">1</span></div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Instructor</h4>
+        <div class="filter-options">
+          <div class="filter-opt">Any Instructor</div>
+          <div class="filter-opt">Ruby Ramdhan</div>
+          <div class="filter-opt">Instructor B</div>
+          <div class="filter-opt">Instructor C</div>
+        </div>
+      </div>
+      <div class="filter-group">
+        <h4>Time of Day</h4>
+        <div class="filter-options">
+          <div class="filter-opt">Morning (6–12am)</div>
+          <div class="filter-opt">Afternoon (12–5pm)</div>
+          <div class="filter-opt">Evening (5–8pm)</div>
+        </div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="week-strip">
+        <div class="day-cell">
+          <span class="dow">Mon</span><span class="date">10</span>
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="day-cell active">
+          <span class="dow">Tue</span><span class="date">11</span>
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="day-cell">
+          <span class="dow">Wed</span><span class="date">12</span>
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="day-cell">
+          <span class="dow">Thu</span><span class="date">13</span>
+          <div class="dot-row"><div class="dot"></div></div>
+        </div>
+        <div class="day-cell">
+          <span class="dow">Fri</span><span class="date">14</span>
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="day-cell">
+          <span class="dow">Sat</span><span class="date">15</span>
+          <div class="dot-row"><div class="dot"></div><div class="dot"></div></div>
+        </div>
+        <div class="day-cell">
+          <span class="dow">Sun</span><span class="date">16</span>
+          <div class="dot-row"></div>
+        </div>
+      </div>
+
+      <div class="section-label">Thursday, March 12</div>
+      <div class="class-rows">
+        <div class="class-row type-group booked">
+          <div class="class-time">6:30 AM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Flow Beyond Basics</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Hailey Christianson · Charlotte Park</div>
+          </div>
+          <span class="spots-badge booked-badge">✓ Booked</span>
+          <button class="btn-outline btn-sm">Manage</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">7:30 AM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Level 1+</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Hailey Christianson · Charlotte Park</div>
+          </div>
+          <span class="spots-badge open">5 spots left</span>
+          <button class="btn-primary btn-sm">Book</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">8:30 AM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Level 2</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Liza Sweeting · Charlotte Park</div>
+          </div>
+          <span class="spots-badge few">2 spots left</span>
+          <button class="btn-accent btn-sm">Book</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">10:30 AM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Core, Arms + Glutes</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Marcela De La Vega Luna · Charlotte Park</div>
+          </div>
+          <span class="spots-badge open">6 spots left</span>
+          <button class="btn-primary btn-sm">Book</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">4:30 PM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer + Mat: Beginner Level</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Jennifer Gaw · Charlotte Park</div>
+          </div>
+          <span class="spots-badge open">7 spots left</span>
+          <button class="btn-primary btn-sm">Book</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">5:30 PM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Level 2</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Meredith Capps · Charlotte Park</div>
+          </div>
+          <span class="spots-badge full">Full</span>
+          <button class="btn-outline btn-sm">Waitlist</button>
+        </div>
+        <div class="class-row type-group">
+          <div class="class-time">6:30 PM<div class="dur">50 min</div></div>
+          <div class="class-info">
+            <div class="cn-row"><span class="cn">Pilates Reformer: Level 1</span><span class="type-pill pill-group">Group</span></div>
+            <div class="cm">Meredith Capps · Charlotte Park</div>
+          </div>
+          <span class="spots-badge open">3 spots left</span>
+          <button class="btn-primary btn-sm">Book</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     SCREEN 2: PRIVATE BOOKING (Step 3 — Date & Time)
+══════════════════════════ -->
+<div id="screen-private" class="platform">
+  <nav class="top-nav">
+    <div class="nav-logo"><img src="assets/logo-horizontal.png" alt="Marathon Pilates"></div>
+    <div class="nav-links">
+      <span class="nav-link" onclick="showScreen('schedule')">Schedule</span>
+      <span class="nav-link active" onclick="showScreen('private')">Book Private</span>
+      <span class="nav-link" onclick="showScreen('memberships')">Memberships</span>
+      <span class="nav-link">On Demand</span>
+    </div>
+    <div class="nav-right">
+      <div class="location-toggle-nav">
+        <button class="loc-btn active">Charlotte Park</button>
+        <button class="loc-btn">Green Hills</button>
+      </div>
+      <div class="avatar">S</div>
+    </div>
+  </nav>
+
+  <div class="private-hero">
+    <h1>Private Sessions</h1>
+    <p>One-on-one, duet, or trio &mdash; personalized to your goals.</p>
+  </div>
+
+  <div class="private-layout">
+    <div class="progress-steps">
+      <div class="step done"><div class="step-num">✓</div><span class="step-label">Session Type</span></div>
+      <div class="step-line"></div>
+      <div class="step done"><div class="step-num">✓</div><span class="step-label">Instructor</span></div>
+      <div class="step-line"></div>
+      <div class="step active"><div class="step-num">3</div><span class="step-label">Date & Time</span></div>
+      <div class="step-line"></div>
+      <div class="step"><div class="step-num">4</div><span class="step-label">Confirm</span></div>
+    </div>
+
+    <div class="step-content">
+      <h3>Choose a date and time</h3>
+      <div class="booking-grid">
+        <div>
+          <div class="section-label" style="margin-bottom:12px">Your instructor</div>
+          <div class="instructor-card selected" style="margin-bottom:20px">
+            <div class="instr-avatar">R</div>
+            <div>
+              <div class="instr-name">Ruby Ramdhan</div>
+              <div class="instr-creds">CPI, CET · Master Trainer</div>
+            </div>
+          </div>
+          <div class="section-label" style="margin-bottom:12px">Available times — March 13</div>
+          <div class="time-slots">
+            <div class="time-slot unavailable">7:00 AM</div>
+            <div class="time-slot">8:00 AM</div>
+            <div class="time-slot selected">9:00 AM</div>
+            <div class="time-slot">10:00 AM</div>
+            <div class="time-slot unavailable">11:00 AM</div>
+            <div class="time-slot">2:00 PM</div>
+            <div class="time-slot">3:00 PM</div>
+            <div class="time-slot unavailable">4:00 PM</div>
+            <div class="time-slot">5:00 PM</div>
+          </div>
+        </div>
+
+        <div class="mini-calendar">
+          <div class="cal-header">
+            <h4>March 2026</h4>
+            <div>
+              <button class="cal-nav">‹</button>
+              <button class="cal-nav">›</button>
+            </div>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div>
+            <div class="cal-day other-month">23</div><div class="cal-day other-month">24</div><div class="cal-day other-month">25</div><div class="cal-day other-month">26</div><div class="cal-day other-month">27</div><div class="cal-day other-month">28</div><div class="cal-day">1</div>
+            <div class="cal-day">2</div><div class="cal-day has-slots">3</div><div class="cal-day has-slots">4</div><div class="cal-day has-slots">5</div><div class="cal-day has-slots">6</div><div class="cal-day has-slots">7</div><div class="cal-day">8</div>
+            <div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day has-slots">12</div><div class="cal-day selected has-slots">13</div><div class="cal-day has-slots">14</div><div class="cal-day">15</div>
+            <div class="cal-day">16</div><div class="cal-day has-slots">17</div><div class="cal-day has-slots">18</div><div class="cal-day has-slots">19</div><div class="cal-day has-slots">20</div><div class="cal-day has-slots">21</div><div class="cal-day">22</div>
+            <div class="cal-day">23</div><div class="cal-day has-slots">24</div><div class="cal-day has-slots">25</div><div class="cal-day has-slots">26</div><div class="cal-day has-slots">27</div><div class="cal-day has-slots">28</div><div class="cal-day">29</div>
+            <div class="cal-day">30</div><div class="cal-day">31</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-actions">
+        <button class="btn-outline">← Back</button>
+        <button class="btn-primary" onclick="showScreen('confirm')">Continue →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     SCREEN 2b: CONFIRM
+══════════════════════════ -->
+<div id="screen-confirm" class="platform">
+  <nav class="top-nav">
+    <div class="nav-logo"><img src="assets/logo-horizontal.png" alt="Marathon Pilates"></div>
+    <div class="nav-links">
+      <span class="nav-link" onclick="showScreen('schedule')">Schedule</span>
+      <span class="nav-link active" onclick="showScreen('private')">Book Private</span>
+      <span class="nav-link" onclick="showScreen('memberships')">Memberships</span>
+      <span class="nav-link">On Demand</span>
+    </div>
+    <div class="nav-right">
+      <div class="location-toggle-nav">
+        <button class="loc-btn active">Charlotte Park</button>
+        <button class="loc-btn">Green Hills</button>
+      </div>
+      <div class="avatar">S</div>
+    </div>
+  </nav>
+
+  <div class="private-hero">
+    <h1>Private Sessions</h1>
+    <p>One-on-one, duet, or trio &mdash; personalized to your goals.</p>
+  </div>
+
+  <div class="private-layout">
+    <div class="progress-steps">
+      <div class="step done"><div class="step-num">✓</div><span class="step-label">Session Type</span></div>
+      <div class="step-line"></div>
+      <div class="step done"><div class="step-num">✓</div><span class="step-label">Instructor</span></div>
+      <div class="step-line"></div>
+      <div class="step done"><div class="step-num">✓</div><span class="step-label">Date & Time</span></div>
+      <div class="step-line"></div>
+      <div class="step active"><div class="step-num">4</div><span class="step-label">Confirm</span></div>
+    </div>
+
+    <div class="step-content">
+      <h3>Review and confirm</h3>
+      <div class="confirm-summary">
+        <div class="confirm-row"><span class="label">Session type</span><span class="value">Solo Private</span></div>
+        <div class="confirm-row"><span class="label">Instructor</span><span class="value">Ruby Ramdhan · CPI, CET</span></div>
+        <div class="confirm-row"><span class="label">Date & time</span><span class="value">Thursday, March 13 · 9:00 AM</span></div>
+        <div class="confirm-row"><span class="label">Location</span><span class="value">Charlotte Park</span></div>
+        <div class="confirm-row"><span class="label">Duration</span><span class="value">50 minutes</span></div>
+        <div class="confirm-row"><span class="label">Payment</span><span class="value">1 Private Credit (2 remaining after)</span></div>
+      </div>
+      <textarea class="notes-field" rows="3" placeholder="Any notes for your instructor? (injuries, goals, focus areas…)"></textarea>
+      <div class="step-actions">
+        <button class="btn-outline" onclick="showScreen('private')">← Back</button>
+        <button class="btn-accent">Confirm Booking</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     SCREEN 3: MEMBERSHIPS
+══════════════════════════ -->
+<div id="screen-memberships" class="platform">
+  <nav class="top-nav">
+    <div class="nav-logo"><img src="assets/logo-horizontal.png" alt="Marathon Pilates"></div>
+    <div class="nav-links">
+      <span class="nav-link" onclick="showScreen('schedule')">Schedule</span>
+      <span class="nav-link" onclick="showScreen('private')">Book Private</span>
+      <span class="nav-link active" onclick="showScreen('memberships')">Memberships</span>
+      <span class="nav-link">On Demand</span>
+    </div>
+    <div class="nav-right">
+      <div class="location-toggle-nav">
+        <button class="loc-btn active">Charlotte Park</button>
+        <button class="loc-btn">Green Hills</button>
+      </div>
+      <div class="avatar">S</div>
+    </div>
+  </nav>
+
+  <div class="memberships-layout">
+    <div class="page-header">
+      <h1>Memberships & Credits</h1>
+      <p style="color:var(--text-sec);font-size:14px;margin-top:8px">Flexible options for every rhythm. Pause or cancel anytime.</p>
+      <div class="hsa-badge">✓ HSA / FSA accepted</div>
+    </div>
+
+    <div class="mem-section-title">Unlimited Memberships</div>
+    <div class="membership-cards">
+      <div class="membership-card">
+        <div class="card-label">Single Location</div>
+        <div class="card-name">Unlimited — Charlotte Park</div>
+        <div class="card-price">$XXX <span>/ month</span></div>
+        <div class="card-desc">Unlimited group reformer classes at one location.</div>
+        <hr class="card-divider">
+        <div class="card-perks">
+          <div class="perk">Unlimited group classes</div>
+          <div class="perk">One location</div>
+          <div class="perk">Priority booking window</div>
+          <div class="perk">Pause up to 1× per year</div>
+        </div>
+        <button class="btn-primary" style="width:100%">Get Started</button>
+      </div>
+
+      <div class="membership-card featured">
+        <div class="featured-badge">Most Popular</div>
+        <div class="card-label">Both Locations</div>
+        <div class="card-name">Unlimited — All Access</div>
+        <div class="card-price">$XXX <span>/ month</span></div>
+        <div class="card-desc">Unlimited group reformer at Charlotte Park + Green Hills.</div>
+        <hr class="card-divider">
+        <div class="card-perks">
+          <div class="perk">Unlimited group classes</div>
+          <div class="perk">Both locations</div>
+          <div class="perk">Priority booking window</div>
+          <div class="perk">Pause up to 1× per year</div>
+          <div class="perk">Member-only perks</div>
+        </div>
+        <button class="btn-accent" style="width:100%">Get Started</button>
+      </div>
+
+      <div class="membership-card">
+        <div class="card-label">Flexible</div>
+        <div class="card-name">Class Packs</div>
+        <div class="card-price" style="font-size:20px;margin-top:12px">Buy as you go</div>
+        <div class="card-desc">No commitment. Credits never expire.</div>
+        <hr class="card-divider">
+        <div class="card-perks">
+          <div class="perk">Use at either location</div>
+          <div class="perk">Credits never expire</div>
+          <div class="perk">Gift to a friend</div>
+        </div>
+        <button class="btn-outline" style="width:100%">See Packs ↓</button>
+      </div>
+    </div>
+
+    <div class="mem-section-title" style="margin-top:48px">Class Packs</div>
+    <div class="pack-cards">
+      <div class="pack-card">
+        <span class="pack-count">5</span>
+        <span class="pack-label">Classes</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">$XX per class</span>
+        <button class="btn-outline" style="width:100%">Buy</button>
+      </div>
+      <div class="pack-card" style="border-color:var(--roseclay)">
+        <span class="pack-count">10</span>
+        <span class="pack-label">Classes</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">$XX per class · Save X%</span>
+        <button class="btn-primary" style="width:100%">Buy</button>
+      </div>
+      <div class="pack-card">
+        <span class="pack-count">20</span>
+        <span class="pack-label">Classes</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">$XX per class · Save X%</span>
+        <button class="btn-outline" style="width:100%">Buy</button>
+      </div>
+      <div class="pack-card">
+        <span class="pack-count">🎁</span>
+        <span class="pack-label">Gift Card</span>
+        <span class="pack-price" style="font-size:18px">Any amount</span>
+        <span class="pack-per">Physical or digital</span>
+        <button class="btn-outline" style="width:100%">Buy</button>
+      </div>
+    </div>
+
+    <div class="mem-section-title" style="margin-top:48px">Private Session Credits</div>
+    <div class="pack-cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="pack-card">
+        <span class="pack-count">1</span>
+        <span class="pack-label">Solo Private</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">50 min · 1-on-1</span>
+        <button class="btn-outline" style="width:100%">Buy</button>
+      </div>
+      <div class="pack-card">
+        <span class="pack-count">5</span>
+        <span class="pack-label">Solo Privates</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">Save X% vs. single</span>
+        <button class="btn-primary" style="width:100%">Buy</button>
+      </div>
+      <div class="pack-card">
+        <span class="pack-count">1</span>
+        <span class="pack-label">Duet / Trio</span>
+        <span class="pack-price">$XXX</span>
+        <span class="pack-per">Per person · 50 min</span>
+        <button class="btn-outline" style="width:100%">Buy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     SCREEN 4: ADMIN DASHBOARD
+══════════════════════════ -->
+<div id="screen-admin" class="platform">
+
+  <!-- Role switcher bar -->
+  <div style="background:#1a1714;padding:10px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-family:'Raleway',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#7A7570">Viewing as:</span>
+    <button class="role-btn active" id="role-owner" onclick="switchRole('owner')">👑 Owner — Ruby</button>
+    <button class="role-btn" id="role-manager" onclick="switchRole('manager')">🗂 Manager — Susan</button>
+    <button class="role-btn" id="role-frontdesk" onclick="switchRole('frontdesk')">🖥 Front Desk</button>
+    <span id="role-caption" style="font-family:'Poppins',sans-serif;font-size:11px;color:#A76E58;margin-left:8px">Full access — all data visible</span>
+  </div>
+
+  <nav class="top-nav">
+    <div class="nav-logo" style="display:flex;align-items:center;gap:10px;"><img src="assets/logo-horizontal.png" alt="Marathon Pilates" style="height:30px;width:auto;"><span id="admin-role-tag" style="font-size:10px;color:var(--text-light);letter-spacing:0.05em;font-weight:400">OWNER</span></div>
+    <div class="nav-links">
+      <span class="nav-link" style="font-size:11px">Charlotte Park</span>
+      <span style="color:var(--border)">|</span>
+      <span class="nav-link" style="font-size:11px">Green Hills</span>
+    </div>
+    <div class="nav-right">
+      <div class="avatar" id="admin-avatar" style="background:var(--moss)">R</div>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar — changes per role -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <span class="admin-section-label">Overview</span>
+      <div class="admin-nav-section">
+        <div class="admin-nav-link active"><span class="icon">📊</span> Dashboard</div>
+        <div class="admin-nav-link"><span class="icon">📅</span> Schedule</div>
+        <div class="admin-nav-link"><span class="icon">👥</span> Clients</div>
+      </div>
+      <span class="admin-section-label">Operations</span>
+      <div class="admin-nav-section">
+        <div class="admin-nav-link"><span class="icon">🔑</span> Bookings</div>
+        <div class="admin-nav-link"><span class="icon">💳</span> Memberships</div>
+        <div class="admin-nav-link"><span class="icon">🎁</span> Gift Cards</div>
+        <div class="admin-nav-link"><span class="icon">🎥</span> On Demand</div>
+      </div>
+      <!-- Business section — Owner only -->
+      <span class="admin-section-label owner-only">Business</span>
+      <div class="admin-nav-section owner-only">
+        <div class="admin-nav-link"><span class="icon">💰</span> Revenue</div>
+        <div class="admin-nav-link"><span class="icon">🧾</span> Payroll</div>
+        <div class="admin-nav-link"><span class="icon">📊</span> Analytics</div>
+        <div class="admin-nav-link"><span class="icon">⚙️</span> Settings</div>
+      </div>
+      <!-- Manager gets notifications but not financials -->
+      <span class="admin-section-label manager-only" style="display:none">Tools</span>
+      <div class="admin-nav-section manager-only" style="display:none">
+        <div class="admin-nav-link"><span class="icon">📣</span> Notifications</div>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <div>
+          <h1 id="admin-greeting">Good morning, Ruby 👋</h1>
+          <div class="date">Tuesday, March 11, 2026 · Charlotte Park</div>
+        </div>
+        <div id="admin-header-actions">
+          <button class="btn-accent btn-sm">+ Add Class</button>
+        </div>
+      </div>
+
+      <!-- KPI row — changes per role -->
+      <div id="kpi-owner" class="kpi-grid">
+        <div class="kpi-card" style="border-top:2px solid var(--terracotta)">
+          <div class="kpi-label">Today's Revenue</div>
+          <div class="kpi-value">$1,248</div>
+          <div class="kpi-delta up">↑ 12% vs last Tue</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Classes Today</div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-sub">42 total bookings</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Occupancy</div>
+          <div class="kpi-value">78%</div>
+          <div class="kpi-delta up">↑ 5pts vs last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Active Members</div>
+          <div class="kpi-value">124</div>
+          <div class="kpi-delta up">↑ 3 this week</div>
+        </div>
+      </div>
+
+      <!-- Manager KPIs — no revenue -->
+      <div id="kpi-manager" class="kpi-grid" style="display:none">
+        <div class="kpi-card">
+          <div class="kpi-label">Classes Today</div>
+          <div class="kpi-value">6</div>
+          <div class="kpi-sub">42 total bookings</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Occupancy</div>
+          <div class="kpi-value">78%</div>
+          <div class="kpi-delta up">↑ 5pts vs last week</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Active Members</div>
+          <div class="kpi-value">124</div>
+          <div class="kpi-sub">Charlotte Park</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Waitlisted Today</div>
+          <div class="kpi-value">5</div>
+          <div class="kpi-sub">Across 2 classes</div>
+        </div>
+      </div>
+
+      <!-- Front Desk — no KPIs at all, just next class -->
+      <div id="kpi-frontdesk" style="display:none;background:var(--earth);color:white;border-radius:8px;padding:20px 24px;margin-bottom:24px">
+        <div style="font-family:'Raleway',sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--roseclay);margin-bottom:8px">Next Class</div>
+        <div style="font-family:'Raleway',sans-serif;font-size:18px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase">Group Reformer</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px">10:30 AM · Ruby Ramdhan · Charlotte Park</div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn-accent btn-sm">Open Roster</button>
+          <button class="btn-outline btn-sm" style="border-color:rgba(255,255,255,0.3);color:white">Add Walk-In</button>
+          <button class="btn-outline btn-sm" style="border-color:rgba(255,255,255,0.3);color:white">Search Client</button>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Today's Classes</span>
+            <button class="btn-outline btn-sm">Full Schedule</button>
+          </div>
+          <div>
+            <div class="today-class-row">
+              <div class="tcr-time">6:00 AM</div>
+              <div><div class="tcr-name">Group Reformer</div><div class="tcr-instr">Ruby Ramdhan</div></div>
+              <div class="occupancy-col">8 / 8<div class="occupancy-bar"><div class="occupancy-fill" style="width:100%"></div></div></div>
+              <span class="status-pill done">Done</span>
+            </div>
+            <div class="today-class-row">
+              <div class="tcr-time">9:00 AM</div>
+              <div><div class="tcr-name">Group Reformer</div><div class="tcr-instr">Ruby Ramdhan</div></div>
+              <div class="occupancy-col">6 / 8<div class="occupancy-bar"><div class="occupancy-fill" style="width:75%"></div></div></div>
+              <span class="status-pill live">Live now</span>
+            </div>
+            <div class="today-class-row">
+              <div class="tcr-time">10:30 AM</div>
+              <div><div class="tcr-name">Group Reformer</div><div class="tcr-instr">Instructor B</div></div>
+              <div class="occupancy-col">7 / 8<div class="occupancy-bar"><div class="occupancy-fill" style="width:87%"></div></div></div>
+              <span class="status-pill upcoming">Upcoming</span>
+            </div>
+            <div class="today-class-row">
+              <div class="tcr-time">12:00 PM</div>
+              <div><div class="tcr-name">Sauna Session</div><div class="tcr-instr">Self-service</div></div>
+              <div class="occupancy-col">1 / 2<div class="occupancy-bar"><div class="occupancy-fill" style="width:50%"></div></div></div>
+              <span class="status-pill upcoming">Upcoming</span>
+            </div>
+            <div class="today-class-row">
+              <div class="tcr-time">5:30 PM</div>
+              <div><div class="tcr-name">Group Reformer</div><div class="tcr-instr">Instructor C</div></div>
+              <div class="occupancy-col">8 / 8<div class="occupancy-bar"><div class="occupancy-fill" style="width:100%;background:var(--moss)"></div></div></div>
+              <span class="status-pill pill-full">Full</span>
+            </div>
+            <div class="today-class-row">
+              <div class="tcr-time">6:30 PM</div>
+              <div><div class="tcr-name">Group Reformer</div><div class="tcr-instr">Ruby Ramdhan</div></div>
+              <div class="occupancy-col">4 / 8<div class="occupancy-bar"><div class="occupancy-fill" style="width:50%"></div></div></div>
+              <span class="status-pill upcoming">Upcoming</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Quick Actions</span></div>
+            <div>
+              <div class="quick-action">
+                <div class="qa-icon terra">📋</div>
+                <div><div class="qa-label">Check in client</div><div class="qa-sub">Walk-in or booked</div></div>
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon moss">➕</div>
+                <div><div class="qa-label">Add walk-in booking</div><div class="qa-sub">For today's classes</div></div>
+              </div>
+              <div class="quick-action">
+                <div class="qa-icon sand">🎁</div>
+                <div><div class="qa-label">Issue gift card</div><div class="qa-sub">Physical or digital</div></div>
+              </div>
+              <!-- Owner-only quick action -->
+              <div class="quick-action owner-only">
+                <div class="qa-icon terra">💰</div>
+                <div><div class="qa-label">View revenue report</div><div class="qa-sub">Daily & period totals</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Needs Attention</span></div>
+            <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+              <div class="alert-item">⚠️ <strong>3 waitlisted</strong> for 5:30 PM — class is full</div>
+              <div class="alert-item">📝 <strong>2 new intake forms</strong> to review</div>
+              <!-- Payment alert visible to all roles but amount hidden for non-owners -->
+              <div class="alert-item owner-only">💳 <strong>1 failed payment</strong> — Sarah M. · $189/mo renewal</div>
+              <div class="alert-item non-owner-only" style="display:none">💳 <strong>1 account needs attention</strong> — Sarah M. <span style="color:var(--text-light);font-size:11px">(billing detail: owner only)</span></div>
+            </div>
+          </div>
+
+          <!-- Owner-only: Revenue snapshot -->
+          <div class="panel owner-only">
+            <div class="panel-header"><span class="panel-title">Revenue This Period</span></div>
+            <div style="padding:16px 20px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-sec)">Group classes</span><span style="font-weight:500">$3,840</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-sec)">Memberships</span><span style="font-weight:500">$11,200</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-sec)">Privates</span><span style="font-weight:500">$2,250</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                <span style="color:var(--text-sec)">Amenities</span><span style="font-weight:500">$890</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px 0 0;font-weight:600">
+                <span>Period total</span><span style="color:var(--terracotta)">$18,180</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Front desk only: clock in/out -->
+          <div class="panel frontdesk-only" style="display:none">
+            <div class="panel-header"><span class="panel-title">My Shift</span></div>
+            <div style="padding:20px">
+              <div style="font-size:13px;color:var(--text-sec);margin-bottom:4px">Clocked in at 6:45 AM</div>
+              <div style="font-size:22px;font-weight:600;color:var(--earth);margin-bottom:16px">3h 15m</div>
+              <div style="display:flex;gap:8px">
+                <button class="btn-outline btn-sm">Log Break</button>
+                <button class="btn-primary btn-sm">Clock Out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  function showScreen(name) {
+    document.querySelectorAll('.platform').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.meta-btn').forEach(b => b.classList.remove('active'));
+    const screen = document.getElementById('screen-' + name);
+    if (screen) screen.classList.add('active');
+    const btnMap = { schedule: 0, private: 1, confirm: 1, memberships: 2, admin: 3 };
+    const idx = btnMap[name];
+    if (idx !== undefined) document.querySelectorAll('.meta-btn')[idx].classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Filter sidebar
+  document.querySelectorAll('.filter-opt').forEach(opt => {
+    opt.addEventListener('click', function() {
+      this.closest('.filter-options').querySelectorAll('.filter-opt').forEach(o => o.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Day strip
+  document.querySelectorAll('.day-cell').forEach(cell => {
+    cell.addEventListener('click', function() {
+      this.closest('.week-strip').querySelectorAll('.day-cell').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Location toggles
+  document.querySelectorAll('.location-toggle-nav').forEach(toggle => {
+    toggle.querySelectorAll('.loc-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        toggle.querySelectorAll('.loc-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+
+  // Time slots
+  document.querySelectorAll('.time-slot:not(.unavailable)').forEach(slot => {
+    slot.addEventListener('click', function() {
+      document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Calendar days
+  document.querySelectorAll('.cal-day:not(.other-month)').forEach(day => {
+    day.addEventListener('click', function() {
+      document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Session type cards
+  document.querySelectorAll('.session-type-card').forEach(card => {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.session-type-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Instructor cards
+  document.querySelectorAll('.instructor-card').forEach(card => {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.instructor-card').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Admin sidebar
+  document.querySelectorAll('.admin-nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+      this.closest('.admin-sidebar').querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Role switcher
+  function switchRole(role) {
+    // Update button states
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('role-' + role).classList.add('active');
+
+    const greeting = document.getElementById('admin-greeting');
+    const tag = document.getElementById('admin-role-tag');
+    const avatar = document.getElementById('admin-avatar');
+    const caption = document.getElementById('role-caption');
+
+    // KPI panels
+    document.getElementById('kpi-owner').style.display = 'none';
+    document.getElementById('kpi-manager').style.display = 'none';
+    document.getElementById('kpi-frontdesk').style.display = 'none';
+
+    // Sidebar sections
+    document.querySelectorAll('.owner-only').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.manager-only').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.frontdesk-only').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.non-owner-only').forEach(el => el.style.display = 'none');
+
+    if (role === 'owner') {
+      greeting.textContent = 'Good morning, Ruby 👋';
+      tag.textContent = 'OWNER';
+      avatar.textContent = 'R';
+      avatar.style.background = 'var(--moss)';
+      caption.textContent = 'Full access — all data visible';
+      document.getElementById('kpi-owner').style.display = 'grid';
+      document.querySelectorAll('.owner-only').forEach(el => el.style.display = '');
+    } else if (role === 'manager') {
+      greeting.textContent = 'Good morning, Susan 👋';
+      tag.textContent = 'MANAGER';
+      avatar.textContent = 'S';
+      avatar.style.background = '#4C5246';
+      caption.textContent = 'Operational access — revenue & payroll not visible';
+      document.getElementById('kpi-manager').style.display = 'grid';
+      document.querySelectorAll('.manager-only').forEach(el => el.style.display = '');
+      document.querySelectorAll('.non-owner-only').forEach(el => el.style.display = '');
+    } else if (role === 'frontdesk') {
+      greeting.textContent = 'Good morning 👋';
+      tag.textContent = 'FRONT DESK';
+      avatar.textContent = 'B';
+      avatar.style.background = '#7A7570';
+      caption.textContent = 'Check-in access only — no financial data';
+      document.getElementById('kpi-frontdesk').style.display = 'block';
+      document.querySelectorAll('.frontdesk-only').forEach(el => el.style.display = '');
+      document.querySelectorAll('.non-owner-only').forEach(el => el.style.display = '');
+    }
+  }
+</script>
+</body>
+</html>
