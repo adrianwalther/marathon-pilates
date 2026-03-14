@@ -109,6 +109,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/clients', label: 'Clients', icon: '◈', show: perms.clients },
     { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },
     { href: '/admin/gift-cards', label: 'Gift Cards', icon: '◇', show: perms.clients },
+    { href: null, label: 'MARKETING', icon: '', show: perms.overview, divider: true },
+    { href: '/admin/marketing/leads', label: 'Leads', icon: '◉', show: perms.clients },
+    { href: '/admin/marketing/automations', label: 'Automations', icon: '⟳', show: perms.clients },
+    { href: '/admin/marketing/broadcasts', label: 'Broadcasts', icon: '◎', show: perms.clients },
+    { href: '/admin/marketing/referrals', label: 'Referrals', icon: '◑', show: perms.clients },
+    { href: '/admin/marketing/testimonials', label: 'Testimonials', icon: '★', show: perms.clients },
+    { href: '/admin/marketing/milestones', label: 'Milestones', icon: '◈', show: perms.clients },
+    { href: '/admin/chat', label: 'Chat', icon: '◻', show: perms.clients },
   ].filter(n => n.show)
 
   return (
@@ -125,11 +133,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: '0.5rem 0' }}>
-          {nav.map(item => {
+        <nav style={{ flex: 1, padding: '0.5rem 0', overflowY: 'auto' }}>
+          {nav.map((item, i) => {
+            if (item.divider) {
+              return (
+                <div key={`divider-${i}`}>
+                  <div style={{ margin: '0.75rem 1.75rem', borderTop: '1px solid #2a2a2a' }} />
+                  <p style={{ padding: '0.25rem 1.75rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.2em', color: '#444' }}>{item.label}</p>
+                </div>
+              )
+            }
             const active = pathname === item.href
             return (
-              <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1.75rem', fontFamily: "'Raleway', sans-serif", fontWeight: active ? 700 : 500, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? '#87CEBF' : '#888', textDecoration: 'none', borderLeft: active ? '2px solid #87CEBF' : '2px solid transparent' }}>
+              <Link key={item.href} href={item.href!} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1.75rem', fontFamily: "'Raleway', sans-serif", fontWeight: active ? 700 : 500, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? '#87CEBF' : '#888', textDecoration: 'none', borderLeft: active ? '2px solid #87CEBF' : '2px solid transparent' }}>
                 <span style={{ fontSize: '1rem', opacity: 0.8 }}>{item.icon}</span>
                 {item.label}
               </Link>
