@@ -1,187 +1,289 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 
-const AUTOMATIONS = [
-  {
-    id: '1', name: 'Welcome Series', trigger_type: 'new_signup', is_active: true,
-    channel: ['email'], sent_count: 124,
-    description: 'Sends 3 emails over 7 days to new signups',
-    steps: [
-      { delay_hours: 0, subject: 'Welcome to Marathon Pilates!', channel: 'email' },
-      { delay_hours: 48, subject: 'Your first class guide', channel: 'email' },
-      { delay_hours: 168, subject: 'Ready to book your next class?', channel: 'email' },
-    ]
-  },
-  {
-    id: '2', name: 'Pack Expiring Soon', trigger_type: 'pack_expiring', is_active: true,
-    channel: ['email', 'sms'], sent_count: 87,
-    description: 'Notifies clients when their class pack has 7 days left',
-    steps: [
-      { delay_hours: 0, subject: 'Your pack expires in 7 days', channel: 'email' },
-      { delay_hours: 120, subject: 'Last chance — 2 days left!', channel: 'sms' },
-    ]
-  },
-  {
-    id: '3', name: 'Win-Back', trigger_type: 'win_back', is_active: true,
-    channel: ['email'], sent_count: 43,
-    description: 'Re-engages clients who haven\'t visited in 30 days',
-    steps: [
-      { delay_hours: 0, subject: 'We miss you at Marathon Pilates', channel: 'email' },
-      { delay_hours: 72, subject: 'Special offer just for you', channel: 'email' },
-    ]
-  },
-  {
-    id: '4', name: 'Failed Payment', trigger_type: 'failed_payment', is_active: true,
-    channel: ['email', 'sms'], sent_count: 19,
-    description: 'Alerts members of failed subscription payment',
-    steps: [
-      { delay_hours: 0, subject: 'Action required: payment failed', channel: 'email' },
-      { delay_hours: 24, subject: 'Your membership is paused — update billing', channel: 'sms' },
-    ]
-  },
-  {
-    id: '5', name: 'Milestone Celebration', trigger_type: 'milestone', is_active: false,
-    channel: ['email'], sent_count: 0,
-    description: 'Celebrates class milestones (10, 25, 50, 100 classes)',
-    steps: [
-      { delay_hours: 0, subject: '🎉 You just hit a milestone!', channel: 'email' },
-    ]
-  },
-  {
-    id: '6', name: 'Birthday', trigger_type: 'birthday', is_active: false,
-    channel: ['email', 'sms'], sent_count: 0,
-    description: 'Sends a birthday message + complimentary class offer',
-    steps: [
-      { delay_hours: 0, subject: 'Happy Birthday from Marathon Pilates 🎂', channel: 'email' },
-    ]
-  },
-]
+const TEAL = '#87CEBF'
+
+type AutomationStep = {
+  delay_hours: number
+  channel: string
+  subject?: string
+  message: string
+}
+
+type Automation = {
+  id: string
+  name: string
+  description: string
+  trigger_type: string
+  trigger_config: Record<string, unknown>
+  is_active: boolean
+  channel: string[]
+  steps: AutomationStep[]
+  sent_count: number
+  created_at: string
+}
 
 const TRIGGER_LABELS: Record<string, string> = {
   new_signup: 'New Signup',
   pack_expiring: 'Pack Expiring',
-  win_back: 'Win-Back (30 days)',
+  no_visit: 'No Visit (30 days)',
   failed_payment: 'Failed Payment',
-  milestone: 'Class Milestone',
+  milestone_reached: 'Milestone Reached',
   birthday: 'Birthday',
-  trial_booked: 'Trial Booked',
+  trial_completed: 'Trial Completed',
 }
 
+const DEFAULT_AUTOMATIONS: Omit<Automation, 'id' | 'created_at' | 'sent_count'>[] = [
+  {
+    name: 'Welcome Series',
+    description: 'Onboard new clients with studio info and first booking nudge',
+    trigger_type: 'new_signup',
+    trigger_config: {},
+    is_active: true,
+    channel: ['email'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: 'Welcome to Marathon Pilates!', message: 'Welcome! Here\'s everything you need to know to get started.' },
+      { delay_hours: 24, channel: 'email', subject: 'Ready to book your first class?', message: 'Your journey starts with one class. Book yours today.' },
+      { delay_hours: 72, channel: 'sms', message: 'Hey! Don\'t forget to book your first class at Marathon Pilates. Reply BOOK for the link.' },
+    ],
+  },
+  {
+    name: 'Pack Expiring Soon',
+    description: 'Remind clients when their class pack is about to expire',
+    trigger_type: 'pack_expiring',
+    trigger_config: { days_before: 7 },
+    is_active: true,
+    channel: ['email', 'sms'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: 'Your class pack expires in 7 days', message: 'You have credits remaining — use them before they expire!' },
+      { delay_hours: 120, channel: 'sms', message: 'Heads up! Your Marathon Pilates pack expires in 2 days. Book now!' },
+    ],
+  },
+  {
+    name: 'Win-Back',
+    description: "Re-engage clients who haven't visited in 30 days",
+    trigger_type: 'no_visit',
+    trigger_config: { days: 30 },
+    is_active: true,
+    channel: ['email'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: 'We miss you at Marathon Pilates', message: "It's been a while — come back and move with us." },
+      { delay_hours: 168, channel: 'email', subject: 'A little something for you', message: 'Here\'s 10% off your next class pack as a welcome-back gift.' },
+    ],
+  },
+  {
+    name: 'Failed Payment',
+    description: 'Notify and prompt clients when a membership payment fails',
+    trigger_type: 'failed_payment',
+    trigger_config: {},
+    is_active: true,
+    channel: ['email', 'sms'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: 'Payment issue with your membership', message: 'We were unable to process your payment. Please update your billing info.' },
+      { delay_hours: 48, channel: 'sms', message: 'Action needed: your Marathon Pilates membership payment failed. Update your card to keep your spot.' },
+    ],
+  },
+  {
+    name: 'Milestone Celebration',
+    description: 'Celebrate client class milestones (10, 25, 50, 100, 200)',
+    trigger_type: 'milestone_reached',
+    trigger_config: {},
+    is_active: true,
+    channel: ['email'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: '🎉 You hit a milestone!', message: 'Congratulations on reaching this incredible achievement. You inspire us every day.' },
+    ],
+  },
+  {
+    name: 'Birthday',
+    description: 'Send a birthday message with a special gift',
+    trigger_type: 'birthday',
+    trigger_config: { days_before: 0 },
+    is_active: true,
+    channel: ['email', 'sms'],
+    steps: [
+      { delay_hours: 0, channel: 'email', subject: 'Happy Birthday from Marathon Pilates! 🎂', message: 'Wishing you a wonderful birthday. Enjoy a complimentary class on us this month.' },
+      { delay_hours: 0, channel: 'sms', message: 'Happy Birthday! 🎉 A free class is waiting for you at Marathon Pilates — our gift to you.' },
+    ],
+  },
+]
+
 export default function AutomationsPage() {
-  const [selected, setSelected] = useState<string | null>(null)
-  const selectedAuto = AUTOMATIONS.find(a => a.id === selected)
+  const supabase = createClient()
+  const [automations, setAutomations] = useState<Automation[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selected, setSelected] = useState<Automation | null>(null)
+  const [seeding, setSeeding] = useState(false)
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('automations')
+      .select('*')
+      .order('created_at', { ascending: true })
+    setAutomations((data as Automation[]) || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  async function toggle(id: string, current: boolean) {
+    await supabase.from('automations').update({ is_active: !current }).eq('id', id)
+    load()
+  }
+
+  async function seedDefaults() {
+    setSeeding(true)
+    for (const a of DEFAULT_AUTOMATIONS) {
+      await supabase.from('automations').insert({ ...a, sent_count: 0 })
+    }
+    setSeeding(false)
+    load()
+  }
+
+  const active = automations.filter(a => a.is_active).length
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#f9f8f6', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Automations</h1>
-          <p className="text-sm text-gray-500 mt-1">{AUTOMATIONS.filter(a => a.is_active).length} active · {AUTOMATIONS.reduce((sum, a) => sum + a.sent_count, 0)} total sent</p>
+          <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Automations</h1>
         </div>
-        <button
-          className="px-4 py-2 rounded-lg text-sm font-medium text-white"
-          style={{ backgroundColor: '#87CEBF' }}
-        >
-          + New Automation
-        </button>
+        {automations.length === 0 && (
+          <button
+            onClick={seedDefaults}
+            disabled={seeding}
+            style={{ background: TEAL, color: '#fff', border: 'none', borderRadius: 2, padding: '0.6rem 1.2rem', fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
+          >
+            {seeding ? 'Loading...' : 'Load Default Automations'}
+          </button>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Automations list */}
-        <div className="lg:col-span-1 space-y-3">
-          {AUTOMATIONS.map(auto => (
+      {/* Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', marginBottom: '2rem' }}>
+        {[
+          { label: 'TOTAL AUTOMATIONS', value: automations.length },
+          { label: 'ACTIVE', value: active },
+          { label: 'TOTAL SENDS', value: automations.reduce((s, a) => s + (a.sent_count || 0), 0).toLocaleString() },
+        ].map(s => (
+          <div key={s.label} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+            <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>{s.label}</p>
+            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 380px' : '1fr', gap: '1.5rem' }}>
+        {/* List */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {loading ? (
+            <div style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af' }}>Loading...</div>
+          ) : automations.length === 0 ? (
+            <div style={{ background: '#fff', borderRadius: 2, padding: '3rem', textAlign: 'center', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+              <p style={{ color: '#9ca3af', fontSize: '0.875rem', margin: '0 0 1rem' }}>No automations yet. Load the defaults to get started.</p>
+            </div>
+          ) : automations.map(a => (
             <div
-              key={auto.id}
-              onClick={() => setSelected(auto.id === selected ? null : auto.id)}
-              className={`bg-white rounded-xl border p-4 cursor-pointer transition-all ${
-                selected === auto.id ? 'border-[#87CEBF] shadow-md' : 'border-gray-100 hover:border-gray-200'
-              }`}
+              key={a.id}
+              onClick={() => setSelected(selected?.id === a.id ? null : a)}
+              style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', cursor: 'pointer', borderLeft: selected?.id === a.id ? `3px solid ${TEAL}` : '3px solid transparent', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}
             >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-gray-900">{auto.name}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{TRIGGER_LABELS[auto.trigger_type]}</p>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>{a.name}</p>
+                  <span style={{ background: a.is_active ? '#d1fae5' : '#f3f4f6', color: a.is_active ? '#065f46' : '#6b7280', padding: '0.15rem 0.5rem', borderRadius: 2, fontSize: '0.65rem', fontFamily: 'Raleway, sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                    {a.is_active ? 'Active' : 'Paused'}
+                  </span>
                 </div>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className={`relative w-10 h-5 rounded-full transition-colors ${auto.is_active ? 'bg-[#87CEBF]' : 'bg-gray-200'}`}
-                >
-                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${auto.is_active ? 'translate-x-5' : 'translate-x-0.5'}`} />
-                </button>
-              </div>
-              <div className="flex items-center gap-3 mt-3">
-                <span className="text-xs text-gray-400">{auto.steps.length} step{auto.steps.length !== 1 ? 's' : ''}</span>
-                <span className="text-xs text-gray-300">·</span>
-                <span className="text-xs text-gray-400">{auto.sent_count} sent</span>
-                <div className="flex gap-1 ml-auto">
-                  {auto.channel.map(c => (
-                    <span key={c} className="text-xs bg-gray-50 text-gray-500 px-1.5 py-0.5 rounded uppercase">{c}</span>
+                <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 0.5rem' }}>{a.description}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <span style={{ background: '#f3f4f6', color: '#4b5563', padding: '0.15rem 0.5rem', borderRadius: 2, fontSize: '0.65rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
+                    {TRIGGER_LABELS[a.trigger_type] || a.trigger_type}
+                  </span>
+                  {(Array.isArray(a.channel) ? a.channel : [a.channel]).map((ch: string) => (
+                    <span key={ch} style={{ background: ch === 'email' ? '#eff6ff' : '#f0fdf4', color: ch === 'email' ? '#1d4ed8' : '#15803d', padding: '0.15rem 0.5rem', borderRadius: 2, fontSize: '0.65rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
+                      {ch}
+                    </span>
                   ))}
+                  <span style={{ fontSize: '0.72rem', color: '#9ca3af' }}>{(a.steps || []).length} steps · {(a.sent_count || 0).toLocaleString()} sent</span>
                 </div>
               </div>
+              <button
+                onClick={e => { e.stopPropagation(); toggle(a.id, a.is_active) }}
+                style={{
+                  width: 40,
+                  height: 22,
+                  borderRadius: 11,
+                  background: a.is_active ? TEAL : '#e5e7eb',
+                  border: 'none',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  flexShrink: 0,
+                  transition: 'background 0.2s',
+                }}
+              >
+                <span style={{
+                  position: 'absolute',
+                  top: 3,
+                  left: a.is_active ? 21 : 3,
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  background: '#fff',
+                  transition: 'left 0.2s',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                }} />
+              </button>
             </div>
           ))}
         </div>
 
         {/* Detail panel */}
-        <div className="lg:col-span-2">
-          {selectedAuto ? (
-            <div className="bg-white rounded-xl border border-gray-100 p-6 space-y-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">{selectedAuto.name}</h2>
-                  <p className="text-sm text-gray-400 mt-1">{selectedAuto.description}</p>
-                </div>
-                <button className="text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-                  Edit
-                </button>
-              </div>
-
+        {selected && (
+          <div style={{ background: '#fff', borderRadius: 2, padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', height: 'fit-content' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
               <div>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Steps</p>
-                <div className="space-y-3">
-                  {selectedAuto.steps.map((step, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0 mt-0.5"
-                        style={{ backgroundColor: '#87CEBF' }}>
-                        {i + 1}
-                      </div>
-                      <div className="flex-1 bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium text-gray-800">{step.subject}</p>
-                          <span className="text-xs bg-white text-gray-500 px-1.5 py-0.5 rounded border border-gray-100 uppercase">{step.channel}</span>
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {step.delay_hours === 0 ? 'Immediately' : `After ${step.delay_hours}h`}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 0.25rem' }}>Automation</p>
+                <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: 0 }}>{selected.name}</h2>
               </div>
+              <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
+            </div>
 
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-50">
-                <div>
-                  <p className="text-xs text-gray-400">Total Sent</p>
-                  <p className="text-xl font-semibold text-gray-900">{selectedAuto.sent_count}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Trigger</p>
-                  <p className="text-sm font-medium text-gray-700">{TRIGGER_LABELS[selectedAuto.trigger_type]}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400">Channels</p>
-                  <p className="text-sm font-medium text-gray-700 capitalize">{selectedAuto.channel.join(', ')}</p>
-                </div>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 0.5rem' }}>Trigger</p>
+              <span style={{ background: '#f3f4f6', color: '#4b5563', padding: '0.3rem 0.75rem', borderRadius: 2, fontSize: '0.8rem' }}>
+                {TRIGGER_LABELS[selected.trigger_type] || selected.trigger_type}
+              </span>
+            </div>
+
+            <div>
+              <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 0.75rem' }}>Steps</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {(selected.steps || []).map((step, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '0.75rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: `${TEAL}20`, border: `1px solid ${TEAL}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 600, color: TEAL, flexShrink: 0 }}>{i + 1}</div>
+                      {i < (selected.steps || []).length - 1 && <div style={{ width: 1, height: 24, background: '#e5e7eb', margin: '2px 0' }} />}
+                    </div>
+                    <div style={{ background: '#f9f8f6', borderRadius: 2, padding: '0.75rem', flex: 1 }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem', alignItems: 'center' }}>
+                        <span style={{ background: step.channel === 'email' ? '#eff6ff' : '#f0fdf4', color: step.channel === 'email' ? '#1d4ed8' : '#15803d', padding: '0.1rem 0.4rem', borderRadius: 2, fontSize: '0.6rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>{step.channel}</span>
+                        {step.delay_hours > 0 && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>+{step.delay_hours >= 24 ? `${step.delay_hours / 24}d` : `${step.delay_hours}h`}</span>}
+                        {step.delay_hours === 0 && i === 0 && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>Immediately</span>}
+                      </div>
+                      {step.subject && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.2rem' }}>{step.subject}</p>}
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0, lineHeight: 1.5 }}>{step.message}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          ) : (
-            <div className="bg-gray-50 rounded-xl border border-dashed border-gray-200 p-12 text-center">
-              <p className="text-sm text-gray-400">Select an automation to view details</p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

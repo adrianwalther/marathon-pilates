@@ -1,157 +1,261 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
 
-const BROADCASTS = [
-  { id: '1', title: 'Spring Schedule Update', subject: 'New classes added for Spring 2026!', status: 'sent', channel: ['email'], recipient_count: 312, open_count: 187, click_count: 43, sent_at: '2026-03-10', audience: 'all_clients' },
-  { id: '2', title: 'Founding Member Reminder', subject: 'Last chance to lock in founding rates', status: 'sent', channel: ['email', 'sms'], recipient_count: 89, open_count: 71, click_count: 28, sent_at: '2026-03-05', audience: 'active_members' },
-  { id: '3', title: 'Green Hills Grand Opening', subject: '🎉 Green Hills is now open!', status: 'draft', channel: ['email', 'sms'], recipient_count: 0, open_count: 0, click_count: 0, sent_at: null, audience: 'all_clients' },
-  { id: '4', title: 'March Newsletter', subject: 'Marathon Pilates — March 2026', status: 'scheduled', channel: ['email'], recipient_count: 312, open_count: 0, click_count: 0, sent_at: '2026-03-20', audience: 'all_clients' },
-]
+const TEAL = '#87CEBF'
 
-const STATUS_STYLES: Record<string, string> = {
-  sent: 'bg-green-100 text-green-700',
-  draft: 'bg-gray-100 text-gray-600',
-  scheduled: 'bg-blue-100 text-blue-700',
-  sending: 'bg-yellow-100 text-yellow-700',
+type Broadcast = {
+  id: string
+  title: string
+  subject: string
+  body: string
+  channel: string[]
+  audience: string
+  audience_filter: Record<string, unknown> | null
+  status: 'draft' | 'scheduled' | 'sending' | 'sent'
+  scheduled_at: string | null
+  sent_at: string | null
+  recipient_count: number
+  open_count: number
+  click_count: number
+  created_at: string
 }
 
+const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
+  draft: { bg: '#f3f4f6', text: '#6b7280' },
+  scheduled: { bg: '#dbeafe', text: '#1d4ed8' },
+  sending: { bg: '#fef9c3', text: '#854d0e' },
+  sent: { bg: '#d1fae5', text: '#065f46' },
+}
+
+const AUDIENCE_OPTIONS = [
+  { value: 'all_clients', label: 'All Clients' },
+  { value: 'active_members', label: 'Active Members' },
+  { value: 'leads', label: 'Leads' },
+  { value: 'charlotte_park', label: 'Charlotte Park Only' },
+  { value: 'green_hills', label: 'Green Hills Only' },
+]
+
 export default function BroadcastsPage() {
-  const [composing, setComposing] = useState(false)
+  const supabase = createClient()
+  const [broadcasts, setBroadcasts] = useState<Broadcast[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [form, setForm] = useState({
+    title: '',
+    subject: '',
+    body: '',
+    channel: ['email'] as string[],
+    audience: 'all_clients',
+    scheduled_at: '',
+  })
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('broadcasts')
+      .select('*')
+      .order('created_at', { ascending: false })
+    setBroadcasts((data as Broadcast[]) || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  function toggleChannel(ch: string) {
+    setForm(f => ({
+      ...f,
+      channel: f.channel.includes(ch) ? f.channel.filter(c => c !== ch) : [...f.channel, ch],
+    }))
+  }
+
+  async function submit(asDraft: boolean) {
+    if (!form.title || !form.subject || !form.body) return
+    setSaving(true)
+    await supabase.from('broadcasts').insert({
+      title: form.title,
+      subject: form.subject,
+      body: form.body,
+      channel: form.channel,
+      audience: form.audience,
+      status: asDraft ? 'draft' : form.scheduled_at ? 'scheduled' : 'draft',
+      scheduled_at: form.scheduled_at || null,
+      recipient_count: 0,
+      open_count: 0,
+      click_count: 0,
+    })
+    setSaving(false)
+    setShowModal(false)
+    setForm({ title: '', subject: '', body: '', channel: ['email'], audience: 'all_clients', scheduled_at: '' })
+    load()
+  }
+
+  const sent = broadcasts.filter(b => b.status === 'sent')
+  const avgOpen = sent.length > 0 ? Math.round(sent.reduce((s, b) => s + (b.recipient_count > 0 ? (b.open_count / b.recipient_count) * 100 : 0), 0) / sent.length) : 0
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#f9f8f6', minHeight: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Broadcasts</h1>
-          <p className="text-sm text-gray-500 mt-1">Newsletters and announcements to clients and leads</p>
+          <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Broadcasts</h1>
         </div>
         <button
-          onClick={() => setComposing(true)}
-          className="px-4 py-2 rounded-lg text-sm font-medium text-white"
-          style={{ backgroundColor: '#87CEBF' }}
+          onClick={() => setShowModal(true)}
+          style={{ background: TEAL, color: '#fff', border: 'none', borderRadius: 2, padding: '0.6rem 1.2rem', fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
         >
-          + New Broadcast
+          + Compose
         </button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-4">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1rem', marginBottom: '2rem' }}>
         {[
-          { label: 'Total Sent', value: '2' },
-          { label: 'Avg Open Rate', value: '68%' },
-          { label: 'Avg Click Rate', value: '18%' },
-          { label: 'Total Recipients', value: '401' },
-        ].map(stat => (
-          <div key={stat.label} className="bg-white rounded-xl border border-gray-100 p-4">
-            <p className="text-xs text-gray-400">{stat.label}</p>
-            <p className="text-2xl font-semibold text-gray-900 mt-1">{stat.value}</p>
+          { label: 'TOTAL SENT', value: sent.length },
+          { label: 'DRAFTS', value: broadcasts.filter(b => b.status === 'draft').length },
+          { label: 'SCHEDULED', value: broadcasts.filter(b => b.status === 'scheduled').length },
+          { label: 'AVG OPEN RATE', value: sent.length > 0 ? `${avgOpen}%` : '—' },
+        ].map(s => (
+          <div key={s.label} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+            <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>{s.label}</p>
+            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Broadcasts list */}
-      <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Title</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Audience</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Sent / Opens / Clicks</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
-              <th className="px-4 py-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-50">
-            {BROADCASTS.map(b => (
-              <tr key={b.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900">{b.title}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{b.subject}</p>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${STATUS_STYLES[b.status]}`}>{b.status}</span>
-                </td>
-                <td className="px-4 py-3 text-gray-500 capitalize text-xs">{b.audience.replace('_', ' ')}</td>
-                <td className="px-4 py-3">
-                  {b.status === 'sent' ? (
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="text-gray-700">{b.recipient_count} sent</span>
-                      <span className="text-gray-400">{b.open_count} opens ({Math.round(b.open_count / b.recipient_count * 100)}%)</span>
-                      <span className="text-gray-400">{b.click_count} clicks</span>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-gray-300">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-gray-400 text-xs">{b.sent_at || '—'}</td>
-                <td className="px-4 py-3">
-                  <button className="text-xs text-gray-400 hover:text-gray-700">
-                    {b.status === 'draft' ? 'Edit' : 'View'}
-                  </button>
-                </td>
+      <div style={{ background: '#fff', borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
+        <div style={{ padding: '1rem 1.25rem', borderBottom: '1px solid #f3f4f6' }}>
+          <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', margin: 0 }}>All Broadcasts</p>
+        </div>
+        {loading ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af' }}>Loading...</div>
+        ) : broadcasts.length === 0 ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>No broadcasts yet. Compose your first one.</div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#f9f8f6' }}>
+                {['Title', 'Audience', 'Channels', 'Status', 'Date', 'Metrics'].map(h => (
+                  <th key={h} style={{ padding: '0.65rem 1rem', fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', textAlign: 'left', fontWeight: 600 }}>{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {broadcasts.map(b => {
+                const audienceLabel = AUDIENCE_OPTIONS.find(a => a.value === b.audience)?.label || b.audience
+                const openRate = b.recipient_count > 0 ? Math.round((b.open_count / b.recipient_count) * 100) : null
+                const clickRate = b.recipient_count > 0 ? Math.round((b.click_count / b.recipient_count) * 100) : null
+                return (
+                  <tr key={b.id} style={{ borderTop: '1px solid #f3f4f6' }}>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.15rem' }}>{b.title}</p>
+                      <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>{b.subject}</p>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#4b5563' }}>{audienceLabel}</td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                        {(Array.isArray(b.channel) ? b.channel : [b.channel]).map((ch: string) => (
+                          <span key={ch} style={{ background: ch === 'email' ? '#eff6ff' : ch === 'sms' ? '#f0fdf4' : '#faf5ff', color: ch === 'email' ? '#1d4ed8' : ch === 'sms' ? '#15803d' : '#7c3aed', padding: '0.15rem 0.4rem', borderRadius: 2, fontSize: '0.65rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
+                            {ch}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      <span style={{ background: STATUS_COLORS[b.status].bg, color: STATUS_COLORS[b.status].text, padding: '0.2rem 0.6rem', borderRadius: 2, fontSize: '0.7rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
+                        {b.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#9ca3af' }}>
+                      {b.sent_at
+                        ? new Date(b.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : b.scheduled_at
+                          ? `Scheduled ${new Date(b.scheduled_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                          : new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </td>
+                    <td style={{ padding: '0.875rem 1rem' }}>
+                      {b.status === 'sent' ? (
+                        <div style={{ fontSize: '0.75rem', color: '#4b5563' }}>
+                          <span style={{ color: '#6b7280' }}>{b.recipient_count} sent</span>
+                          {openRate !== null && <span style={{ marginLeft: '0.5rem' }}>· {openRate}% open</span>}
+                          {clickRate !== null && <span style={{ marginLeft: '0.5rem' }}>· {clickRate}% click</span>}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>—</span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {/* Compose modal */}
-      {composing && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900">New Broadcast</h2>
-              <button onClick={() => setComposing(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
-            </div>
-            <div className="p-6 space-y-4">
+      {showModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: '100%', maxWidth: 560, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: '0 0 1.5rem' }}>Compose Broadcast</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Title</label>
-                <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#87CEBF]" placeholder="Internal name" />
+                <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Title (internal)</label>
+                <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. March Newsletter" style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', boxSizing: 'border-box' }} />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Subject Line</label>
+                <input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="e.g. Spring classes are here 🌿" style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', boxSizing: 'border-box' }} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Audience</label>
-                  <select className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#87CEBF]">
-                    <option>All Clients</option>
-                    <option>Active Members</option>
-                    <option>Leads</option>
-                    <option>Charlotte Park only</option>
-                    <option>Green Hills only</option>
+                  <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Audience</label>
+                  <select value={form.audience} onChange={e => setForm(f => ({ ...f, audience: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem' }}>
+                    {AUDIENCE_OPTIONS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Channels</label>
-                  <div className="flex gap-3 mt-1">
-                    {['Email', 'SMS', 'Push'].map(c => (
-                      <label key={c} className="flex items-center gap-1.5 text-sm text-gray-600">
-                        <input type="checkbox" defaultChecked={c === 'Email'} className="rounded" />
-                        {c}
-                      </label>
+                  <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 8 }}>Channels</label>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {['email', 'sms', 'push'].map(ch => (
+                      <button
+                        key={ch}
+                        onClick={() => toggleChannel(ch)}
+                        style={{
+                          background: form.channel.includes(ch) ? TEAL : '#f3f4f6',
+                          color: form.channel.includes(ch) ? '#fff' : '#6b7280',
+                          border: 'none',
+                          borderRadius: 2,
+                          padding: '0.35rem 0.75rem',
+                          fontSize: '0.75rem',
+                          fontFamily: 'Raleway, sans-serif',
+                          textTransform: 'uppercase',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {ch}
+                      </button>
                     ))}
                   </div>
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Subject Line</label>
-                <input className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#87CEBF]" placeholder="Email subject" />
+                <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Message</label>
+                <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={6} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', boxSizing: 'border-box', resize: 'vertical' }} />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Message</label>
-                <textarea className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#87CEBF] resize-none" rows={6} placeholder="Write your message..." />
+                <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Schedule Send (optional)</label>
+                <input type='datetime-local' value={form.scheduled_at} onChange={e => setForm(f => ({ ...f, scheduled_at: e.target.value }))} style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', boxSizing: 'border-box' }} />
               </div>
             </div>
-            <div className="flex items-center justify-between p-6 border-t border-gray-100">
-              <button onClick={() => setComposing(false)} className="text-sm text-gray-500 hover:text-gray-700">Cancel</button>
-              <div className="flex gap-3">
-                <button className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-700 hover:bg-gray-50">
-                  Save Draft
-                </button>
-                <button className="px-4 py-2 rounded-lg text-sm font-medium text-white" style={{ backgroundColor: '#87CEBF' }}>
-                  Send Now
-                </button>
-              </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem' }}>
+              <button onClick={() => setShowModal(false)} style={{ background: 'none', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 1rem', fontSize: '0.8rem', cursor: 'pointer', color: '#6b7280' }}>Cancel</button>
+              <button onClick={() => submit(true)} disabled={saving} style={{ background: '#f3f4f6', color: '#4b5563', border: 'none', borderRadius: 2, padding: '0.5rem 1rem', fontSize: '0.8rem', cursor: 'pointer' }}>Save Draft</button>
+              <button onClick={() => submit(false)} disabled={saving} style={{ background: TEAL, color: '#fff', border: 'none', borderRadius: 2, padding: '0.5rem 1.25rem', fontSize: '0.8rem', cursor: 'pointer' }}>
+                {saving ? 'Saving...' : form.scheduled_at ? 'Schedule' : 'Save'}
+              </button>
             </div>
           </div>
         </div>
