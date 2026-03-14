@@ -5,33 +5,87 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
-const nav = [
-  { href: '/admin', label: 'Overview', icon: '⊡' },
-  { href: '/admin/schedule', label: 'Schedule', icon: '◷' },
-  { href: '/admin/clients', label: 'Clients', icon: '◈' },
-  { href: '/admin/payroll', label: 'Payroll', icon: '◆' },
-]
+export type StaffRole = 'admin' | 'manager' | 'instructor' | 'front_desk'
+
+// What each role can access
+export const ROLE_PERMISSIONS: Record<StaffRole, {
+  overview: boolean
+  schedule_view: boolean
+  schedule_edit: boolean
+  clients: boolean
+  payroll_view: boolean
+  payroll_edit: boolean
+}> = {
+  admin: {
+    overview: true,
+    schedule_view: true,
+    schedule_edit: true,
+    clients: true,
+    payroll_view: true,
+    payroll_edit: true,
+  },
+  manager: {
+    overview: true,
+    schedule_view: true,
+    schedule_edit: true,
+    clients: true,
+    payroll_view: true,
+    payroll_edit: false,
+  },
+  instructor: {
+    overview: false,
+    schedule_view: true,   // own classes only
+    schedule_edit: false,
+    clients: false,        // own class rosters only
+    payroll_view: false,
+    payroll_edit: false,
+  },
+  front_desk: {
+    overview: true,
+    schedule_view: true,
+    schedule_edit: false,
+    clients: true,         // lookup only
+    payroll_view: false,
+    payroll_edit: false,
+  },
+}
+
+const ROLE_LABELS: Record<StaffRole, string> = {
+  admin: 'Admin',
+  manager: 'Manager',
+  instructor: 'Instructor',
+  front_desk: 'Front Desk',
+}
+
+const ROLE_COLORS: Record<StaffRole, string> = {
+  admin: '#87CEBF',
+  manager: '#6b9fd4',
+  instructor: '#c8860a',
+  front_desk: '#808282',
+}
+
+const ALLOWED_ROLES: StaffRole[] = ['admin', 'manager', 'instructor', 'front_desk']
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-  const [adminName, setAdminName] = useState('')
+  const [profile, setProfile] = useState<{ first_name: string; role: StaffRole } | null>(null)
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { router.push('/login'); return }
-      const { data: profile } = await supabase
+      const { data: prof } = await supabase
         .from('profiles')
         .select('first_name, role')
         .eq('id', data.user.id)
         .single()
-      if (!profile || !['admin', 'instructor'].includes(profile.role)) {
+      if (!prof || !ALLOWED_ROLES.includes(prof.role as StaffRole)) {
         router.push('/dashboard')
         return
       }
-      setAdminName(profile.first_name)
+      setProfile({ first_name: prof.first_name, role: prof.role as StaffRole })
       setChecking(false)
     })
   }, [router])
@@ -44,6 +98,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (checking) return null
 
+  const role = profile!.role
+  const perms = ROLE_PERMISSIONS[role]
+  const roleColor = ROLE_COLORS[role]
+
+  const nav = [
+    { href: '/admin', label: 'Overview', icon: '⊡', show: perms.overview },
+    { href: '/admin/schedule', label: 'Schedule', icon: '◷', show: perms.schedule_view },
+    { href: '/admin/clients', label: 'Clients', icon: '◈', show: perms.clients },
+    { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },
+  ].filter(n => n.show)
+
   return (
     <div className="min-h-screen flex" style={{ background: '#f9f8f6' }}>
       <aside className="hidden lg:flex flex-col w-64 min-h-screen" style={{ background: '#1a1a1a', position: 'fixed', top: 0, left: 0, bottom: 0 }}>
@@ -52,7 +117,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <br />
           <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#87CEBF' }}>Pilates</span>
           <div style={{ marginTop: '0.5rem' }}>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: '#87CEBF', color: 'white' }}>Admin</span>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: roleColor, color: 'white' }}>
+              {ROLE_LABELS[role]}
+            </span>
           </div>
         </div>
 
@@ -73,7 +140,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         <div style={{ padding: '1.5rem 1.75rem', borderTop: '1px solid #2a2a2a' }}>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'white', marginBottom: '0.5rem' }}>{adminName}</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'white', marginBottom: '0.15rem' }}>{profile?.first_name}</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#555', marginBottom: '0.6rem' }}>{ROLE_LABELS[role]}</p>
           <button onClick={handleSignOut} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#555', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Sign Out</button>
         </div>
       </aside>
