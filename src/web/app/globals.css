@@ -1,26 +1,79 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600&family=Raleway:wght@400;500;600;700&display=swap');
 
 :root {
+  --teal: #87CEBF;
+  --teal-dark: #6bb8a8;
+  --gray: #808282;
+  --off-white: #f9f8f6;
+  --dark: #1a1a1a;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1a1a1a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-teal: var(--teal);
+  --color-teal-dark: var(--teal-dark);
+  --color-mp-gray: var(--gray);
+  --color-off-white: var(--off-white);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 100;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.subhead {
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--teal);
+  color: white;
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--teal-dark);
+}
+
+.btn-ghost {
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-family: 'Raleway', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.75rem 2rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: var(--teal);
+  color: white;
+}
+
+input, textarea, select {
+  font-family: 'Poppins', sans-serif;
 }
