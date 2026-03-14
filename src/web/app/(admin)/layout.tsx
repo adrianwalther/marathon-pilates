@@ -104,7 +104,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const nav = [
     { href: '/admin', label: 'Overview', icon: '⊡', show: perms.overview },
-    { href: '/admin/schedule', label: 'Schedule', icon: '◷', show: perms.schedule_view },
+    { href: '/admin/my-classes', label: 'My Classes', icon: '◷', show: role === 'instructor' },
+    { href: '/admin/schedule', label: 'Schedule', icon: '◷', show: perms.schedule_view && role !== 'instructor' },
     { href: '/admin/clients', label: 'Clients', icon: '◈', show: perms.clients },
     { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },
   ].filter(n => n.show)
