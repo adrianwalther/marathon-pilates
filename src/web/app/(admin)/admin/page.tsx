@@ -57,7 +57,7 @@ export default function AdminOverviewPage() {
         // Today bookings
         const todayBookings = bookings?.filter(() => true).length ?? 0
 
-        setUpcoming(sessions.map(s => ({ ...s, booking_count: countMap[s.id] ?? 0, profiles: s.profiles as UpcomingSession['profiles'] })) as UpcomingSession[])
+        setUpcoming(sessions.map(s => ({ ...s, booking_count: countMap[s.id] ?? 0, profiles: s.profiles as unknown as UpcomingSession["profiles"] })) as unknown as UpcomingSession[])
         setStats({
           totalClients: clientCount ?? 0,
           classesToday: sessions.filter(s => new Date(s.starts_at) >= todayStart && new Date(s.starts_at) <= todayEnd).length,

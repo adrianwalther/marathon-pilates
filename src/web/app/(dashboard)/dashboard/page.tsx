@@ -55,7 +55,7 @@ export default function DashboardPage() {
       ])
 
       if (prof) setProfile(prof)
-      if (bookings) setUpcomingBookings(bookings as Booking[])
+      if (bookings) setUpcomingBookings(bookings as unknown as Booking[])
       if (creds) setCredits(creds)
       setLoading(false)
     }

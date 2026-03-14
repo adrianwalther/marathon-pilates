@@ -133,7 +133,7 @@ export default function SchedulePage() {
         ...s,
         booking_count: countMap[s.id] ?? 0,
         user_booking: bookingMap[s.id] ?? null,
-      })) as Session[])
+      })) as unknown as Session[])
     } else {
       setSessions([])
     }

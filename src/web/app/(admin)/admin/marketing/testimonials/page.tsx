@@ -55,7 +55,7 @@ export default function TestimonialsPage() {
     content: '',
     rating: 5,
     service_type: 'group_reformer',
-    source: 'manual' as const,
+    source: 'manual' as 'in_app' | 'google' | 'yelp' | 'manual',
   })
 
   async function load() {

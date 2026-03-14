@@ -54,7 +54,7 @@ export default function OnDemandPage() {
       else if (filter !== 'All') query = query.eq('difficulty_level', filter.toLowerCase())
 
       const { data } = await query
-      setClasses((data ?? []) as OnDemandClass[])
+      setClasses((data ?? []) as unknown as OnDemandClass[])
       setLoading(false)
     }
     load()

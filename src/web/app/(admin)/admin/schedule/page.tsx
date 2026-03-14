@@ -151,7 +151,7 @@ export default function AdminSchedulePage() {
         .in('status', ['confirmed', 'waitlisted'])
       const countMap: Record<string, number> = {}
       bookings?.forEach(b => { countMap[b.session_id] = (countMap[b.session_id] ?? 0) + 1 })
-      setSessions(sessionsData.map(s => ({ ...s, booking_count: countMap[s.id] ?? 0 })) as Session[])
+      setSessions(sessionsData.map(s => ({ ...s, booking_count: countMap[s.id] ?? 0 })) as unknown as Session[])
     } else {
       setSessions([])
     }
@@ -176,7 +176,7 @@ export default function AdminSchedulePage() {
       .select('id, status, attended, late_cancel, profiles(first_name, last_name, email)')
       .eq('session_id', session.id)
       .order('created_at', { ascending: true })
-    setRoster((data ?? []) as RosterEntry[])
+    setRoster((data ?? []) as unknown as RosterEntry[])
     setRosterLoading(false)
   }
 

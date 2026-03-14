@@ -69,7 +69,7 @@ export default function BookingsPage() {
     }
 
     const { data } = await query
-    setBookings((data ?? []) as Booking[])
+    setBookings((data ?? []) as unknown as Booking[])
     setLoading(false)
   }, [tab])
 

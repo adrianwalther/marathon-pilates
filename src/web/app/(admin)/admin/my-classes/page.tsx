@@ -83,10 +83,10 @@ export default function MyClassesPage() {
       const bookingsBySession: Record<string, RosterEntry[]> = {}
       bookings?.forEach(b => {
         if (!bookingsBySession[b.session_id]) bookingsBySession[b.session_id] = []
-        bookingsBySession[b.session_id].push(b as RosterEntry)
+        bookingsBySession[b.session_id].push(b as unknown as RosterEntry)
       })
 
-      setClasses(sessions.map(s => ({ ...s, bookings: bookingsBySession[s.id] ?? [] })) as ClassWithRoster[])
+      setClasses(sessions.map(s => ({ ...s, bookings: bookingsBySession[s.id] ?? [] })) as unknown as ClassWithRoster[])
     } else {
       setClasses([])
     }
