@@ -67,6 +67,13 @@ export default function SchedulePage() {
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState(initialType)
   const [locationFilter, setLocationFilter] = useState('')
+
+  // Green Hills is privates-only — auto-switch type filter when location changes
+  const handleLocationChange = (loc: string) => {
+    setLocationFilter(loc)
+    if (loc === 'green_hills') setTypeFilter('private')
+    else if (locationFilter === 'green_hills') setTypeFilter('')
+  }
   const [selectedDay, setSelectedDay] = useState(0)
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
@@ -92,7 +99,13 @@ export default function SchedulePage() {
       .eq('is_cancelled', false)
       .order('starts_at', { ascending: true })
 
-    if (locationFilter) query = query.eq('locations.slug', locationFilter)
+    const LOCATION_IDS: Record<string, string> = {
+      charlotte_park: 'd727b8df-d963-4bc5-a080-5908a1f4711e',
+      green_hills: '9410b236-c577-4d37-bd3e-094c66b3c921',
+    }
+    if (locationFilter && LOCATION_IDS[locationFilter]) {
+      query = query.eq('location_id', LOCATION_IDS[locationFilter])
+    }
 
     if (typeFilter === 'private') {
       query = query.in('session_type', ['private_solo', 'private_duet', 'private_trio'])
@@ -240,7 +253,7 @@ export default function SchedulePage() {
       </div>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
         {LOCATION_FILTERS.map(f => (
-          <button key={f.value} onClick={() => setLocationFilter(f.value)} style={pillStyle(locationFilter === f.value)}>
+          <button key={f.value} onClick={() => handleLocationChange(f.value)} style={pillStyle(locationFilter === f.value)}>
             {f.label}
           </button>
         ))}
