@@ -1,179 +1,389 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import { createClient } from '@/lib/supabase'
 
-const CONVERSATIONS = [
-  { id: '1', client_name: 'Sarah Johnson', last_message: 'Can I reschedule my Thursday class?', last_message_at: '2 min ago', unread_count: 2, status: 'open', assigned_to: 'Ruby' },
-  { id: '2', client_name: 'Kate Rodriguez', last_message: 'Thank you! See you Saturday 🙏', last_message_at: '1 hr ago', unread_count: 0, status: 'open', assigned_to: 'Anissa' },
-  { id: '3', client_name: 'Harriett Watkins', last_message: 'Does the sauna pack expire?', last_message_at: '3 hrs ago', unread_count: 1, status: 'open', assigned_to: null },
-  { id: '4', client_name: 'Parker Long', last_message: 'Just booked my first class!', last_message_at: 'Yesterday', unread_count: 0, status: 'open', assigned_to: 'Ruby' },
-  { id: '5', client_name: 'Jennifer Estes', last_message: 'Perfect, I\'ll see you then!', last_message_at: 'Yesterday', unread_count: 0, status: 'closed', assigned_to: null },
+const TEAL = '#87CEBF'
+
+type Conversation = {
+  id: string
+  client_id: string
+  assigned_to: string | null
+  status: 'open' | 'closed'
+  last_message_at: string | null
+  unread_count: number
+  created_at: string
+  client: { first_name: string; last_name: string; email: string } | null
+  last_message?: string
+}
+
+type Message = {
+  id: string
+  conversation_id: string
+  sender_id: string
+  body: string
+  read_at: string | null
+  created_at: string
+  sender: { first_name: string; last_name: string; role: string } | null
+}
+
+type StaffMember = { id: string; first_name: string; last_name: string }
+
+const QUICK_REPLIES = [
+  { label: 'Booking link', text: 'You can book your next class here: [booking link]' },
+  { label: 'Schedule link', text: 'Check the full schedule here: [schedule link]' },
+  { label: 'Pack offer', text: "We'd love to have you back! Ask us about our current class pack options." },
 ]
 
-const MESSAGES: Record<string, Array<{ id: string; sender: string; body: string; time: string; is_staff: boolean }>> = {
-  '1': [
-    { id: '1', sender: 'Sarah Johnson', body: 'Hi! I had a question about my Thursday class booking.', time: '10:32 AM', is_staff: false },
-    { id: '2', sender: 'Ruby', body: 'Of course! What do you need?', time: '10:45 AM', is_staff: true },
-    { id: '3', sender: 'Sarah Johnson', body: 'I need to reschedule — something came up at work.', time: '10:47 AM', is_staff: false },
-    { id: '4', sender: 'Sarah Johnson', body: 'Can I move it to Saturday instead?', time: '10:47 AM', is_staff: false },
-  ],
-  '2': [
-    { id: '1', sender: 'Kate Rodriguez', body: 'Hi! Just wanted to confirm my appointment tomorrow.', time: '9:15 AM', is_staff: false },
-    { id: '2', sender: 'Anissa', body: 'Yes! You\'re all set for 10am at Charlotte Park 🎉', time: '9:20 AM', is_staff: true },
-    { id: '3', sender: 'Kate Rodriguez', body: 'Thank you! See you Saturday 🙏', time: '9:22 AM', is_staff: false },
-  ],
-  '3': [
-    { id: '1', sender: 'Harriett Watkins', body: 'Hi there — quick question about my sauna pack.', time: '8:00 AM', is_staff: false },
-    { id: '2', sender: 'Harriett Watkins', body: 'Does the sauna pack expire?', time: '8:01 AM', is_staff: false },
-  ],
+function formatTime(iso: string) {
+  const d = new Date(iso)
+  const now = new Date()
+  const diffMin = Math.round((now.getTime() - d.getTime()) / 60000)
+  if (diffMin < 1) return 'Just now'
+  if (diffMin < 60) return `${diffMin}m ago`
+  const diffHr = Math.floor(diffMin / 60)
+  if (diffHr < 24) return `${diffHr}h ago`
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function formatMsgTime(iso: string) {
+  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 
 export default function ChatPage() {
-  const [selectedId, setSelectedId] = useState<string>('1')
-  const [message, setMessage] = useState('')
+  const supabase = createClient()
+  const [conversations, setConversations] = useState<Conversation[]>([])
+  const [messages, setMessages] = useState<Message[]>([])
+  const [staff, setStaff] = useState<StaffMember[]>([])
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentUserRole, setCurrentUserRole] = useState<string>('admin')
+  const [messageText, setMessageText] = useState('')
+  const [search, setSearch] = useState('')
+  const [sending, setSending] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const selectedConvo = CONVERSATIONS.find(c => c.id === selectedId)
-  const messages = MESSAGES[selectedId] || []
-  const totalUnread = CONVERSATIONS.reduce((sum, c) => sum + c.unread_count, 0)
+  useEffect(() => {
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setCurrentUserId(user.id)
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        if (profile) setCurrentUserRole(profile.role)
+      }
+      loadConversations()
+      loadStaff()
+    }
+    init()
+  }, [])
+
+  async function loadStaff() {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, first_name, last_name')
+      .in('role', ['admin', 'manager', 'instructor', 'front_desk'])
+      .order('first_name')
+    setStaff((data as StaffMember[]) || [])
+  }
+
+  async function loadConversations() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('chat_conversations')
+      .select('*, client:profiles!client_id(first_name, last_name, email)')
+      .order('last_message_at', { ascending: false, nullsFirst: false })
+    if (data) {
+      // Fetch last message for each conversation
+      const convos = data as Conversation[]
+      const ids = convos.map(c => c.id)
+      if (ids.length > 0) {
+        const { data: lastMsgs } = await supabase
+          .from('chat_messages')
+          .select('conversation_id, body, created_at')
+          .in('conversation_id', ids)
+          .order('created_at', { ascending: false })
+
+        const lastMap: Record<string, string> = {}
+        lastMsgs?.forEach(m => {
+          if (!lastMap[m.conversation_id]) lastMap[m.conversation_id] = m.body
+        })
+        setConversations(convos.map(c => ({ ...c, last_message: lastMap[c.id] || '' })))
+      } else {
+        setConversations(convos)
+      }
+    }
+    setLoading(false)
+  }
+
+  async function loadMessages(conversationId: string) {
+    const { data } = await supabase
+      .from('chat_messages')
+      .select('*, sender:profiles!sender_id(first_name, last_name, role)')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true })
+    setMessages((data as Message[]) || [])
+    // Mark unread as read
+    await supabase
+      .from('chat_messages')
+      .update({ read_at: new Date().toISOString() })
+      .eq('conversation_id', conversationId)
+      .is('read_at', null)
+    // Reset unread count
+    await supabase
+      .from('chat_conversations')
+      .update({ unread_count: 0 })
+      .eq('id', conversationId)
+    loadConversations()
+  }
+
+  useEffect(() => {
+    if (selectedId) loadMessages(selectedId)
+  }, [selectedId])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  // Realtime subscription
+  useEffect(() => {
+    const channel = supabase
+      .channel('chat-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, (payload) => {
+        const newMsg = payload.new as Message
+        if (newMsg.conversation_id === selectedId) {
+          loadMessages(selectedId)
+        }
+        loadConversations()
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [selectedId])
+
+  async function sendMessage(body: string) {
+    if (!body.trim() || !selectedId || !currentUserId) return
+    setSending(true)
+    await supabase.from('chat_messages').insert({
+      conversation_id: selectedId,
+      sender_id: currentUserId,
+      body: body.trim(),
+    })
+    await supabase
+      .from('chat_conversations')
+      .update({ last_message_at: new Date().toISOString() })
+      .eq('id', selectedId)
+    setMessageText('')
+    setSending(false)
+    loadMessages(selectedId)
+  }
+
+  async function closeConversation(id: string) {
+    await supabase.from('chat_conversations').update({ status: 'closed' }).eq('id', id)
+    if (selectedId === id) setSelectedId(null)
+    loadConversations()
+  }
+
+  async function assignConversation(id: string, staffId: string) {
+    await supabase.from('chat_conversations').update({ assigned_to: staffId || null }).eq('id', id)
+    loadConversations()
+  }
+
+  const filtered = conversations.filter(c => {
+    if (!search) return true
+    const name = `${c.client?.first_name} ${c.client?.last_name}`.toLowerCase()
+    return name.includes(search.toLowerCase()) || c.client?.email.toLowerCase().includes(search.toLowerCase())
+  })
+
+  const open = filtered.filter(c => c.status === 'open')
+  const closed = filtered.filter(c => c.status === 'closed')
+  const totalUnread = conversations.reduce((s, c) => s + (c.unread_count || 0), 0)
+  const selected = conversations.find(c => c.id === selectedId) || null
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex">
+    <div style={{ display: 'flex', height: 'calc(100vh - 4rem)', fontFamily: 'Poppins, sans-serif' }}>
       {/* Sidebar */}
-      <div className="w-80 border-r border-gray-100 flex flex-col bg-white">
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <h1 className="font-semibold text-gray-900">Messages</h1>
+      <div style={{ width: 300, borderRight: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', background: '#fff', flexShrink: 0 }}>
+        <div style={{ padding: '1rem', borderBottom: '1px solid #f0f0f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <p style={{ fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a', margin: 0 }}>Messages</p>
             {totalUnread > 0 && (
-              <span className="text-xs text-white px-1.5 py-0.5 rounded-full" style={{ backgroundColor: '#87CEBF' }}>
-                {totalUnread}
-              </span>
+              <span style={{ background: TEAL, color: '#fff', fontSize: '0.7rem', padding: '0.1rem 0.5rem', borderRadius: '999px' }}>{totalUnread}</span>
             )}
           </div>
           <input
-            className="mt-3 w-full bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
             placeholder="Search conversations..."
+            style={{ width: '100%', background: '#f9f8f6', border: 'none', borderRadius: 4, padding: '0.4rem 0.75rem', fontSize: '0.8rem', color: '#4b5563', outline: 'none', boxSizing: 'border-box' }}
           />
         </div>
-        <div className="flex-1 overflow-y-auto">
-          {CONVERSATIONS.filter(c => c.status === 'open').map(convo => (
-            <div
-              key={convo.id}
-              onClick={() => setSelectedId(convo.id)}
-              className={`p-4 cursor-pointer border-b border-gray-50 hover:bg-gray-50 transition-colors ${
-                selectedId === convo.id ? 'bg-gray-50 border-l-2 border-l-[#87CEBF]' : ''
-              }`}
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-semibold flex-shrink-0"
-                    style={{ backgroundColor: '#87CEBF' }}>
-                    {convo.client_name.charAt(0)}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-medium text-sm text-gray-900 truncate">{convo.client_name}</p>
-                    <p className="text-xs text-gray-400 truncate mt-0.5">{convo.last_message}</p>
+
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {loading ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem' }}>Loading...</div>
+          ) : open.length === 0 && closed.length === 0 ? (
+            <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem' }}>No conversations yet.</div>
+          ) : (
+            <>
+              {open.map(convo => (
+                <div
+                  key={convo.id}
+                  onClick={() => setSelectedId(convo.id)}
+                  style={{
+                    padding: '0.875rem 1rem',
+                    cursor: 'pointer',
+                    borderBottom: '1px solid #f9f8f6',
+                    background: selectedId === convo.id ? '#f9f8f6' : '#fff',
+                    borderLeft: selectedId === convo.id ? `3px solid ${TEAL}` : '3px solid transparent',
+                  }}
+                >
+                  <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '50%', background: TEAL, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 600, flexShrink: 0 }}>
+                      {convo.client?.first_name?.charAt(0) || '?'}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <p style={{ fontSize: '0.8rem', fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {convo.client ? `${convo.client.first_name} ${convo.client.last_name}` : 'Unknown'}
+                        </p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0, marginLeft: '0.5rem' }}>
+                          {convo.last_message_at && <span style={{ fontSize: '0.65rem', color: '#9ca3af' }}>{formatTime(convo.last_message_at)}</span>}
+                          {(convo.unread_count || 0) > 0 && (
+                            <span style={{ background: TEAL, color: '#fff', borderRadius: '50%', width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6rem' }}>{convo.unread_count}</span>
+                          )}
+                        </div>
+                      </div>
+                      <p style={{ fontSize: '0.72rem', color: '#9ca3af', margin: '0.1rem 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {convo.last_message || 'No messages yet'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-1 ml-2 flex-shrink-0">
-                  <p className="text-xs text-gray-400">{convo.last_message_at}</p>
-                  {convo.unread_count > 0 && (
-                    <span className="text-xs text-white w-4 h-4 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: '#87CEBF' }}>
-                      {convo.unread_count}
-                    </span>
-                  )}
-                </div>
-              </div>
-              {convo.assigned_to && (
-                <p className="text-xs text-gray-300 mt-1 pl-12">Assigned to {convo.assigned_to}</p>
+              ))}
+              {closed.length > 0 && (
+                <>
+                  <div style={{ padding: '0.5rem 1rem', background: '#f9f8f6', borderBottom: '1px solid #f0f0f0' }}>
+                    <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', margin: 0 }}>Closed</p>
+                  </div>
+                  {closed.map(convo => (
+                    <div
+                      key={convo.id}
+                      onClick={() => setSelectedId(convo.id)}
+                      style={{ padding: '0.875rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f9f8f6', background: selectedId === convo.id ? '#f9f8f6' : '#fff', opacity: 0.6 }}
+                    >
+                      <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0 }}>
+                        {convo.client ? `${convo.client.first_name} ${convo.client.last_name}` : 'Unknown'}
+                      </p>
+                    </div>
+                  ))}
+                </>
               )}
-            </div>
-          ))}
+            </>
+          )}
         </div>
       </div>
 
       {/* Chat area */}
-      {selectedConvo ? (
-        <div className="flex-1 flex flex-col">
-          {/* Chat header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold"
-                style={{ backgroundColor: '#87CEBF' }}>
-                {selectedConvo.client_name.charAt(0)}
+      {selected ? (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.875rem 1.5rem', borderBottom: '1px solid #f0f0f0', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: TEAL, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 600 }}>
+                {selected.client?.first_name?.charAt(0) || '?'}
               </div>
               <div>
-                <p className="font-medium text-gray-900">{selectedConvo.client_name}</p>
-                <p className="text-xs text-gray-400">Active client</p>
+                <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>
+                  {selected.client ? `${selected.client.first_name} ${selected.client.last_name}` : 'Unknown'}
+                </p>
+                <p style={{ fontSize: '0.72rem', color: '#9ca3af', margin: 0 }}>{selected.client?.email}</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <select className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 text-gray-600 focus:outline-none">
-                <option>Assign to: {selectedConvo.assigned_to || 'Unassigned'}</option>
-                <option>Ruby</option>
-                <option>Anissa</option>
-                <option>Front Desk</option>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <select
+                value={selected.assigned_to || ''}
+                onChange={e => assignConversation(selected.id, e.target.value)}
+                style={{ border: '1px solid #e5e7eb', borderRadius: 4, padding: '0.3rem 0.5rem', fontSize: '0.75rem', color: '#4b5563', outline: 'none' }}
+              >
+                <option value=''>Unassigned</option>
+                {staff.map(s => <option key={s.id} value={s.id}>{s.first_name} {s.last_name}</option>)}
               </select>
-              <button className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-                View Profile
-              </button>
-              <button className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50">
-                Close
-              </button>
+              {selected.status === 'open' && (
+                <button
+                  onClick={() => closeConversation(selected.id)}
+                  style={{ border: '1px solid #e5e7eb', borderRadius: 4, padding: '0.3rem 0.75rem', fontSize: '0.72rem', background: '#fff', color: '#6b7280', cursor: 'pointer' }}
+                >
+                  Close
+                </button>
+              )}
             </div>
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
-            {messages.map(msg => (
-              <div key={msg.id} className={`flex ${msg.is_staff ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-sm ${msg.is_staff ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-                  {!msg.is_staff && (
-                    <span className="text-xs text-gray-400 px-1">{msg.sender}</span>
-                  )}
-                  <div className={`px-4 py-2.5 rounded-2xl text-sm ${
-                    msg.is_staff
-                      ? 'text-white rounded-tr-sm'
-                      : 'bg-white text-gray-800 rounded-tl-sm shadow-sm'
-                  }`} style={msg.is_staff ? { backgroundColor: '#87CEBF' } : {}}>
-                    {msg.body}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', background: '#f9f8f6', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {messages.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem', marginTop: '2rem' }}>No messages yet. Say hello!</div>
+            ) : messages.map(msg => {
+              const isStaff = msg.sender?.role !== 'client'
+              return (
+                <div key={msg.id} style={{ display: 'flex', justifyContent: isStaff ? 'flex-end' : 'flex-start' }}>
+                  <div style={{ maxWidth: 400, display: 'flex', flexDirection: 'column', gap: '0.2rem', alignItems: isStaff ? 'flex-end' : 'flex-start' }}>
+                    {!isStaff && msg.sender && (
+                      <span style={{ fontSize: '0.7rem', color: '#9ca3af', paddingLeft: 4 }}>{msg.sender.first_name}</span>
+                    )}
+                    <div style={{
+                      padding: '0.6rem 0.875rem',
+                      borderRadius: isStaff ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                      background: isStaff ? TEAL : '#fff',
+                      color: isStaff ? '#fff' : '#1a1a1a',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.5,
+                      boxShadow: isStaff ? 'none' : '0 1px 2px rgba(0,0,0,0.06)',
+                    }}>
+                      {msg.body}
+                    </div>
+                    <span style={{ fontSize: '0.65rem', color: '#9ca3af', paddingLeft: 4, paddingRight: 4 }}>{formatMsgTime(msg.created_at)}</span>
                   </div>
-                  <span className="text-xs text-gray-400 px-1">{msg.time}</span>
                 </div>
-              </div>
-            ))}
+              )
+            })}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input */}
-          <div className="px-6 py-4 bg-white border-t border-gray-100">
-            <div className="flex items-end gap-3">
+          <div style={{ padding: '0.875rem 1.5rem', background: '#fff', borderTop: '1px solid #f0f0f0' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
               <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); setMessage('') } }}
-                className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#87CEBF] resize-none"
-                rows={2}
+                value={messageText}
+                onChange={e => setMessageText(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(messageText) } }}
                 placeholder="Type a message..."
+                rows={2}
+                style={{ flex: 1, border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.5rem 0.875rem', fontSize: '0.875rem', resize: 'none', outline: 'none', fontFamily: 'Poppins, sans-serif' }}
               />
               <button
-                onClick={() => setMessage('')}
-                className="px-4 py-2.5 rounded-xl text-white text-sm font-medium flex-shrink-0"
-                style={{ backgroundColor: '#87CEBF' }}
+                onClick={() => sendMessage(messageText)}
+                disabled={sending || !messageText.trim()}
+                style={{ background: TEAL, color: '#fff', border: 'none', borderRadius: 8, padding: '0.5rem 1.25rem', fontSize: '0.8rem', cursor: 'pointer', flexShrink: 0, opacity: !messageText.trim() ? 0.5 : 1 }}
               >
                 Send
               </button>
             </div>
-            <div className="flex gap-3 mt-2">
-              {['Booking link', 'Schedule link', 'Pack offer'].map(q => (
-                <button key={q} className="text-xs bg-gray-50 hover:bg-gray-100 text-gray-500 px-2.5 py-1 rounded-lg transition-colors">
-                  {q}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+              {QUICK_REPLIES.map(q => (
+                <button
+                  key={q.label}
+                  onClick={() => setMessageText(q.text)}
+                  style={{ background: '#f3f4f6', border: 'none', borderRadius: 4, padding: '0.25rem 0.65rem', fontSize: '0.72rem', color: '#6b7280', cursor: 'pointer' }}
+                >
+                  {q.label}
                 </button>
               ))}
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-gray-400">
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af', fontSize: '0.875rem' }}>
           Select a conversation
         </div>
       )}
