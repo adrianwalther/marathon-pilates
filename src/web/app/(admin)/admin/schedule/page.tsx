@@ -44,6 +44,8 @@ const SESSION_TYPES = [
   { value: 'cold_plunge', label: 'Cold Plunge', capacity: 2 },
   { value: 'contrast_therapy', label: 'Contrast Therapy', capacity: 2 },
   { value: 'neveskin', label: 'Neveskin', capacity: 1 },
+  { value: 'event_internal', label: 'Event — Internal', capacity: 50 },
+  { value: 'event_external', label: 'Event — External', capacity: 100 },
 ]
 
 const TYPE_FILTER_OPTIONS = [
@@ -51,6 +53,7 @@ const TYPE_FILTER_OPTIONS = [
   { value: 'group', label: 'Group' },
   { value: 'private', label: 'Private' },
   { value: 'amenity', label: 'Amenities' },
+  { value: 'event', label: 'Events' },
 ]
 
 const LOCATION_FILTER_OPTIONS = [
@@ -134,6 +137,8 @@ export default function AdminSchedulePage() {
       query = query.in('session_type', ['private_solo', 'private_duet', 'private_trio'])
     } else if (typeFilter === 'amenity') {
       query = query.in('session_type', ['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'])
+    } else if (typeFilter === 'event') {
+      query = query.in('session_type', ['event_internal', 'event_external'])
     }
 
     const [{ data: sessionsData }, { data: instructorProfiles }, { data: locs }] = await Promise.all([
