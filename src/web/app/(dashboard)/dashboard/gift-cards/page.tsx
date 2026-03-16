@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { createClient } from '@/lib/supabase'
 
 const AMOUNTS = [25, 50, 75, 100, 150, 200]
 
@@ -8,6 +9,7 @@ const label = { fontFamily: "'Raleway', sans-serif" as const, fontWeight: 700 as
 const input = { width: '100%', fontFamily: "'Poppins', sans-serif" as const, fontWeight: 300 as const, fontSize: '0.88rem', color: '#1a1a1a', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.7rem 0.9rem', background: 'white', outline: 'none', boxSizing: 'border-box' as const }
 
 type Mode = 'buy' | 'redeem'
+type RedeemResult = { status: 'valid'; balance: number; code: string } | { status: 'redeemed' } | { status: 'notfound' } | null
 
 export default function GiftCardsPage() {
   const [mode, setMode] = useState<Mode>('buy')
@@ -19,6 +21,29 @@ export default function GiftCardsPage() {
   const [isPhysical, setIsPhysical] = useState(false)
   const [redeemCode, setRedeemCode] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [redeemResult, setRedeemResult] = useState<RedeemResult>(null)
+  const [redeemLoading, setRedeemLoading] = useState(false)
+
+  const applyCode = async () => {
+    if (!redeemCode.trim()) return
+    setRedeemLoading(true)
+    setRedeemResult(null)
+    const supabase = createClient()
+    const { data } = await supabase
+      .from('gift_cards')
+      .select('id, code, current_balance, redeemed_at')
+      .eq('code', redeemCode.trim().toUpperCase())
+      .single()
+
+    if (!data) {
+      setRedeemResult({ status: 'notfound' })
+    } else if (data.redeemed_at || data.current_balance <= 0) {
+      setRedeemResult({ status: 'redeemed' })
+    } else {
+      setRedeemResult({ status: 'valid', balance: data.current_balance, code: data.code })
+    }
+    setRedeemLoading(false)
+  }
 
   const finalAmount = customAmount ? parseFloat(customAmount) : amount
 
@@ -58,22 +83,42 @@ export default function GiftCardsPage() {
       {mode === 'redeem' ? (
         <div>
           <span style={sectionLabel}>Enter Gift Card Code</span>
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
             <input
-              style={{ ...input, flex: 1 }}
+              style={{ ...input, flex: 1, letterSpacing: '0.06em' }}
               placeholder="XXXX-XXXX-XXXX"
               value={redeemCode}
-              onChange={e => setRedeemCode(e.target.value.toUpperCase())}
+              onChange={e => { setRedeemCode(e.target.value.toUpperCase()); setRedeemResult(null) }}
             />
             <button
-              disabled={!redeemCode.trim()}
+              disabled={!redeemCode.trim() || redeemLoading}
+              onClick={applyCode}
               style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', borderRadius: '2px', background: redeemCode.trim() ? '#87CEBF' : '#e0e0e0', color: redeemCode.trim() ? 'white' : '#aaa', border: 'none', cursor: redeemCode.trim() ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap' as const }}
             >
-              Apply
+              {redeemLoading ? '...' : 'Apply'}
             </button>
           </div>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#aaa' }}>
-            Gift card balance will be applied to your account and can be used toward any booking.
+
+          {redeemResult?.status === 'valid' && (
+            <div style={{ background: '#e8f7f4', border: '1px solid #87CEBF', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '1rem' }}>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.3rem' }}>Valid Gift Card</p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: '#1a1a1a', lineHeight: 1, marginBottom: '0.3rem' }}>{formatCurrency(redeemResult.balance)}</p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#808282' }}>Balance available · will be applied at checkout</p>
+            </div>
+          )}
+          {redeemResult?.status === 'redeemed' && (
+            <div style={{ background: '#fef0f0', border: '1px solid #e05555', borderRadius: '2px', padding: '1rem 1.25rem', marginBottom: '1rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#e05555' }}>This gift card has already been redeemed or has no remaining balance.</p>
+            </div>
+          )}
+          {redeemResult?.status === 'notfound' && (
+            <div style={{ background: '#fef0f0', border: '1px solid #e05555', borderRadius: '2px', padding: '1rem 1.25rem', marginBottom: '1rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#e05555' }}>Gift card code not found. Please check the code and try again.</p>
+            </div>
+          )}
+
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa' }}>
+            Gift card balance will be applied at your next checkout.
           </p>
         </div>
       ) : (
