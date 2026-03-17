@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
@@ -59,7 +59,7 @@ function buildWeek() {
   return Array.from({ length: 7 }, (_, i) => getDayRange(i))
 }
 
-export default function SchedulePage() {
+function SchedulePageInner() {
   const searchParams = useSearchParams()
   const initialType = searchParams.get('type') ?? ''
 
@@ -323,5 +323,13 @@ export default function SchedulePage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function SchedulePage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '3rem 2.5rem' }}><p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>Loading...</p></div>}>
+      <SchedulePageInner />
+    </Suspense>
   )
 }
