@@ -10,6 +10,7 @@ const nav = [
   { href: '/dashboard/schedule', label: 'Schedule', icon: '◷' },
   { href: '/dashboard/bookings', label: 'My Bookings', icon: '◈' },
   { href: '/dashboard/on-demand', label: 'On Demand', icon: '▷' },
+  { href: '/dashboard/generate-class', label: 'AI Generator', icon: '✦' },
   { href: '/dashboard/membership', label: 'Membership', icon: '◆' },
   { href: '/dashboard/gift-cards', label: 'Gift Cards', icon: '◇' },
   { href: '/dashboard/account', label: 'Account', icon: '○' },
