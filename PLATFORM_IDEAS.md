@@ -218,4 +218,41 @@ See full research in:
 
 ---
 
-*Last updated: 2026-03-09*
+---
+
+## AI Class Generator — Future Vision (Phase 4+)
+
+### AI Voice Cues (Priority Feature)
+- The class generator already produces instructor cues (italic lines per exercise)
+- Feed those cues to **ElevenLabs** voice API, which can clone Ruby's voice from ~10 min of audio
+- Every AI-generated class plays back in Ruby's actual voice — hands-free, eyes-free for the client
+- Cues fire at the right moment as the client moves through each block
+- Optional: visual timer or exercise name on screen so client knows where they are
+- **This is a killer differentiator** — infinite classes in the instructor's real voice
+
+### AI Movement Visuals
+- **Confirmed direction:** AI-generated images per exercise block — Ruby prefers not to be on camera
+- Style: editorial, artistic, on-brand with Marathon Pilates aesthetic — a serene figure in motion
+- One image generated per class (or per block) using focus area + difficulty as the prompt
+- Tools: DALL-E 3 (OpenAI API, easiest), Stability AI (more style control), Midjourney (best quality, no API yet)
+- Image appears at top of generated class card — immediate visual impact
+- Future: one image per exercise block, displayed as client moves through the class alongside voice cues
+
+### AI Instructor Video (Ultimate Vision)
+- **HeyGen** or **Synthesia** API — generate a realistic AI instructor video from the class script
+- Create a custom Marathon Pilates AI avatar (brand character, not Ruby — she prefers not to be on camera)
+- Feed the generated cues as a script → HeyGen renders a full instructor video automatically
+- Instructor demonstrates and cues simultaneously — client just hits play
+- Caveat: video generation takes 5-10 min, so either pre-generate a library or notify client when ready
+- This puts Marathon Pilates ahead of the curve — no other boutique studio is doing this
+
+### Full AI Class Experience (end state)
+1. Client configures class (duration / difficulty / focus / props) ✅ built
+2. Claude generates the full BASI Block class plan ✅ built
+3. AI instructor video generated via HeyGen (custom Marathon Pilates avatar)
+4. ElevenLabs narrates each cue in the avatar's voice as client moves through the class
+5. Client hits Play — no screen-watching, no thinking, just move
+6. Timer counts down each block automatically
+7. Props shop surfaced at end of class with affiliate links (Balanced Body)
+
+*Last updated: 2026-03-17*

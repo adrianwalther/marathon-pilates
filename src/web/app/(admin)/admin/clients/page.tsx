@@ -18,6 +18,9 @@ type Client = {
   health_conditions: string[] | null
   preferred_location: string | null
   intake_completed_at: string | null
+  experience_level: string | null
+  goals: string[] | null
+  hear_about_us: string | null
   created_at: string
   memberships: { membership_type: string; status: string; created_at: string }[]
 }
@@ -70,7 +73,7 @@ export default function AdminClientsPage() {
   useEffect(() => {
     const supabase = createClient()
     supabase.from('profiles')
-      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, preferred_location, intake_completed_at, created_at, memberships(membership_type, status, created_at)')
+      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, preferred_location, intake_completed_at, experience_level, goals, hear_about_us, created_at, memberships(membership_type, status, created_at)')
       .eq('role', 'client')
       .order('created_at', { ascending: false })
       .then(({ data }) => {
@@ -250,7 +253,19 @@ export default function AdminClientsPage() {
                   <InfoItem label="Preferred studio" value={selected.preferred_location?.replace(/_/g, ' ') ?? '—'} />
                   {selected.date_of_birth && <InfoItem label="Date of birth" value={formatDate(selected.date_of_birth)} />}
                   <InfoItem label="Intake done" value={selected.intake_completed_at ? '✓ Yes' : 'No'} />
+                  {selected.experience_level && <InfoItem label="Experience" value={selected.experience_level.replace(/_/g, ' ')} />}
+                  {selected.hear_about_us && <InfoItem label="Referred by" value={selected.hear_about_us} />}
                 </div>
+                {selected.goals && selected.goals.length > 0 && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.5rem' }}>Goals</p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                      {selected.goals.map(g => (
+                        <span key={g} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#555', background: '#f5f5f5', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>{g}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Membership + credits */}

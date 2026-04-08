@@ -1,5 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { createClient } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
+import { getAiRatelimit } from "@/lib/ratelimit"
 
 export const runtime = 'nodejs'
 
@@ -51,51 +53,73 @@ OUTPUT FORMAT — use this exact structure with markdown:
 Be specific, warm, and practical — this class should be ready to teach immediately.`
 
 export async function POST(req: NextRequest) {
-  const { duration, difficulty, focusArea, props, healthStatus } = await req.json()
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } }
+    )
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return new Response('Unauthorized', { status: 401 })
 
-  const propsText = props && props.length > 0 ? props.join(', ') : 'mat only (no props)'
-  const healthNote = healthStatus === 'red'
-    ? '\n⚠️ IMPORTANT: Class includes red-flag participants. Add modifications for cardiac conditions, prenatal, or osteoporosis.'
-    : healthStatus === 'yellow'
-    ? '\nNote: Some participants have moderate restrictions. Include back pain and hip modification options.'
-    : ''
+    const { success } = await getAiRatelimit().limit(user.id)
+    if (!success) return new Response('Too many requests — please wait before generating another class.', { status: 429 })
 
-  const userPrompt = `Generate a complete ${duration}-minute ${difficulty} mat Pilates class.
+    const { duration, difficulty, focusArea, props, healthStatus } = await req.json()
+
+    const propsText = props && props.length > 0 ? props.join(', ') : 'mat only (no props)'
+    const healthNote = healthStatus === 'red'
+      ? '\n⚠️ IMPORTANT: Class includes red-flag participants. Add modifications for cardiac conditions, prenatal, or osteoporosis.'
+      : healthStatus === 'yellow'
+      ? '\nNote: Some participants have moderate restrictions. Include back pain and hip modification options.'
+      : ''
+
+    const userPrompt = `Generate a complete ${duration}-minute ${difficulty} mat Pilates class.
 
 Focus area: ${focusArea}
 Props available: ${propsText}${healthNote}
 
 Create a full ready-to-teach class following the BASI Block System. Distribute the ${duration} minutes thoughtfully across all 9 blocks.`
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return new Response('ANTHROPIC_API_KEY is not set', { status: 500 })
+    }
 
-  const stream = await client.messages.stream({
-    model: 'claude-opus-4-6',
-    max_tokens: 4000,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: 'user', content: userPrompt }],
-  })
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-  const encoder = new TextEncoder()
-  const readable = new ReadableStream({
-    async start(controller) {
-      try {
-        for await (const event of stream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            controller.enqueue(encoder.encode(event.delta.text))
+    const stream = client.messages.stream({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: 'user', content: userPrompt }],
+    })
+
+    const encoder = new TextEncoder()
+    const readable = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const event of stream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              controller.enqueue(encoder.encode(event.delta.text))
+            }
           }
+        } catch (err) {
+          controller.enqueue(encoder.encode("\n\nSomething went wrong generating the class."))
+        } finally {
+          controller.close()
         }
-      } finally {
-        controller.close()
-      }
-    },
-  })
+      },
+    })
 
-  return new Response(readable, {
-    headers: {
-      'Content-Type': 'text/plain; charset=utf-8',
-      'Transfer-Encoding': 'chunked',
-      'Cache-Control': 'no-cache',
-    },
-  })
+    return new Response(readable, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+        'Cache-Control': 'no-cache',
+      },
+    })
+  } catch (err) {
+    console.error(err)
+    return new Response("Something went wrong. Please try again.", { status: 500 })
+  }
 }

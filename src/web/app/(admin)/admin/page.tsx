@@ -9,6 +9,8 @@ type Stats = {
   classesToday: number
   bookingsToday: number
   activeMembers: number
+  pendingRequests: number
+  revenueToday: number
 }
 
 type UpcomingSession = {
@@ -22,29 +24,44 @@ type UpcomingSession = {
 }
 
 export default function AdminOverviewPage() {
-  const [stats, setStats] = useState<Stats>({ totalClients: 0, classesToday: 0, bookingsToday: 0, activeMembers: 0 })
+  const [stats, setStats] = useState<Stats>({ totalClients: 0, classesToday: 0, bookingsToday: 0, activeMembers: 0, pendingRequests: 0, revenueToday: 0 })
   const [upcoming, setUpcoming] = useState<UpcomingSession[]>([])
   const [loading, setLoading] = useState(true)
+  const [canViewRevenue, setCanViewRevenue] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
     const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data: prof } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+        setCanViewRevenue(prof?.role === 'admin')
+      }
+
       const todayStart = new Date(); todayStart.setHours(0,0,0,0)
       const todayEnd = new Date(); todayEnd.setHours(23,59,59,999)
 
       const [
         { count: clientCount },
         { count: memberCount },
+        { count: pendingCount },
         { data: sessions },
+        { data: todayBookings },
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'client'),
         supabase.from('memberships').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('private_session_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('scheduled_sessions')
           .select('id, name, starts_at, max_capacity, locations(name), profiles(first_name, last_name)')
           .gte('starts_at', new Date().toISOString())
           .eq('is_cancelled', false)
           .order('starts_at', { ascending: true })
           .limit(6),
+        supabase.from('bookings')
+          .select('amount_paid')
+          .gte('created_at', todayStart.toISOString())
+          .lte('created_at', todayEnd.toISOString())
+          .eq('status', 'confirmed'),
       ])
 
       // Booking counts per session
@@ -54,18 +71,18 @@ export default function AdminOverviewPage() {
         const countMap: Record<string, number> = {}
         bookings?.forEach(b => { countMap[b.session_id] = (countMap[b.session_id] ?? 0) + 1 })
 
-        // Today bookings
-        const todayBookings = bookings?.filter(() => true).length ?? 0
-
         setUpcoming(sessions.map(s => ({ ...s, booking_count: countMap[s.id] ?? 0, profiles: s.profiles as unknown as UpcomingSession["profiles"] })) as unknown as UpcomingSession[])
+        const revenueToday = todayBookings?.reduce((sum: number, b: { amount_paid: number | null }) => sum + (b.amount_paid ?? 0), 0) ?? 0
         setStats({
           totalClients: clientCount ?? 0,
           classesToday: sessions.filter(s => new Date(s.starts_at) >= todayStart && new Date(s.starts_at) <= todayEnd).length,
-          bookingsToday: todayBookings,
+          bookingsToday: todayBookings?.length ?? 0,
           activeMembers: memberCount ?? 0,
+          pendingRequests: pendingCount ?? 0,
+          revenueToday,
         })
       } else {
-        setStats({ totalClients: clientCount ?? 0, classesToday: 0, bookingsToday: 0, activeMembers: memberCount ?? 0 })
+        setStats({ totalClients: clientCount ?? 0, classesToday: 0, bookingsToday: 0, activeMembers: memberCount ?? 0, pendingRequests: pendingCount ?? 0, revenueToday: 0 })
       }
       setLoading(false)
     }
@@ -93,13 +110,26 @@ export default function AdminOverviewPage() {
         </p>
       </div>
 
+      {/* Pending requests alert */}
+      {!loading && stats.pendingRequests > 0 && (
+        <Link href="/admin/private-requests" style={{ textDecoration: 'none', display: 'block', marginBottom: '1.5rem' }}>
+          <div style={{ background: '#fff8e6', border: '1px solid #f0d080', borderRadius: '2px', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#c8860a' }}>
+              {stats.pendingRequests} private session request{stats.pendingRequests !== 1 ? 's' : ''} need attention
+            </p>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#c8860a' }}>Review →</span>
+          </div>
+        </Link>
+      )}
+
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
         {[
           { label: 'Total Clients', value: stats.totalClients },
           { label: 'Active Members', value: stats.activeMembers },
-          { label: "Classes Today", value: stats.classesToday },
-          { label: "Bookings Today", value: stats.bookingsToday },
+          { label: 'Classes Today', value: stats.classesToday },
+          { label: 'Bookings Today', value: stats.bookingsToday },
+          ...(canViewRevenue ? [{ label: 'Revenue Today', value: `$${stats.revenueToday}` }] : []),
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', color: '#1a1a1a', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
@@ -113,6 +143,7 @@ export default function AdminOverviewPage() {
         <p style={sectionLabel}>Quick Actions</p>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <ActionBtn href="/admin/schedule" label="+ Add Class" primary />
+          <ActionBtn href="/admin/private-requests" label="Private Requests" />
           <ActionBtn href="/admin/clients" label="View Clients" />
           <ActionBtn href="/admin/payroll" label="Run Payroll" />
         </div>

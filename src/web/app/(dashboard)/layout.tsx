@@ -10,7 +10,7 @@ const nav = [
   { href: '/dashboard/schedule', label: 'Schedule', icon: '◷' },
   { href: '/dashboard/bookings', label: 'My Bookings', icon: '◈' },
   { href: '/dashboard/on-demand', label: 'On Demand', icon: '▷' },
-  { href: '/dashboard/generate-class', label: 'AI Generator', icon: '✦' },
+  { href: '/dashboard/generate-class', label: 'Build a Class', icon: '✦' },
   { href: '/dashboard/membership', label: 'Membership', icon: '◆' },
   { href: '/dashboard/gift-cards', label: 'Gift Cards', icon: '◇' },
   { href: '/dashboard/account', label: 'Account', icon: '○' },
@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
   const pathname = usePathname()
   const [user, setUser] = useState<{ first_name: string; last_name: string; email: string } | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -28,12 +29,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       if (!data.user) { router.push('/login'); return }
       const { data: profile } = await supabase
         .from('profiles')
-        .select('first_name, last_name, email')
+        .select('first_name, last_name, email, intake_completed_at, role')
         .eq('id', data.user.id)
         .single()
-      if (profile) setUser(profile)
+      if (profile) {
+        setUser(profile)
+        setIsAdmin(['admin', 'manager', 'instructor', 'front_desk'].includes(profile.role))
+        // Redirect new users to onboarding (skip if already on that page)
+        if (!profile.intake_completed_at && !pathname.startsWith('/dashboard/onboarding')) {
+          router.push('/dashboard/onboarding')
+        }
+      }
     })
-  }, [router])
+  }, [router, pathname])
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -99,6 +107,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#555', marginBottom: '0.75rem' }}>
               {user.email}
             </p>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none', marginBottom: '0.5rem' }}
+              >
+                ← Admin Portal
+              </Link>
+            )}
             <button
               onClick={handleSignOut}
               style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#555', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
@@ -144,8 +160,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </Link>
             ))}
           </nav>
-          <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #2a2a2a' }}>
-            <button onClick={handleSignOut} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#555', background: 'none', border: 'none', cursor: 'pointer' }}>
+          <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #2a2a2a', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {isAdmin && (
+              <Link href="/admin" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none' }}>
+                ← Admin Portal
+              </Link>
+            )}
+            <button onClick={handleSignOut} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#555', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
               Sign Out
             </button>
           </div>

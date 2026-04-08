@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { createClient } from '@/lib/supabase'
 
 const DURATIONS = [30, 45, 60]
 const DIFFICULTIES = ['beginner', 'intermediate', 'advanced']
@@ -103,6 +104,134 @@ export default function GenerateClassPage() {
   const [generating, setGenerating] = useState(false)
   const [output, setOutput] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [imageLoading, setImageLoading] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [audioLoading, setAudioLoading] = useState(false)
+  const [cueTimings, setCueTimings] = useState<{ block: string; exercise: string; cue: string; startTime: number }[]>([])
+  const [currentCueIndex, setCurrentCueIndex] = useState(-1)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [savedClasses, setSavedClasses] = useState<{ id: string; title: string | null; difficulty: string | null; focus_area: string | null; duration: number | null; created_at: string }[]>([])
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const musicRef = useRef<HTMLAudioElement>(null)
+
+  const handleTimeUpdate = useCallback(() => {
+    const el = audioRef.current
+    if (!el || cueTimings.length === 0) return
+    const t = el.currentTime
+    // Find the last cue whose startTime has passed
+    let idx = -1
+    for (let i = 0; i < cueTimings.length; i++) {
+      if (cueTimings[i].startTime <= t) idx = i
+    }
+    setCurrentCueIndex(idx)
+  }, [cueTimings])
+
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  const handlePlayPause = useCallback(() => {
+    const music = musicRef.current
+    const voice = audioRef.current
+    if (!voice) return
+
+    if (isPlaying) {
+      voice.pause()
+      music?.pause()
+      setIsPlaying(false)
+    } else {
+      // Start music first, then voice after 2.5s
+      if (music) { music.volume = 0.10; music.play().catch(() => {}) }
+      setTimeout(() => { voice.play().catch(() => {}) }, 2500)
+      setIsPlaying(true)
+    }
+  }, [isPlaying])
+
+  const handlePlay = useCallback(() => {}, [])
+
+  const handleEnded2 = useCallback(() => {
+    setIsPlaying(false)
+  }, [])
+
+  const handlePause = useCallback(() => {
+    musicRef.current?.pause()
+  }, [])
+
+  const handleEnded = useCallback(() => {
+    setCurrentCueIndex(-1)
+    musicRef.current?.pause()
+    if (musicRef.current) musicRef.current.currentTime = 0
+  }, [])
+
+  // Load saved classes on mount
+  useEffect(() => {
+    const loadSaved = async () => {
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('generated_classes')
+        .select('id, title, difficulty, focus_area, duration, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10)
+      if (data) setSavedClasses(data)
+    }
+    loadSaved()
+  }, [saved])
+
+  const saveClass = async () => {
+    if (!output || saving) return
+    setSaving(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    // Extract title from first # line
+    const titleLine = output.split('\n').find(l => l.startsWith('# '))
+    const title = titleLine ? titleLine.slice(2).trim() : null
+    const { error: saveError } = await supabase.from('generated_classes').insert({
+      user_id: user?.id ?? null,
+      title,
+      duration,
+      difficulty,
+      focus_area: focusArea,
+      props: selectedProps,
+      class_text: output,
+      image_url: imageUrl,
+    })
+    setSaving(false)
+    if (!saveError) setSaved(true)
+  }
+
+  const generateAudio = async (classText: string) => {
+    setAudioLoading(true)
+    setAudioUrl(null)
+    setCueTimings([])
+    setCurrentCueIndex(-1)
+    try {
+      const supabaseAudio = createClient()
+      const { data: { session: audioSession } } = await supabaseAudio.auth.getSession()
+      const audioAuthHeader = audioSession ? `Bearer ${audioSession.access_token}` : ''
+      const res = await fetch('/api/generate-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': audioAuthHeader },
+        body: JSON.stringify({ classText }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        // Convert base64 audio to a blob URL
+        const byteChars = atob(data.audioBase64)
+        const byteNums = new Uint8Array(byteChars.length)
+        for (let i = 0; i < byteChars.length; i++) byteNums[i] = byteChars.charCodeAt(i)
+        const blob = new Blob([byteNums], { type: 'audio/mpeg' })
+        setAudioUrl(URL.createObjectURL(blob))
+        setCueTimings(data.cueTimings ?? [])
+      } else {
+        const text = await res.text()
+        setError('Audio error: ' + text)
+      }
+    } catch (err) {
+      setError('Audio error: ' + (err instanceof Error ? err.message : String(err)))
+    } finally {
+      setAudioLoading(false)
+    }
+  }
 
   const toggleProp = (prop: string) => {
     setSelectedProps(prev => prev.includes(prop) ? prev.filter(p => p !== prop) : [...prev, prop])
@@ -112,11 +241,40 @@ export default function GenerateClassPage() {
     setGenerating(true)
     setOutput('')
     setError(null)
+    setImageUrl(null)
+    // Get auth token for protected API routes
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    const authHeader = session ? `Bearer ${session.access_token}` : ''
+    setImageLoading(true)
+    setAudioUrl(null)
+    setCueTimings([])
+    setCurrentCueIndex(-1)
+    setSaved(false)
+
+    // Generate image in parallel
+    fetch('/api/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+      body: JSON.stringify({ focusArea, difficulty }),
+    })
+      .then(async r => {
+        const text = await r.text()
+        try {
+          const data = JSON.parse(text)
+          if (data.url) setImageUrl(data.url)
+          else setError('Image error: ' + (data.error || text))
+        } catch {
+          setError('Image error: ' + text)
+        }
+      })
+      .catch(err => setError('Image fetch failed: ' + err.message))
+      .finally(() => setImageLoading(false))
 
     try {
       const res = await fetch('/api/generate-class', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
         body: JSON.stringify({ duration, difficulty, focusArea, props: selectedProps, healthStatus: 'green' }),
       })
 
@@ -132,12 +290,24 @@ export default function GenerateClassPage() {
 
       const reader = res.body?.getReader()
       const decoder = new TextDecoder()
-      if (!reader) return
+      if (!reader) {
+        console.log('reader is null — body:', res.body)
+        return
+      }
 
+      let fullText = ''
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        setOutput(prev => prev + decoder.decode(value, { stream: true }))
+        const chunk = decoder.decode(value, { stream: true })
+        fullText += chunk
+        setOutput(prev => prev + chunk)
+      }
+      // Only generate audio if the class text looks valid (not an API error)
+      if (fullText.length > 200 && !fullText.includes('"type":"error"') && !fullText.startsWith('Error:')) {
+        generateAudio(fullText)
+      } else if (fullText.includes('"type":"error"') || fullText.startsWith('Error:')) {
+        setError('Class generation failed — please try again.')
       }
     } catch {
       setError('Could not connect to the generator. Check your API key.')
@@ -271,6 +441,18 @@ export default function GenerateClassPage() {
             </span>
           )}
 
+          {/* AI Image */}
+          {(imageLoading || imageUrl) && (
+            <div style={{ marginBottom: '2rem', borderRadius: '2px', overflow: 'hidden', background: '#f5f5f5', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {imageLoading && !imageUrl && (
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa' }}>Generating image...</p>
+              )}
+              {imageUrl && (
+                <img src={imageUrl} alt="AI generated Pilates" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              )}
+            </div>
+          )}
+
           {/* Streaming placeholder */}
           {generating && !output && (
             <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -289,25 +471,145 @@ export default function GenerateClassPage() {
 
           {/* Actions */}
           {!generating && output && (
-            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid #f0f0f0' }}>
-              <button
-                onClick={generateClass}
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: '#87CEBF', color: 'white', cursor: 'pointer' }}>
-                Regenerate
-              </button>
-              <button
-                onClick={() => {
-                  const blob = new Blob([output], { type: 'text/plain' })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url; a.download = `pilates-class-${duration}min-${difficulty}.txt`; a.click()
-                  URL.revokeObjectURL(url)
-                }}
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}>
-                Download
-              </button>
+            <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid #f0f0f0' }}>
+              {/* Audio player */}
+              {(audioLoading || audioUrl) && (
+                <div style={{ marginBottom: '1.25rem' }}>
+                  {audioLoading && (
+                    <div style={{ background: '#f9f8f6', borderRadius: '2px', padding: '1rem 1.25rem' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa', margin: 0 }}>
+                        Preparing voice cues...
+                      </p>
+                    </div>
+                  )}
+                  {audioUrl && (
+                    <div>
+                      {/* Label */}
+                      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>
+                        Voice Cues — Press play, put your phone down, and move
+                      </p>
+
+                      {/* Synced cue display */}
+                      {cueTimings.length > 0 && (
+                        <div style={{ background: '#f9f8f6', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '0.75rem', minHeight: '80px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                          {currentCueIndex < 0 ? (
+                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#bbb', margin: 0, fontStyle: 'italic' }}>
+                              Press play to begin your class
+                            </p>
+                          ) : (
+                            <>
+                              {/* Block + exercise */}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                                {cueTimings[currentCueIndex].block && (
+                                  <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'white', background: '#87CEBF', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>
+                                    {cueTimings[currentCueIndex].block}
+                                  </span>
+                                )}
+                                {cueTimings[currentCueIndex].exercise && (
+                                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.78rem', color: '#1a1a1a' }}>
+                                    {cueTimings[currentCueIndex].exercise}
+                                  </span>
+                                )}
+                              </div>
+                              {/* Cue text */}
+                              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontStyle: 'italic', fontSize: '0.88rem', color: '#555', margin: 0, lineHeight: 1.5 }}>
+                                {cueTimings[currentCueIndex].cue}
+                              </p>
+                              {/* Progress dots */}
+                              <div style={{ display: 'flex', gap: '4px', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+                                {cueTimings.map((_, i) => (
+                                  <div key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: i <= currentCueIndex ? '#87CEBF' : '#e0e0e0', transition: 'background 0.3s' }} />
+                                ))}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Hidden music track */}
+                      <audio
+                        ref={musicRef}
+                        src="/music/stillness.m4a"
+                        loop
+                        preload="auto"
+                      />
+
+                      {/* Hidden voice audio */}
+                      <audio
+                        ref={audioRef}
+                        src={audioUrl}
+                        onTimeUpdate={handleTimeUpdate}
+                        onEnded={() => { handleEnded(); handleEnded2(); }}
+                      />
+
+                      {/* Custom play/pause button */}
+                      <button
+                        onClick={handlePlayPause}
+                        style={{
+                          width: '100%', padding: '0.75rem',
+                          background: isPlaying ? '#1a1a1a' : '#87CEBF',
+                          border: 'none', borderRadius: '2px', cursor: 'pointer',
+                          fontFamily: "'Raleway', sans-serif", fontWeight: 700,
+                          fontSize: '0.65rem', letterSpacing: '0.14em',
+                          textTransform: 'uppercase', color: 'white',
+                        }}
+                      >
+                        {isPlaying ? '⏸ Pause' : '▶ Play Class'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <button
+                  onClick={generateClass}
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: '#87CEBF', color: 'white', cursor: 'pointer' }}>
+                  Regenerate
+                </button>
+                <button
+                  onClick={saveClass}
+                  disabled={saving || saved}
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: saved ? '#e8f7f4' : '#1a1a1a', color: saved ? '#87CEBF' : 'white', cursor: saved ? 'default' : 'pointer' }}>
+                  {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Class'}
+                </button>
+                <button
+                  onClick={() => {
+                    const blob = new Blob([output], { type: 'text/plain' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url; a.download = `pilates-class-${duration}min-${difficulty}.txt`; a.click()
+                    URL.revokeObjectURL(url)
+                  }}
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}>
+                  Download
+                </button>
+              </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Saved classes */}
+      {savedClasses.length > 0 && (
+        <div style={{ marginTop: '3rem' }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#808282', marginBottom: '1rem' }}>
+            Your Saved Classes
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {savedClasses.map(c => (
+              <div key={c.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a', margin: '0 0 0.2rem' }}>
+                    {c.title ?? 'Untitled Class'}
+                  </p>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', margin: 0 }}>
+                    {c.duration}min · {c.difficulty} · {c.focus_area} · {new Date(c.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

@@ -51,7 +51,7 @@ export default function AccountPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [activeSection, setActiveSection] = useState<'profile' | 'health' | 'password'>('profile')
+  const [activeSection, setActiveSection] = useState<'profile' | 'health' | 'preferences' | 'password'>('profile')
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
   // Form state
@@ -65,6 +65,8 @@ export default function AccountPage() {
   const [selectedConditions, setSelectedConditions] = useState<string[]>([])
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [experienceLevel, setExperienceLevel] = useState('')
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([])
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
@@ -86,6 +88,8 @@ export default function AccountPage() {
         setEmergencyPhone(prof.emergency_contact_phone ?? '')
         setPreferredLocation(prof.preferred_location ?? '')
         setSelectedConditions(prof.health_conditions ?? [])
+        setExperienceLevel((prof as unknown as Record<string, string>).experience_level ?? '')
+        setSelectedGoals((prof as unknown as Record<string, string[]>).goals ?? [])
       }
       setLoading(false)
     })
@@ -140,6 +144,22 @@ export default function AccountPage() {
     else { showToast('Password updated'); setNewPassword(''); setConfirmPassword('') }
     setSaving(false)
   }
+
+  const savePreferences = async () => {
+    setSaving(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+    const { error } = await supabase.from('profiles').update({
+      experience_level: experienceLevel || null,
+      goals: selectedGoals.length > 0 ? selectedGoals : null,
+    } as unknown as Record<string, unknown>).eq('id', user.id)
+    if (error) showToast('Could not save preferences', 'error')
+    else showToast('Preferences saved')
+    setSaving(false)
+  }
+
+  const toggleGoal = (g: string) => setSelectedGoals(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g])
 
   const toggleCondition = (key: string) => {
     setSelectedConditions(prev =>
@@ -207,6 +227,7 @@ export default function AccountPage() {
       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2.5rem', flexWrap: 'wrap' }}>
         <button onClick={() => setActiveSection('profile')} style={sectionTabStyle(activeSection === 'profile')}>Profile</button>
         <button onClick={() => setActiveSection('health')} style={sectionTabStyle(activeSection === 'health')}>Health Info</button>
+        <button onClick={() => setActiveSection('preferences')} style={sectionTabStyle(activeSection === 'preferences')}>Goals</button>
         <button onClick={() => setActiveSection('password')} style={sectionTabStyle(activeSection === 'password')}>Password</button>
       </div>
 
@@ -321,6 +342,37 @@ export default function AccountPage() {
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginTop: '1rem', lineHeight: 1.6 }}>
             This information is private and only shared with your instructor to ensure your safety.
           </p>
+        </div>
+      )}
+
+      {/* PREFERENCES */}
+      {activeSection === 'preferences' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginBottom: '0.75rem' }}>Pilates Experience</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {[{ value: 'new_to_pilates', label: 'Brand new' }, { value: 'less_than_1yr', label: '< 1 year' }, { value: '1_to_3_yrs', label: '1–3 years' }, { value: '3_plus_yrs', label: '3+ years' }].map(opt => (
+                <button key={opt.value} onClick={() => setExperienceLevel(opt.value)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: experienceLevel === opt.value ? 'none' : '1px solid #e0e0e0', background: experienceLevel === opt.value ? '#87CEBF' : 'white', color: experienceLevel === opt.value ? 'white' : '#808282', cursor: 'pointer' }}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginBottom: '0.75rem' }}>Your Goals</p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {['Build strength', 'Improve flexibility', 'Recovery & rehab', 'Stress relief', 'Posture & alignment', 'Weight management', 'Athletic performance'].map(g => (
+                <button key={g} onClick={() => toggleGoal(g)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: selectedGoals.includes(g) ? 'none' : '1px solid #e0e0e0', background: selectedGoals.includes(g) ? '#87CEBF' : 'white', color: selectedGoals.includes(g) ? 'white' : '#808282', cursor: 'pointer' }}>
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button onClick={savePreferences} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? '#b0ddd6' : '#87CEBF', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+            {saving ? 'Saving...' : 'Save Preferences'}
+          </button>
         </div>
       )}
 

@@ -32,13 +32,46 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex" style={{ background: '#f9f8f6' }}>
-      {/* Left panel — brand */}
-      <div
-        className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16"
-        style={{ background: '#1a1a1a' }}
-      >
-        <Logo />
-        <div>
+      {/* Left panel — looping hero video */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-16">
+        {/*
+          Replace the src below with actual studio footage from Ruby.
+          Recommended: 30–60s loop, 1080p, shot at Charlotte Park or Green Hills.
+          Encode as MP4 (H.264) + WebM for best browser compatibility.
+        */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        >
+          {/* TODO: Replace with real studio footage */}
+          <source src="/videos/hero-loop.mp4" type="video/mp4" />
+        </video>
+
+        {/* Dark overlay — keeps text legible over any footage */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.65) 100%)',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Content sits above video + overlay */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <Logo />
+        </div>
+        <div style={{ position: 'relative', zIndex: 2 }}>
           <p
             style={{
               fontFamily: "'Poppins', sans-serif",
@@ -57,7 +90,7 @@ export default function LoginPage() {
               fontFamily: "'Poppins', sans-serif",
               fontWeight: 300,
               fontSize: '0.85rem',
-              color: '#808282',
+              color: 'rgba(255,255,255,0.6)',
               marginTop: '1rem',
               letterSpacing: '0.04em',
             }}
@@ -67,10 +100,12 @@ export default function LoginPage() {
         </div>
         <p
           style={{
+            position: 'relative',
+            zIndex: 2,
             fontFamily: "'Poppins', sans-serif",
             fontWeight: 300,
             fontSize: '0.75rem',
-            color: '#555',
+            color: 'rgba(255,255,255,0.4)',
             letterSpacing: '0.04em',
           }}
         >

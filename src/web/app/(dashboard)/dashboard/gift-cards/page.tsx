@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 const AMOUNTS = [25, 50, 75, 100, 150, 200]
@@ -10,8 +11,10 @@ const input = { width: '100%', fontFamily: "'Poppins', sans-serif" as const, fon
 
 type Mode = 'buy' | 'redeem'
 type RedeemResult = { status: 'valid'; balance: number; code: string } | { status: 'redeemed' } | { status: 'notfound' } | null
+type PurchaseResult = { code: string; amount: number } | null
 
-export default function GiftCardsPage() {
+function GiftCardsPageInner() { // eslint-disable-line
+  const searchParams = useSearchParams()
   const [mode, setMode] = useState<Mode>('buy')
   const [amount, setAmount] = useState<number>(50)
   const [customAmount, setCustomAmount] = useState('')
@@ -20,9 +23,28 @@ export default function GiftCardsPage() {
   const [message, setMessage] = useState('')
   const [isPhysical, setIsPhysical] = useState(false)
   const [redeemCode, setRedeemCode] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [purchaseResult, setPurchaseResult] = useState<PurchaseResult>(null)
   const [redeemResult, setRedeemResult] = useState<RedeemResult>(null)
   const [redeemLoading, setRedeemLoading] = useState(false)
+
+  // Handle Stripe redirect after payment
+  useEffect(() => {
+    const giftSuccess = searchParams.get('gift_success')
+    const stripeSession = searchParams.get('stripe_session')
+    if (giftSuccess === 'true' && stripeSession) {
+      fetch('/api/gift-card/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stripe_session_id: stripeSession }),
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data.code) setPurchaseResult({ code: data.code, amount: data.amount })
+        })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const applyCode = async () => {
     if (!redeemCode.trim()) return
@@ -49,16 +71,47 @@ export default function GiftCardsPage() {
 
   const sectionLabel = { fontFamily: "'Raleway', sans-serif" as const, fontWeight: 700 as const, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: '#808282', marginBottom: '1rem', display: 'block' }
 
-  if (submitted) {
+  const handlePurchase = async () => {
+    setCheckoutLoading(true)
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { setCheckoutLoading(false); return }
+
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+    const res = await fetch('/api/checkout/gift-card', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': authSession ? `Bearer ${authSession.access_token}` : '' },
+      body: JSON.stringify({
+        amount: finalAmount,
+        recipient_name: recipientName,
+        recipient_email: recipientEmail,
+        message,
+        is_physical: isPhysical,
+        user_id: user.id,
+      }),
+    })
+    const { url, error } = await res.json()
+    if (error || !url) { setCheckoutLoading(false); return }
+    window.location.href = url
+  }
+
+  if (purchaseResult) {
     return (
       <div style={{ padding: '3rem 2.5rem', maxWidth: '560px' }}>
         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#e8f7f4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
-          <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.75rem' }}>Gift Card Sent</h2>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.88rem', color: '#808282', marginBottom: '2rem' }}>
-            {recipientEmail ? `A ${formatCurrency(finalAmount)} gift card has been sent to ${recipientEmail}.` : `Your ${formatCurrency(finalAmount)} gift card is ready.`}
+          <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.75rem' }}>Gift Card Ready</h2>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.88rem', color: '#808282', marginBottom: '1.5rem' }}>
+            {formatCurrency(purchaseResult.amount)} gift card
           </p>
-          <button onClick={() => setSubmitted(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 1.75rem', borderRadius: '2px', background: '#87CEBF', color: 'white', border: 'none', cursor: 'pointer' }}>
+          <div style={{ background: '#1a1a1a', borderRadius: '2px', padding: '1.5rem 2rem', display: 'inline-block', marginBottom: '1.5rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#808282', marginBottom: '0.5rem' }}>Gift Card Code</p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '1.6rem', letterSpacing: '0.12em', color: '#87CEBF' }}>{purchaseResult.code}</p>
+          </div>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa', marginBottom: '2rem' }}>
+            {recipientEmail ? `A confirmation has been sent to ${recipientEmail}.` : 'Share this code with the recipient.'}
+          </p>
+          <button onClick={() => setPurchaseResult(null)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 1.75rem', borderRadius: '2px', background: '#87CEBF', color: 'white', border: 'none', cursor: 'pointer' }}>
             Send Another
           </button>
         </div>
@@ -190,11 +243,11 @@ export default function GiftCardsPage() {
               <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: '#1a1a1a' }}>{isNaN(finalAmount) || finalAmount <= 0 ? '—' : formatCurrency(finalAmount)}</span>
             </div>
             <button
-              onClick={() => setSubmitted(true)}
-              disabled={!finalAmount || finalAmount <= 0}
+              onClick={handlePurchase}
+              disabled={!finalAmount || finalAmount <= 0 || checkoutLoading}
               style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.9rem', borderRadius: '2px', background: finalAmount > 0 ? '#87CEBF' : '#e0e0e0', color: finalAmount > 0 ? 'white' : '#aaa', border: 'none', cursor: finalAmount > 0 ? 'pointer' : 'not-allowed' }}
             >
-              {isPhysical ? 'Request Physical Card' : `Send ${finalAmount > 0 ? formatCurrency(finalAmount) : ''} Gift Card`}
+              {checkoutLoading ? 'Redirecting...' : isPhysical ? 'Request Physical Card' : `Purchase ${finalAmount > 0 ? formatCurrency(finalAmount) : ''} Gift Card`}
             </button>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', textAlign: 'center', marginTop: '0.75rem' }}>
               HSA/FSA accepted · Gift cards never expire
@@ -203,6 +256,14 @@ export default function GiftCardsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function GiftCardsPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: '3rem 2.5rem' }}><p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>Loading...</p></div>}>
+      <GiftCardsPageInner />
+    </Suspense>
   )
 }
 

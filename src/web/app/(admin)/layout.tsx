@@ -15,6 +15,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
   clients: boolean
   payroll_view: boolean
   payroll_edit: boolean
+  revenue: boolean
 }> = {
   admin: {
     overview: true,
@@ -23,6 +24,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: true,
     payroll_view: true,
     payroll_edit: true,
+    revenue: true,
   },
   manager: {
     overview: true,
@@ -31,6 +33,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: true,
     payroll_view: true,
     payroll_edit: true,
+    revenue: false,
   },
   instructor: {
     overview: false,
@@ -39,6 +42,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: false,        // own class rosters only
     payroll_view: false,
     payroll_edit: false,
+    revenue: false,
   },
   front_desk: {
     overview: true,
@@ -47,6 +51,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: true,         // lookup only
     payroll_view: false,
     payroll_edit: false,
+    revenue: false,
   },
 }
 
@@ -106,6 +111,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', label: 'Overview', icon: '⊡', show: perms.overview },
     { href: '/admin/my-classes', label: 'My Classes', icon: '◷', show: role === 'instructor' },
     { href: '/admin/schedule', label: 'Schedule', icon: '◷', show: perms.schedule_view && role !== 'instructor' },
+    { href: '/admin/private-requests', label: 'Private Requests', icon: '◐', show: perms.schedule_edit },
     { href: '/admin/clients', label: 'Clients', icon: '◈', show: perms.clients },
     { href: '/admin/instructors', label: 'Instructors', icon: '◉', show: perms.payroll_view },
     { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },

@@ -307,3 +307,4 @@ generated_classes (
 - Should AI classes count toward client milestone tracking (spec 02)?
 - Pricing: include AI classes in all memberships, or as a separate add-on tier?
 - Does Ruby want to review and approve the initial exercise library before it goes live, or delegate to senior instructors?
+/clear

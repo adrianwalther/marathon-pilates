@@ -37,6 +37,8 @@ const TYPE_FILTERS = [
   { value: 'private', label: 'Private' },
   { value: 'sauna', label: 'Sauna' },
   { value: 'cold_plunge', label: 'Cold Plunge' },
+  { value: 'contrast_therapy', label: 'Contrast Therapy' },
+  { value: 'neveskin', label: 'Neveskin' },
 ]
 
 const LOCATION_FILTERS = [
@@ -77,6 +79,42 @@ function SchedulePageInner() {
   const [selectedDay, setSelectedDay] = useState(0)
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
+
+  // Handle Stripe redirect back after payment
+  useEffect(() => {
+    const payment = searchParams.get('payment')
+    const paidSessionId = searchParams.get('session_id')
+    if (payment === 'success' && paidSessionId) {
+      const confirmBooking = async () => {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) return
+        const { data: existing } = await supabase
+          .from('bookings')
+          .select('id')
+          .eq('client_id', user.id)
+          .eq('session_id', paidSessionId)
+          .single()
+        if (!existing) {
+          await supabase.from('bookings').insert({
+            client_id: user.id,
+            session_id: paidSessionId,
+            status: 'confirmed',
+            amount_paid: 0,
+            payment_status: 'paid',
+          })
+        } else {
+          await supabase.from('bookings').update({ status: 'confirmed', payment_status: 'paid' }).eq('id', existing.id)
+        }
+        showToast('Payment confirmed — booking complete!')
+        loadSessions()
+      }
+      confirmBooking()
+    } else if (payment === 'cancelled') {
+      showToast('Payment cancelled', 'error')
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const week = buildWeek()
 
@@ -151,19 +189,65 @@ function SchedulePageInner() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { showToast('Please sign in', 'error'); setBookingLoading(false); return }
 
-    const isFull = session.booking_count >= session.max_capacity
-    const { error } = await supabase.from('bookings').insert({
-      client_id: user.id,
-      session_id: session.id,
-      status: isFull ? 'waitlisted' : 'confirmed',
-      amount_paid: 0,
-      payment_status: 'pending',
-    })
+    // Determine credit type to check
+    const isGroup = session.session_type === 'group_reformer'
+    const isPrivate = ['private_solo', 'private_duet', 'private_trio'].includes(session.session_type)
+    const isAmenity = ['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'].includes(session.session_type)
+    const creditType = isGroup ? 'group' : isPrivate ? 'private' : isAmenity ? 'amenity' : null
 
-    if (error) {
-      showToast(error.message.includes('unique') ? 'Already booked' : error.message, 'error')
+    // Check if user has credits
+    let hasCredit = false
+    let creditId: string | null = null
+    if (creditType) {
+      const { data: credits } = await supabase
+        .from('credits')
+        .select('id, total_credits, used_credits')
+        .eq('client_id', user.id)
+        .eq('credit_type', creditType)
+        .order('expires_at', { ascending: true, nullsFirst: false })
+
+      const usable = credits?.find(c => c.total_credits - c.used_credits > 0)
+      if (usable) {
+        hasCredit = true
+        creditId = usable.id
+      }
+    }
+
+    // If no credits and session has a drop-in price → Stripe Checkout
+    if (!hasCredit && session.drop_in_price) {
+      const { data: { session: authSession } } = await supabase.auth.getSession()
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authSession ? `Bearer ${authSession.access_token}` : '' },
+        body: JSON.stringify({ session_id: session.id, user_id: user.id }),
+      })
+      const { url, error: checkoutError } = await res.json()
+      if (checkoutError || !url) {
+        showToast('Could not start checkout', 'error')
+        setBookingLoading(false)
+        setBookingId(null)
+        return
+      }
+      window.location.href = url
+      return
+    }
+
+    // Book via API — capacity check + insert are atomic (no race condition)
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+    const res = await fetch('/api/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authSession ? `Bearer ${authSession.access_token}` : '',
+      },
+      body: JSON.stringify({ session_id: session.id, credit_id: creditId }),
+    })
+    const result = await res.json()
+
+    if (!res.ok) {
+      showToast(result.error === 'Already booked' ? 'Already booked' : result.error, 'error')
     } else {
-      showToast(isFull ? 'Added to waitlist' : 'Booking confirmed!')
+      showToast(result.status === 'waitlisted' ? 'Added to waitlist' : 'Booking confirmed!')
       loadSessions()
     }
     setBookingLoading(false)

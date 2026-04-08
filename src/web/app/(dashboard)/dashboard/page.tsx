@@ -175,6 +175,37 @@ export default function DashboardPage() {
         )}
       </div>
 
+      {/* Milestone progress */}
+      {(() => {
+        const done = profile?.total_classes_completed ?? 0
+        const milestones = [1, 5, 10, 25, 50, 100]
+        const next = milestones.find(m => m > done)
+        const prev = milestones.filter(m => m <= done).pop() ?? 0
+        if (!next) return null
+        const pct = next === 1 ? (done > 0 ? 100 : 0) : Math.round(((done - prev) / (next - prev)) * 100)
+        return (
+          <div style={{ marginBottom: '3rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <p style={sectionLabel}>Milestone</p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#aaa' }}>
+                {done}/{next} classes
+              </p>
+            </div>
+            <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.75rem' }}>
+                {next - done} more class{next - done !== 1 ? 'es' : ''} to your <strong>{next}-class milestone</strong>
+              </p>
+              <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: '#87CEBF', borderRadius: '2px', transition: 'width 0.5s' }} />
+              </div>
+            </div>
+          </div>
+        )
+      })()}
+
+      {/* Build a Class */}
+      <BuildAClassCard />
+
       {/* Locations */}
       <div>
         <p style={sectionLabel}>Our Studios</p>
@@ -221,6 +252,50 @@ function QuickBookBtn({ href, label, ghost }: { href: string; label: string; gho
     >
       {label}
     </Link>
+  )
+}
+
+function BuildAClassCard() {
+  const [hovered, setHovered] = useState(false)
+  const sectionLabel = {
+    fontFamily: "'Raleway', sans-serif",
+    fontWeight: 700,
+    fontSize: '0.65rem',
+    letterSpacing: '0.18em',
+    textTransform: 'uppercase' as const,
+    color: '#808282',
+    marginBottom: '1rem',
+  }
+  return (
+    <div style={{ marginBottom: '3rem' }}>
+      <p style={sectionLabel}>On Demand</p>
+      <Link href="/dashboard/generate-class" style={{ textDecoration: 'none', display: 'block' }}>
+        <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            padding: '1.5rem',
+            border: `1px solid ${hovered ? '#87CEBF' : '#e8e8e8'}`,
+            borderRadius: '2px',
+            background: hovered ? '#f7fcfb' : 'white',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.1, marginBottom: '0.5rem' }}>
+              Build a Class
+            </h2>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', marginTop: '0.4rem', transition: 'transform 0.2s', display: 'inline-block', transform: hovered ? 'translateX(4px)' : 'translateX(0)' }}>
+              Begin →
+            </span>
+          </div>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#808282', letterSpacing: '0.02em' }}>
+            Personalized mat Pilates · voice cues · music
+          </p>
+        </div>
+      </Link>
+    </div>
   )
 }
 

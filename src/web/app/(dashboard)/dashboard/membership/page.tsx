@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 type Membership = {
@@ -36,43 +37,139 @@ const PLANS = [
   {
     key: 'founding',
     name: 'Founding Member',
-    price: 'Special Rate',
+    price: 'Contact us',
+    priceNote: 'Special rate',
     perks: ['Unlimited group classes', 'Priority booking', 'Locked-in founding rate', 'HSA/FSA eligible'],
     highlight: true,
+    contactOnly: true,
   },
   {
     key: 'unlimited',
     name: 'Unlimited',
-    price: 'Monthly',
+    price: '$289',
+    priceNote: '/ month',
     perks: ['Unlimited group classes', 'Priority booking', 'HSA/FSA eligible'],
     highlight: false,
+    contactOnly: false,
   },
   {
     key: 'eight_class',
-    name: '8-Class Pack',
-    price: 'Per pack',
-    perks: ['8 group classes', 'Use within 3 months', 'HSA/FSA eligible'],
+    name: '8-Class Monthly',
+    price: '$224',
+    priceNote: '/ month · 8 classes',
+    perks: ['8 group classes per month', 'Credits reset monthly', 'HSA/FSA eligible'],
     highlight: false,
+    contactOnly: false,
   },
   {
     key: 'four_class',
-    name: '4-Class Pack',
-    price: 'Per pack',
-    perks: ['4 group classes', 'Use within 6 weeks', 'HSA/FSA eligible'],
+    name: '4-Class Monthly',
+    price: '$128',
+    priceNote: '/ month · 4 classes',
+    perks: ['4 group classes per month', 'Credits reset monthly', 'HSA/FSA eligible'],
     highlight: false,
+    contactOnly: false,
   },
 ]
 
-export default function MembershipPage() {
+const CLASS_PACKS = [
+  {
+    key: 'drop_in',
+    name: 'Drop-In',
+    price: '$40',
+    priceNote: '1 class',
+    description: 'Single group class. No commitment.',
+  },
+  {
+    key: 'five_class_pack',
+    name: '5-Class Pack',
+    price: '$175',
+    priceNote: '$35 / class',
+    description: 'Five group classes. Use anytime.',
+  },
+  {
+    key: 'ten_class_pack',
+    name: '10-Class Pack',
+    price: '$330',
+    priceNote: '$33 / class',
+    description: 'Ten group classes. Best value.',
+  },
+]
+
+// TODO: confirm amenity prices with Ruby
+const AMENITY_PACKS = [
+  {
+    key: 'sauna_single',
+    name: 'Sauna — Single',
+    price: '$35',
+    priceNote: '1 session',
+    description: 'Single Sunlighten mPulse infrared sauna session.',
+  },
+  {
+    key: 'sauna_five_pack',
+    name: 'Sauna — 5 Pack',
+    price: '$150',
+    priceNote: '$30 / session',
+    description: 'Five sauna sessions. Use anytime.',
+  },
+  {
+    key: 'cold_plunge_single',
+    name: 'Cold Plunge — Single',
+    price: '$30',
+    priceNote: '1 session',
+    description: 'Single cold plunge session.',
+  },
+  {
+    key: 'cold_plunge_five_pack',
+    name: 'Cold Plunge — 5 Pack',
+    price: '$125',
+    priceNote: '$25 / session',
+    description: 'Five cold plunge sessions. Use anytime.',
+  },
+  {
+    key: 'contrast_single',
+    name: 'Contrast Therapy — Single',
+    price: '$45',
+    priceNote: '1 session',
+    description: 'Single contrast therapy session (sauna + cold plunge).',
+  },
+]
+
+export default function MembershipPageWrapper() {
+  return (
+    <Suspense>
+      <MembershipPage />
+    </Suspense>
+  )
+}
+
+function MembershipPage() {
   const [membership, setMembership] = useState<Membership | null>(null)
   const [credits, setCredits] = useState<Credit[]>([])
   const [loading, setLoading] = useState(true)
+  const [checkingOut, setCheckingOut] = useState<string | null>(null)
+  const [successPlan, setSuccessPlan] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const supabase = createClient()
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      setUserId(user.id)
+
+      // Handle post-payment confirmation
+      const stripeSession = searchParams.get('stripe_session')
+      const successKey = searchParams.get('success')
+      if (stripeSession && successKey) {
+        setSuccessPlan(successKey)
+        await fetch('/api/checkout/membership/confirm', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stripe_session_id: stripeSession }),
+        })
+      }
 
       const [{ data: mem }, { data: creds }] = await Promise.all([
         supabase.from('memberships').select('*').eq('client_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).single(),
@@ -84,7 +181,27 @@ export default function MembershipPage() {
       setLoading(false)
     }
     load()
-  }, [])
+  }, [searchParams])
+
+  const handleSelectPlan = async (planKey: string) => {
+    if (!userId) return
+    setCheckingOut(planKey)
+    try {
+      const supabase = createClient()
+      const { data: { session: authSession } } = await supabase.auth.getSession()
+      const res = await fetch('/api/checkout/membership', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authSession ? `Bearer ${authSession.access_token}` : '' },
+        body: JSON.stringify({ plan_key: planKey, user_id: userId }),
+      })
+      const { url, error } = await res.json()
+      if (error) { alert(error); setCheckingOut(null); return }
+      window.location.href = url
+    } catch {
+      alert('Something went wrong. Please try again.')
+      setCheckingOut(null)
+    }
+  }
 
   const groupCredits = credits.filter(c => c.credit_type === 'group')
   const privateCredits = credits.filter(c => c.credit_type === 'private')
@@ -196,18 +313,35 @@ export default function MembershipPage() {
         )}
       </div>
 
-      {/* Plans */}
-      <div>
-        <p style={sectionLabel}>Available Plans</p>
+      {/* Success banner */}
+      {successPlan && (
+        <div style={{ background: '#e8f7f4', border: '1px solid #87CEBF', borderRadius: '2px', padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <span style={{ color: '#87CEBF', fontSize: '1.2rem' }}>✓</span>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>
+            Payment confirmed — your membership is now active.
+          </p>
+        </div>
+      )}
+
+      {/* Membership Plans */}
+      <div style={{ marginBottom: '3rem' }}>
+        <p style={sectionLabel}>Membership Plans</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
           {PLANS.map(plan => {
             const isCurrent = membership?.membership_type === plan.key
+            const isLoading = checkingOut === plan.key
             return (
-              <div key={plan.key} style={{ background: plan.highlight ? '#1a1a1a' : 'white', border: plan.highlight ? 'none' : '1px solid #eee', borderRadius: '2px', padding: '1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: plan.highlight ? '#87CEBF' : '#87CEBF', marginBottom: '0.5rem' }}>
+              <div key={plan.key} style={{ background: plan.highlight ? '#1a1a1a' : 'white', border: plan.highlight ? 'none' : '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>
                   {plan.name}
                 </p>
-                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: plan.highlight ? 'white' : '#1a1a1a', lineHeight: 1 }}>{plan.price}</span>
+                  {plan.priceNote && (
+                    <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{plan.priceNote}</span>
+                  )}
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: 1 }}>
                   {plan.perks.map(p => (
                     <li key={p} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: plan.highlight ? '#888' : '#808282', paddingLeft: '1rem', position: 'relative' }}>
                       <span style={{ position: 'absolute', left: 0, color: '#87CEBF' }}>·</span>
@@ -215,20 +349,85 @@ export default function MembershipPage() {
                     </li>
                   ))}
                 </ul>
+                {plan.contactOnly ? (
+                  <a href="mailto:info@marathonpilates.com" style={{ display: 'block', width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem', borderRadius: '2px', border: '1px solid #87CEBF', background: 'transparent', color: '#87CEBF', cursor: 'pointer', textAlign: 'center', textDecoration: 'none' }}>
+                    Contact Us
+                  </a>
+                ) : (
+                  <button
+                    disabled={isCurrent || !!checkingOut}
+                    onClick={() => !isCurrent && handleSelectPlan(plan.key)}
+                    style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem', borderRadius: '2px', border: isCurrent ? 'none' : '1px solid #87CEBF', background: isCurrent ? '#87CEBF' : 'transparent', color: isCurrent ? 'white' : '#87CEBF', cursor: isCurrent || checkingOut ? 'default' : 'pointer', opacity: checkingOut && !isLoading ? 0.5 : 1 }}
+                  >
+                    {isCurrent ? 'Current Plan' : isLoading ? 'Redirecting...' : 'Select Plan'}
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Class Packs */}
+      <div style={{ marginBottom: '3rem' }}>
+        <p style={sectionLabel}>Class Packs</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+          {CLASS_PACKS.map(pack => {
+            const isLoading = checkingOut === pack.key
+            return (
+              <div key={pack.key} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>{pack.name}</p>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: '#1a1a1a', lineHeight: 1 }}>{pack.price}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{pack.priceNote}</span>
+                </div>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282', flex: 1, marginBottom: '1.25rem' }}>{pack.description}</p>
                 <button
-                  disabled={isCurrent}
-                  style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem', borderRadius: '2px', border: isCurrent ? 'none' : '1px solid #87CEBF', background: isCurrent ? '#87CEBF' : 'transparent', color: isCurrent ? 'white' : '#87CEBF', cursor: isCurrent ? 'default' : 'pointer' }}
+                  disabled={!!checkingOut}
+                  onClick={() => handleSelectPlan(pack.key)}
+                  style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem', borderRadius: '2px', border: '1px solid #87CEBF', background: 'transparent', color: '#87CEBF', cursor: checkingOut ? 'default' : 'pointer', opacity: checkingOut && !isLoading ? 0.5 : 1 }}
                 >
-                  {isCurrent ? 'Current Plan' : 'Select Plan'}
+                  {isLoading ? 'Redirecting...' : 'Purchase'}
                 </button>
               </div>
             )
           })}
         </div>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', marginTop: '1rem' }}>
-          HSA & FSA accepted · Contact us at <a href="mailto:info@marathonpilates.com" style={{ color: '#87CEBF', textDecoration: 'none' }}>info@marathonpilates.com</a> to upgrade or change plans.
-        </p>
       </div>
+
+      {/* Amenity Packs */}
+      <div style={{ marginBottom: '3rem' }}>
+        <p style={sectionLabel}>Amenity Packs</p>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa', marginBottom: '1.25rem' }}>
+          Sauna · Cold Plunge · Contrast Therapy — credits work across all amenity sessions.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+          {AMENITY_PACKS.map(pack => {
+            const isLoading = checkingOut === pack.key
+            return (
+              <div key={pack.key} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>{pack.name}</p>
+                <div style={{ marginBottom: '1rem' }}>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: '#1a1a1a', lineHeight: 1 }}>{pack.price}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{pack.priceNote}</span>
+                </div>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282', flex: 1, marginBottom: '1.25rem' }}>{pack.description}</p>
+                <button
+                  disabled={!!checkingOut}
+                  onClick={() => handleSelectPlan(pack.key)}
+                  style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem', borderRadius: '2px', border: '1px solid #87CEBF', background: 'transparent', color: '#87CEBF', cursor: checkingOut ? 'default' : 'pointer', opacity: checkingOut && !isLoading ? 0.5 : 1 }}
+                >
+                  {isLoading ? 'Redirecting...' : 'Purchase'}
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', marginTop: '1rem' }}>
+        HSA & FSA accepted · Questions? <a href="mailto:info@marathonpilates.com" style={{ color: '#87CEBF', textDecoration: 'none' }}>info@marathonpilates.com</a>
+      </p>
     </div>
   )
 }
