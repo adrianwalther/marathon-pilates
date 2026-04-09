@@ -259,8 +259,42 @@ function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }
   )
 }
 
+const BUNNY_LIBRARY_ID = '620844'
+
+// Extract Bunny video GUID from CDN URL like:
+// https://vz-79f68a3f-815.b-cdn.net/{guid}/play_720p.mp4
+function bunnyEmbedUrl(videoUrl: string): string | null {
+  const match = videoUrl.match(/b-cdn\.net\/([a-f0-9-]{36})\//)
+  if (!match) return null
+  return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${match[1]}?autoplay=false&preload=true&responsive=true`
+}
+
+// Memberships that include on-demand access
+const ON_DEMAND_MEMBERSHIPS = new Set(['unlimited', 'on_demand', 'founding'])
+
 function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }) {
   const diff = cls.difficulty_level ? DIFFICULTY_COLORS[cls.difficulty_level] : { bg: '#f0f0f0', color: '#808282' }
+  const [canWatch, setCanWatch] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) { setCanWatch(false); return }
+      const { data } = await supabase
+        .from('memberships')
+        .select('membership_type')
+        .eq('client_id', user.id)
+        .eq('status', 'active')
+        .limit(1)
+        .maybeSingle()
+      const hasAccess = data ? ON_DEMAND_MEMBERSHIPS.has(data.membership_type) : false
+      setCanWatch(hasAccess)
+      // Increment view count on open
+      if (hasAccess) {
+        supabase.from('on_demand_classes').update({ view_count: (cls.view_count ?? 0) + 1 }).eq('id', cls.id)
+      }
+    })
+  }, [])
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
@@ -269,13 +303,34 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
       </button>
 
       {/* Video player */}
-      <div style={{ background: '#1a1a1a', borderRadius: '2px', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem' }}>
-        {cls.video_url ? (
-          <video src={cls.video_url} controls style={{ width: '100%', height: '100%', borderRadius: '2px' }} />
-        ) : (
+      <div style={{ background: '#1a1a1a', borderRadius: '2px', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', overflow: 'hidden', position: 'relative' }}>
+        {canWatch === null ? (
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#555' }}>Loading...</p>
+        ) : canWatch && cls.video_url ? (
+          <iframe
+            src={bunnyEmbedUrl(cls.video_url) ?? undefined}
+            style={{ width: '100%', height: '100%', border: 'none' }}
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+          />
+        ) : canWatch && !cls.video_url ? (
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '3rem', color: '#333' }}>▷</p>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#555' }}>Video coming soon</p>
+          </div>
+        ) : (
+          /* Paywall */
+          <div style={{ textAlign: 'center', padding: '2rem' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: '#333', marginBottom: '0.75rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Members Only</p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#666', marginBottom: '1.5rem' }}>
+              On Demand access requires an Unlimited or On Demand subscription.
+            </p>
+            <a
+              href="/dashboard/membership"
+              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.75rem 1.5rem', background: '#87CEBF', color: 'white', borderRadius: '2px', textDecoration: 'none' }}
+            >
+              View Plans
+            </a>
           </div>
         )}
       </div>

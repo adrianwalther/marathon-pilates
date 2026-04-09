@@ -258,8 +258,19 @@ function SchedulePageInner() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    await supabase.from('bookings').update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
-      .eq('client_id', user.id).eq('session_id', session.id)
+
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+
+    // Cancel via API so the server can atomically promote the waitlist
+    await fetch('/api/bookings/cancel', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authSession ? `Bearer ${authSession.access_token}` : '',
+      },
+      body: JSON.stringify({ session_id: session.id }),
+    })
+
     showToast('Booking cancelled')
     loadSessions()
   }
