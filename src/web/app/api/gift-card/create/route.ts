@@ -1,8 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   const randomBytes = crypto.getRandomValues(new Uint8Array(12))
@@ -12,6 +10,7 @@ function generateCode(): string {
 }
 
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   try {
     const { stripe_session_id } = await req.json()
 

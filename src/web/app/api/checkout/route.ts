@@ -2,9 +2,8 @@ import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { getCheckoutRatelimit } from "@/lib/ratelimit"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   try {
     const { session_id, user_id } = await req.json()
 

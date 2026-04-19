@@ -1,8 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
-
 const CREDIT_CONFIG: Record<string, { credits: number; type: string }> = {
   four_class:          { credits: 4,  type: 'group' },
   eight_class:         { credits: 8,  type: 'group' },
@@ -17,6 +15,7 @@ const CREDIT_CONFIG: Record<string, { credits: number; type: string }> = {
 }
 
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   try {
     const { stripe_session_id } = await req.json()
 
