@@ -25,3 +25,12 @@ export function getCheckoutRatelimit() {
     prefix: 'rl:checkout',
   })
 }
+
+// Bookings — 60 requests per user per hour
+export function getBookingRatelimit() {
+  return new Ratelimit({
+    redis: getRedis(),
+    limiter: Ratelimit.slidingWindow(60, '1 h'),
+    prefix: 'rl:booking',
+  })
+}

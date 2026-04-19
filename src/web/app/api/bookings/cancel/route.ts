@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { getBookingRatelimit } from '@/lib/ratelimit'
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +14,9 @@ export async function POST(req: Request) {
     )
     const { data: { user } } = await authSupabase.auth.getUser()
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { success } = await getBookingRatelimit().limit(user.id)
+    if (!success) return Response.json({ error: 'Too many requests' }, { status: 429 })
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

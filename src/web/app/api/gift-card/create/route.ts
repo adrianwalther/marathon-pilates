@@ -15,6 +15,15 @@ export async function POST(req: Request) {
   try {
     const { stripe_session_id } = await req.json()
 
+    // Verify caller is authenticated
+    const authSupabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } }
+    )
+    const { data: { user } } = await authSupabase.auth.getUser()
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
     // Verify payment with Stripe
     const session = await stripe.checkout.sessions.retrieve(stripe_session_id)
     if (session.payment_status !== 'paid') {
