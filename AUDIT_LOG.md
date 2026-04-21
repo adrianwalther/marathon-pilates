@@ -2,6 +2,26 @@
 
 ---
 
+## PRE-LAUNCH BLOCKERS (updated 2026-04-19)
+
+These security items must be resolved before going live with real clients:
+
+- [ ] **Upgrade Supabase to Pro plan** — required to enable "Prevent use of leaked passwords" (HaveIBeenPwned check). Currently on Nano plan; feature is locked.
+- [ ] **HSA/FSA receipt itemization** — advertised as HSA/FSA eligible but no itemized receipt is generated per transaction. Needed for client reimbursement documentation (P3-5 from audit).
+- [ ] **Enable email notifications** — waiting on Ruby's provider decision (Google Workspace or Resend).
+- [ ] **WordPress subdomain** — point app.marathonpilates.com → Vercel before launch.
+- [ ] **Data migration from Arketa** — waiting on Susan LeGrand availability.
+
+Already resolved before launch ✅:
+- Next.js upgraded to 16.2.4 (CSRF + HTTP smuggling CVEs patched)
+- gift_cards RLS policies applied
+- Rate limiting on all booking + AI + checkout routes
+- Mutable search_path fixed on DB functions
+- Error boundaries added to all route groups
+- Minimum password length bumped to 8 characters
+
+---
+
 ## Audit Run: 2026-04-19T20:12 UTC
 
 **Auditor:** Automated scheduled task (Claude Sonnet 4.6)

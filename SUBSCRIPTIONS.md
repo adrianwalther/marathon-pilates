@@ -33,7 +33,7 @@ Last updated: 2026-03-19
 
 | Service | Purpose | Plan | Est. Cost |
 |---------|---------|------|-----------|
-| **Bunny.net Stream** | On-demand video hosting & streaming (Library ID: 620844) | Pay-as-you-go | ~$0.005/min streamed + $0.01/GB stored |
+| **Bunny.net Stream** | On-demand video hosting & streaming (Library ID: 620844) | ⚠️ **EXPIRED** — trial ended 2026-04-20, files delete ~2026-04-22. Will reactivate before launch with fresh paid plan. Source MP4s backed up (Google Drive + local). | Expected ~$10–25/mo when restored |
 
 ---
 
@@ -60,3 +60,13 @@ Last updated: 2026-03-19
 - Bunny.net costs scale with usage; very low at launch
 - Supabase free tier has limits (500MB DB, 1GB storage) — upgrade to Pro (~$25/mo) when approaching limits
 - Membership pricing TBD — needed from Ruby before Stripe subscription billing can be activated
+
+---
+
+## Expense Log
+
+Actual charges to the Marathon Pilates business accounts.
+
+| Date | Service | Amount | Category | Notes |
+|------|---------|--------|----------|-------|
+| 2026-04-17 | ElevenLabs | $5.49 | AI / Content | Starter plan — voice cues for Build a Class (Rachel voice) |
