@@ -7,6 +7,14 @@ import { createClient } from '@/lib/supabase'
 
 export type StaffRole = 'admin' | 'manager' | 'instructor' | 'front_desk'
 
+// Role hierarchy (confirmed):
+//   owner   → Ruby, Adrian    — full access incl. revenue (not yet implemented, uses 'admin' for now)
+//   admin   → Jazz, Susan     — full operations, no raw revenue
+//   manager → Front desk + sales staff — schedule view, client check-ins, bookings, CRM. No payroll. No revenue.
+//   instructor → Trainers     — own schedule + own payroll view only
+//   client  → Studio members  — dashboard only (handled by dashboard layout, not here)
+//   (front_desk role retired — manager covers that function)
+
 // What each role can access
 export const ROLE_PERMISSIONS: Record<StaffRole, {
   overview: boolean
@@ -24,15 +32,17 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: true,
     payroll_view: true,
     payroll_edit: true,
-    revenue: true,
+    revenue: false,  // revenue reserved for 'owner' role only (Ruby, Adrian)
   },
+  // Front desk + sales staff: schedule view, client bookings & check-ins, CRM/leads, own payroll view
+  // No payroll editing, no revenue data
   manager: {
     overview: true,
     schedule_view: true,
-    schedule_edit: true,
-    clients: true,
-    payroll_view: true,
-    payroll_edit: true,
+    schedule_edit: false,  // view only — can't add/remove sessions from calendar
+    clients: true,         // bookings, check-ins, CRM leads
+    payroll_view: true,    // own hours/pay only
+    payroll_edit: false,
     revenue: false,
   },
   instructor: {
@@ -40,15 +50,15 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     schedule_view: true,   // own classes only
     schedule_edit: false,
     clients: false,        // own class rosters only
-    payroll_view: false,
+    payroll_view: true,    // own pay records only
     payroll_edit: false,
     revenue: false,
   },
-  front_desk: {
+  front_desk: {            // retired — use 'manager' instead
     overview: true,
     schedule_view: true,
     schedule_edit: false,
-    clients: true,         // lookup only
+    clients: true,
     payroll_view: false,
     payroll_edit: false,
     revenue: false,

@@ -121,6 +121,22 @@ Sauna single, Sauna 5-pack, Cold Plunge single, Cold Plunge 5-pack, Contrast sin
 
 ---
 
+## Role Hierarchy (Confirmed)
+
+| Role | Who | Access |
+|------|-----|--------|
+| `owner` | Ruby, Adrian | Everything — revenue, MRR, Stripe payouts, full business metrics |
+| `admin` | Jazz, Susan LeGrand | Full operations — schedule, users, payroll, CRM. No raw revenue. |
+| `manager` | Front desk + sales staff | Schedule view, client check-ins, booking management, CRM (leads/contacts). No payroll. No revenue. |
+| `instructor` | All trainers | Their own schedule + payroll view |
+| `client` | Studio members | Booking, membership, on-demand |
+
+> ⚠️ **`owner` role is not yet implemented in code** — planned for a future sprint. Currently Ruby and Adrian are set to `admin`.
+> ⚠️ **`manager` permissions need updating** — currently has `payroll_edit: true` which is wrong for front desk/sales. Needs to be updated to check-in, booking management, and CRM access only.
+> The `front_desk` role is retired — `manager` covers that function.
+
+---
+
 ## Database Tables (Key Ones)
 
 | Table | What It Stores |
