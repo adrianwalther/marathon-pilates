@@ -6,22 +6,30 @@ Last updated: 2026-04-29
 
 ---
 
+## Current Ownership Status
+
+Adrian is intentionally retaining ownership of the code and personal service accounts for now. This table will be updated each time a service is migrated to a Marathon Pilates business account. No action needed until you're ready.
+
+> **To update this doc:** any time a service moves to a business account, change its row in the Summary Table below — update "Current Owner" to the new account and add a ✅ and the migration date in the Notes column.
+
+---
+
 ## Summary Table
 
-| Service | Current Owner | Target Owner | Priority | Complexity |
-|---------|--------------|--------------|----------|------------|
-| GitHub | `adrianwalther` (personal) | `marathon-pilates` org | 🔴 High | Easy |
-| Vercel | `adrianwalthers-projects` team | Marathon Pilates team | 🔴 High | Easy |
-| Supabase | Adrian's personal org | Marathon Pilates org | 🔴 High | Medium |
-| Stripe | Ruby's account (confirm) | Marathon Pilates LLC | 🔴 High | Confirm |
-| Bunny.net | Adrian's account (assumed) | Marathon Pilates account | 🟡 Medium | Easy |
-| ElevenLabs | Adrian's account | Marathon Pilates account | 🟡 Medium | Easy |
-| Anthropic (Claude API) | Adrian's account | Marathon Pilates account | 🟡 Medium | Easy |
-| OpenAI (DALL-E 3) | Adrian's account | Marathon Pilates account | 🟡 Medium | Easy |
-| Upstash Redis | Adrian's account | Marathon Pilates account | 🟡 Medium | Easy |
-| Gusto | Not yet activated | Marathon Pilates LLC | 🔴 High | Activate fresh |
-| Domain (marathonpilates.com) | Confirm registrar | Marathon Pilates LLC | 🔴 High | Confirm |
-| Google Workspace / Email | Ruby's personal Gmail? | studio@marathonpilates.com | 🟡 Medium | Confirm |
+| Service | Current Owner | Target Owner | Status | Notes |
+|---------|--------------|--------------|--------|-------|
+| GitHub | `adrianwalther` (personal) | `marathon-pilates` org | ⏳ Holding | Adrian retaining intentionally for now |
+| Vercel | `adrianwalthers-projects` team | Marathon Pilates team | ⏳ Holding | Adrian retaining intentionally for now |
+| Supabase | Adrian's personal org | Marathon Pilates org | ⏳ Holding | Adrian retaining intentionally for now |
+| Stripe | Ruby's account (confirm) | Marathon Pilates LLC | ❓ Unconfirmed | Confirm with Ruby — should already be business |
+| Bunny.net | Adrian's account (assumed) | Marathon Pilates account | ⏳ Holding | Will migrate when reactivating pre-launch |
+| ElevenLabs | Adrian's account | Marathon Pilates account | ⏳ Holding | Can migrate anytime |
+| Anthropic (Claude API) | Adrian's account | Marathon Pilates account | ⏳ Holding | Can migrate anytime |
+| OpenAI (DALL-E 3) | Adrian's account | Marathon Pilates account | ⏳ Holding | Can migrate anytime |
+| Upstash Redis | Adrian's account | Marathon Pilates account | ⏳ Holding | Can migrate anytime |
+| Gusto | Not yet activated | Marathon Pilates LLC | ⏳ Activate fresh | Do when first payroll run needed |
+| Domain (marathonpilates.com) | Confirm registrar | Marathon Pilates LLC | ❓ Unconfirmed | Confirm with Ruby |
+| Google Workspace / Email | Ruby's personal Gmail? | studio@marathonpilates.com | ❓ Unconfirmed | Confirm with Ruby |
 
 ---
 
