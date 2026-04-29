@@ -55,6 +55,23 @@ Last updated: 2026-03-19
 
 ---
 
+## Pre-Launch Upgrade Checklist
+
+Services currently on free/expired tiers that **must be upgraded before going live**. Do not upgrade early — wait until launch week to avoid paying for idle time.
+
+| Service | Current State | Action Required | Est. Cost | Priority |
+|---------|--------------|-----------------|-----------|----------|
+| **Bunny.net Stream** | ⚠️ Trial expired (2026-04-20) | Reactivate with paid plan; re-upload 23 on-demand videos; re-seed `video_url` in DB | ~$10–25/mo | 🔴 Launch blocker |
+| **Supabase** | Free (500MB DB / 1GB storage) | Upgrade to Pro when approaching limits, or proactively before launch | $25/mo | 🟡 Upgrade when DB > 400MB |
+| **Vercel** | Hobby (free) | Upgrade to Pro for Vercel Password Protection (built-in, no middleware needed) — current beta gate middleware is free alternative | $20/mo | 🟢 Optional |
+| **ElevenLabs** | Starter ($5.49/mo, active) | Move to Creator or higher if voice cue volume increases | $22/mo | 🟢 Scale as needed |
+| **Gusto** | Not yet activated | Activate before first payroll run | ~$40+/mo | 🔴 Before first pay period |
+
+### To disable the beta gate at launch:
+Remove the `BETA_PASSWORD` environment variable from Vercel — the gate turns off automatically. No code change needed.
+
+---
+
 ## Notes
 - Stripe fees apply to every transaction — factor into pricing decisions
 - Bunny.net costs scale with usage; very low at launch
