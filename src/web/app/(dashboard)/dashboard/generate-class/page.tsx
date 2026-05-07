@@ -141,7 +141,7 @@ export default function GenerateClassPage() {
       setIsPlaying(false)
     } else {
       // Start music first, then voice after 2.5s
-      if (music) { music.volume = 0.10; music.play().catch(() => {}) }
+      if (music) { music.volume = 0.05; music.play().catch(() => {}) }
       setTimeout(() => { voice.play().catch(() => {}) }, 2500)
       setIsPlaying(true)
     }
