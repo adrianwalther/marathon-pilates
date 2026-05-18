@@ -8,16 +8,10 @@ Last updated: 2026-05-07
 
 ## Step 1 — Install Claude Code
 
-1. Open Terminal (search "Terminal" in Spotlight)
-2. Run this command:
-   ```bash
-   npm install -g @anthropic-ai/claude-code
-   ```
-3. Once installed, run:
-   ```bash
-   claude
-   ```
-4. Follow the prompts to log in with your Marathon Pilates Claude account
+1. Download the Claude desktop app from claude.ai/download
+2. Open it and log in with your Marathon Pilates Claude account
+
+That's it — no Terminal needed.
 
 ---
 
@@ -73,16 +67,10 @@ Or ask Adrian to share the skill file directly.
 
 ## Step 5 — Start Your First Session
 
-Every time you open a new Claude Code conversation for this project:
+Every time you open a new Claude conversation for this project:
 
-1. Navigate to the project folder:
-   ```bash
-   cd marathon-pilates
-   ```
-2. Open Claude Code:
-   ```bash
-   claude
-   ```
+1. Open the Claude desktop app
+2. Start a new conversation
 3. Paste the contents of `HANDOFF/00-PLATFORM-OVERVIEW.md` into the chat
 
 That's it — Claude is now fully up to speed on the entire platform and ready to help.
@@ -98,7 +86,7 @@ That's it — Claude is now fully up to speed on the entire platform and ready t
 > "How many active memberships do we have right now?"
 
 **Deploying:**
-> Just push to the `main` branch on GitHub — Vercel auto-deploys in 60–90 seconds.
+> "Deploy the latest changes to production" — Claude handles it, no Terminal needed.
 
 **When something breaks:**
 > "There's an error on the booking page — can you check the Vercel logs?"
