@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 import { getAiRatelimit } from "@/lib/ratelimit"
 
 export const runtime = 'nodejs'
+export const maxDuration = 60  // DALL-E 3 image generation can take 15-30s
 
 export async function POST(req: NextRequest) {
   try {

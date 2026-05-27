@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 import { getAiRatelimit } from "@/lib/ratelimit"
 
 export const runtime = 'nodejs'
+export const maxDuration = 60  // ElevenLabs audio generation can take 20-40s for full class scripts
 
 // Extract exercise names paired with cues for the visual display
 function extractCueBlocks(classText: string): { block: string; exercise: string; cue: string }[] {
