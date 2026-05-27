@@ -18,7 +18,7 @@ export default function AdminError({
       <p style={{ color: '#555', fontSize: '1rem', fontWeight: 400 }}>Something went wrong in the admin panel.</p>
       <button
         onClick={reset}
-        style={{ background: '#87CEBF', color: '#fff', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
+        style={{ background: '#A76E58', color: '#fff', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
       >
         Try again
       </button>

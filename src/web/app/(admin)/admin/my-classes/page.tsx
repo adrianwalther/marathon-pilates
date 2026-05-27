@@ -30,7 +30,7 @@ type RosterEntry = {
 }
 
 const TRAFFIC_COLORS = {
-  green:  { bg: '#e8f7f4', color: '#87CEBF', label: 'No restrictions' },
+  green:  { bg: '#f5ece6', color: '#A76E58', label: 'No restrictions' },
   yellow: { bg: '#fff8e6', color: '#c8860a', label: 'Modifications may apply' },
   red:    { bg: '#fef0f0', color: '#e05555', label: 'Review before class' },
 }
@@ -130,12 +130,12 @@ export default function MyClassesPage() {
 
       {/* Week nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-        <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#808282' }}>←</button>
+        <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>←</button>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a' }}>
           {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
-        <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#808282' }}>→</button>
-        {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#87CEBF' }}>This week</button>}
+        <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>→</button>
+        {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#A76E58' }}>This week</button>}
       </div>
 
       {loading ? (
@@ -169,7 +169,7 @@ export default function MyClassesPage() {
                         </span>
                       )}
                     </div>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#8a8d83' }}>
                       {formatDay(cls.starts_at)} · {formatTime(cls.starts_at)} – {formatTime(cls.ends_at)} · {cls.locations?.name}
                     </p>
                   </div>
@@ -189,7 +189,7 @@ export default function MyClassesPage() {
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#aaa' }}>No bookings yet</p>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginBottom: '0.25rem' }}>
+                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.25rem' }}>
                           Roster — {cls.bookings.length} client{cls.bookings.length !== 1 ? 's' : ''}
                         </p>
                         {cls.bookings.map(b => {
@@ -197,21 +197,21 @@ export default function MyClassesPage() {
                           const isNew = (b.profiles?.total_classes_completed ?? 0) < 3
 
                           return (
-                            <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#f9f8f6', borderRadius: '2px', gap: '1rem' }}>
+                            <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#FAF7F2', borderRadius: '2px', gap: '1rem' }}>
                               <div style={{ flex: 1 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>
                                     {b.profiles?.first_name} {b.profiles?.last_name}
                                   </p>
                                   {isNew && (
-                                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: '#e8f7f4', color: '#87CEBF' }}>New</span>
+                                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>New</span>
                                   )}
                                   <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: tl.bg, color: tl.color }}>
                                     {b.profiles?.polestar_traffic_light}
                                   </span>
                                 </div>
                                 {b.profiles?.health_conditions && b.profiles.health_conditions.length > 0 && (
-                                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#808282', marginTop: '0.2rem' }}>
+                                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#8a8d83', marginTop: '0.2rem' }}>
                                     {b.profiles.health_conditions.join(', ')}
                                   </p>
                                 )}
@@ -223,14 +223,14 @@ export default function MyClassesPage() {
                                   <button
                                     onClick={() => markAttendance(b.id, true)}
                                     disabled={markingId === b.id}
-                                    style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.35rem 0.7rem', borderRadius: '2px', border: 'none', background: b.attended === true ? '#87CEBF' : '#e8f7f4', color: b.attended === true ? 'white' : '#87CEBF', cursor: 'pointer' }}
+                                    style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.35rem 0.7rem', borderRadius: '2px', border: 'none', background: b.attended === true ? '#A76E58' : '#f5ece6', color: b.attended === true ? 'white' : '#A76E58', cursor: 'pointer' }}
                                   >
                                     ✓ Present
                                   </button>
                                   <button
                                     onClick={() => markAttendance(b.id, false)}
                                     disabled={markingId === b.id}
-                                    style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.35rem 0.7rem', borderRadius: '2px', border: 'none', background: b.attended === false ? '#e05555' : '#f5f5f5', color: b.attended === false ? 'white' : '#808282', cursor: 'pointer' }}
+                                    style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.35rem 0.7rem', borderRadius: '2px', border: 'none', background: b.attended === false ? '#e05555' : '#f5f5f5', color: b.attended === false ? 'white' : '#8a8d83', cursor: 'pointer' }}
                                   >
                                     No-show
                                   </button>

@@ -29,7 +29,7 @@ const labelStyle = {
   fontSize: '0.65rem',
   letterSpacing: '0.15em',
   textTransform: 'uppercase' as const,
-  color: '#808282',
+  color: '#8a8d83',
   display: 'block',
   marginBottom: '0.5rem',
 }
@@ -107,8 +107,8 @@ export default function OnboardingPage() {
     padding: '0.55rem 1.1rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#87CEBF' : 'white',
-    color: active ? 'white' : '#808282',
+    background: active ? '#A76E58' : 'white',
+    color: active ? 'white' : '#8a8d83',
     cursor: 'pointer',
   })
 
@@ -122,12 +122,12 @@ export default function OnboardingPage() {
     borderRadius: '2px',
     border: current === val ? 'none' : '1px solid #e0e0e0',
     background: current === val ? '#1a1a1a' : 'white',
-    color: current === val ? 'white' : '#808282',
+    color: current === val ? 'white' : '#8a8d83',
     cursor: 'pointer',
   })
 
   const primaryBtn = {
-    background: '#87CEBF',
+    background: '#A76E58',
     color: 'white',
     fontFamily: "'Raleway', sans-serif",
     fontWeight: 700,
@@ -142,7 +142,7 @@ export default function OnboardingPage() {
 
   const backBtn = {
     background: 'none',
-    color: '#808282',
+    color: '#8a8d83',
     fontFamily: "'Raleway', sans-serif",
     fontWeight: 600,
     fontSize: '0.65rem',
@@ -155,26 +155,26 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f9f8f6', padding: '2rem' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAF7F2', padding: '2rem' }}>
       <div style={{ width: '100%', maxWidth: '520px' }}>
 
         {/* Progress bar */}
         <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '3rem' }}>
           {[1, 2, 3].map(i => (
-            <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i <= step ? '#87CEBF' : '#e0e0e0', transition: 'background 0.3s' }} />
+            <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i <= step ? '#A76E58' : '#e0e0e0', transition: 'background 0.3s' }} />
           ))}
         </div>
 
         {/* Step 1 — Experience + Goals */}
         {step === 1 && (
           <div>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.75rem' }}>
               Step 1 of 3
             </p>
             <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Let&apos;s get to know you
             </h2>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#808282', marginBottom: '2.5rem' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginBottom: '2.5rem' }}>
               This helps us personalize your experience.
             </p>
 
@@ -218,13 +218,13 @@ export default function OnboardingPage() {
         {/* Step 2 — Health */}
         {step === 2 && (
           <div>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.75rem' }}>
               Step 2 of 3
             </p>
             <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Health &amp; safety
             </h2>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#808282', marginBottom: '2.5rem' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginBottom: '2.5rem' }}>
               Your instructor reviews this before class. Everything stays private.
             </p>
 
@@ -249,7 +249,7 @@ export default function OnboardingPage() {
                   placeholder="Brief description — your instructor will follow up..."
                   rows={4}
                   style={{ ...inputStyle, resize: 'vertical' }}
-                  onFocus={e => (e.target.style.borderColor = '#87CEBF')}
+                  onFocus={e => (e.target.style.borderColor = '#A76E58')}
                   onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                 />
               )}
@@ -271,13 +271,13 @@ export default function OnboardingPage() {
         {/* Step 3 — Preferences */}
         {step === 3 && (
           <div>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.75rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.75rem' }}>
               Step 3 of 3
             </p>
             <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Almost there
             </h2>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#808282', marginBottom: '2.5rem' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginBottom: '2.5rem' }}>
               Last few quick questions.
             </p>
 

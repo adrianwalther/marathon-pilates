@@ -107,11 +107,11 @@ export default function SocialContentPage() {
   const totalApprovedPay = totalApprovedHours * RATE
 
   const inputStyle = { width: '100%', padding: '0.65rem 0.9rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.85rem', outline: 'none', background: 'white', fontFamily: "'Poppins', sans-serif" }
-  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#808282', display: 'block' as const, marginBottom: '0.35rem' }
+  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#8a8d83', display: 'block' as const, marginBottom: '0.35rem' }
 
   const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
     pending:  { bg: '#fff8e6', color: '#c8860a' },
-    approved: { bg: '#e8f7f4', color: '#87CEBF' },
+    approved: { bg: '#f5ece6', color: '#A76E58' },
     rejected: { bg: '#fef0f0', color: '#e05555' },
   }
 
@@ -122,12 +122,12 @@ export default function SocialContentPage() {
       <div key={entry.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
         <div style={{ flex: 1 }}>
           {isAdmin && entry.profiles && (
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.2rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.2rem' }}>
               {entry.profiles.first_name} {entry.profiles.last_name}
             </p>
           )}
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{entry.description}</p>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#808282' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#8a8d83' }}>
             {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
             {' · '}{entry.hours} hr{entry.hours !== 1 ? 's' : ''} · ${pay.toFixed(2)}
           </p>
@@ -138,7 +138,7 @@ export default function SocialContentPage() {
           </span>
           {isAdmin && entry.status === 'pending' && (
             <div style={{ display: 'flex', gap: '0.4rem' }}>
-              <button onClick={() => updateStatus(entry.id, 'approved')} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.3rem 0.7rem', background: '#e8f7f4', color: '#87CEBF', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+              <button onClick={() => updateStatus(entry.id, 'approved')} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.3rem 0.7rem', background: '#f5ece6', color: '#A76E58', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
                 Approve
               </button>
               <button onClick={() => updateStatus(entry.id, 'rejected')} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.3rem 0.7rem', background: '#fef0f0', color: '#e05555', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
@@ -162,10 +162,10 @@ export default function SocialContentPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Social Content</h1>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#808282', marginTop: '0.25rem' }}>$25/hr · Rounds to nearest 15 min · Admin approval required</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '0.25rem' }}>$25/hr · Rounds to nearest 15 min · Admin approval required</p>
         </div>
         {!isAdmin && (
-          <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : '#87CEBF', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+          <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
             {showForm ? '✕ Close' : '+ Log Hours'}
           </button>
         )}
@@ -181,7 +181,7 @@ export default function SocialContentPage() {
           ].map(s => (
             <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.1rem 1.4rem' }}>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: '#1a1a1a', lineHeight: 1 }}>{s.value}</p>
-              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginTop: '0.3rem' }}>{s.label}</p>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginTop: '0.3rem' }}>{s.label}</p>
             </div>
           ))}
         </div>
@@ -195,14 +195,14 @@ export default function SocialContentPage() {
             <div>
               <label style={labelStyle}>Date</label>
               <input type="date" value={formDate} onChange={e => setFormDate(e.target.value)} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Hours · $25/hr</label>
               <input type="number" step="0.25" min="0.25" max="8" placeholder="e.g. 1.5" value={formHours} onChange={e => setFormHours(e.target.value)} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
               {formHours && !isNaN(parseFloat(formHours)) && (
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#87CEBF', marginTop: '0.3rem' }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#A76E58', marginTop: '0.3rem' }}>
                   = ${(Math.round(parseFloat(formHours) * 4) / 4 * RATE).toFixed(2)}
                 </p>
               )}
@@ -210,15 +210,15 @@ export default function SocialContentPage() {
             <div style={{ gridColumn: 'span 2' }}>
               <label style={labelStyle}>Description</label>
               <input type="text" placeholder="e.g. Filmed 3 reformer reels for Instagram" value={formDesc} onChange={e => setFormDesc(e.target.value)} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
           </div>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginBottom: '1rem' }}>Hours round to the nearest 15 minutes. Admin will review before it appears in payroll.</p>
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <button type="submit" disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: saving ? '#b0ddd6' : '#87CEBF', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+            <button type="submit" disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
               {saving ? 'Submitting...' : 'Submit'}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.2rem', background: 'white', color: '#808282', border: '1px solid #e0e0e0', borderRadius: '2px', cursor: 'pointer' }}>
+            <button type="button" onClick={() => setShowForm(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.2rem', background: 'white', color: '#8a8d83', border: '1px solid #e0e0e0', borderRadius: '2px', cursor: 'pointer' }}>
               Cancel
             </button>
           </div>
@@ -250,7 +250,7 @@ export default function SocialContentPage() {
           {/* All other entries */}
           {otherEntries.length > 0 && (
             <div>
-              {isAdmin && <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#808282', marginBottom: '0.75rem' }}>History</p>}
+              {isAdmin && <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>History</p>}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {otherEntries.map(renderEntry)}
               </div>

@@ -289,8 +289,8 @@ function SchedulePageInner() {
     padding: '0.4rem 1rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#87CEBF' : 'white',
-    color: active ? 'white' : '#808282',
+    background: active ? '#A76E58' : 'white',
+    color: active ? 'white' : '#8a8d83',
     cursor: 'pointer',
   })
 
@@ -325,14 +325,14 @@ function SchedulePageInner() {
               minWidth: '52px', flexShrink: 0,
             }}
           >
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: selectedDay === i ? '#87CEBF' : '#aaa' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: selectedDay === i ? '#A76E58' : '#aaa' }}>
               {formatDay(w.date)}
             </span>
             <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: selectedDay === i ? 400 : 100, fontSize: '1.2rem', color: selectedDay === i ? 'white' : '#1a1a1a', lineHeight: 1.3 }}>
               {formatDayNum(w.date)}
             </span>
             {isToday(w.date) && (
-              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#87CEBF', marginTop: '2px' }} />
+              <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: '#A76E58', marginTop: '2px' }} />
             )}
           </button>
         ))}
@@ -378,25 +378,25 @@ function SchedulePageInner() {
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
                       {s.name}
                     </p>
-                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.5rem', borderRadius: '2px', background: '#f0f0f0', color: '#808282' }}>
+                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.5rem', borderRadius: '2px', background: '#f0f0f0', color: '#8a8d83' }}>
                       {SESSION_LABELS[s.session_type] ?? s.session_type}
                     </span>
                   </div>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#808282' }}>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>
                     {formatTime(s.starts_at)} – {formatTime(s.ends_at)} · {s.duration_minutes} min
                   </p>
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', marginTop: '0.15rem' }}>
                     {s.locations?.name}
                     {s.drop_in_price ? ` · $${s.drop_in_price}` : ''}
                   </p>
-                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: '0.4rem', color: isFull ? '#c8860a' : spotsLeft <= 2 ? '#c8860a' : '#87CEBF' }}>
+                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: '0.4rem', color: isFull ? '#c8860a' : spotsLeft <= 2 ? '#c8860a' : '#A76E58' }}>
                     {isFull ? 'Full — waitlist open' : `${spotsLeft} spot${spotsLeft !== 1 ? 's' : ''} left`}
                   </p>
                 </div>
 
                 <div>
                   {userBooked ? (
-                    <button onClick={() => handleCancel(s)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}>
+                    <button onClick={() => handleCancel(s)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer' }}>
                       Cancel
                     </button>
                   ) : userWaitlisted ? (
@@ -407,7 +407,7 @@ function SchedulePageInner() {
                     <button
                       onClick={() => handleBook(s)}
                       disabled={isLoading}
-                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: 'none', borderRadius: '2px', background: isLoading ? '#b0ddd6' : '#87CEBF', color: 'white', cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: 'none', borderRadius: '2px', background: isLoading ? '#c4a094' : '#A76E58', color: 'white', cursor: isLoading ? 'not-allowed' : 'pointer' }}>
                       {isLoading ? '...' : isFull ? 'Join Waitlist' : 'Book'}
                     </button>
                   )}

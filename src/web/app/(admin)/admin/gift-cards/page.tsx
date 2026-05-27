@@ -17,7 +17,7 @@ type GiftCard = {
   purchaser: { first_name: string; last_name: string } | null
 }
 
-const sectionLabel = { fontFamily: "'Raleway', sans-serif" as const, fontWeight: 700 as const, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: '#808282', display: 'block', marginBottom: '1rem' }
+const sectionLabel = { fontFamily: "'Raleway', sans-serif" as const, fontWeight: 700 as const, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: '#8a8d83', display: 'block', marginBottom: '1rem' }
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }).format(n)
@@ -108,7 +108,7 @@ export default function AdminGiftCardsPage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Gift Cards</h1>
-        <button onClick={() => setCreating(true)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.25rem', borderRadius: '2px', background: '#87CEBF', color: 'white', border: 'none', cursor: 'pointer' }}>
+        <button onClick={() => setCreating(true)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.25rem', borderRadius: '2px', background: '#A76E58', color: 'white', border: 'none', cursor: 'pointer' }}>
           + Issue Card
         </button>
       </div>
@@ -123,7 +123,7 @@ export default function AdminGiftCardsPage() {
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: '#1a1a1a', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginTop: '0.4rem' }}>{s.label}</p>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginTop: '0.4rem' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -132,7 +132,7 @@ export default function AdminGiftCardsPage() {
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', border: '1px solid #e0e0e0', borderRadius: '2px', overflow: 'hidden' }}>
           {(['all', 'active', 'redeemed', 'physical'] as const).map(f => (
-            <button key={f} onClick={() => setFilter(f)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 0.9rem', border: 'none', background: filter === f ? '#1a1a1a' : 'white', color: filter === f ? 'white' : '#808282', cursor: 'pointer' }}>
+            <button key={f} onClick={() => setFilter(f)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 0.9rem', border: 'none', background: filter === f ? '#1a1a1a' : 'white', color: filter === f ? 'white' : '#8a8d83', cursor: 'pointer' }}>
               {f}
             </button>
           ))}
@@ -164,15 +164,15 @@ export default function AdminGiftCardsPage() {
               <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a', letterSpacing: '0.08em' }}>{c.code}</span>
               <div>
                 {c.recipient_name && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a' }}>{c.recipient_name}</p>}
-                {c.recipient_email && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#808282' }}>{c.recipient_email}</p>}
+                {c.recipient_email && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#8a8d83' }}>{c.recipient_email}</p>}
                 {!c.recipient_name && !c.recipient_email && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#ccc' }}>—</span>}
               </div>
               <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>{formatCurrency(c.initial_balance)}</span>
               <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: c.current_balance < c.initial_balance ? 400 : 300, fontSize: '0.82rem', color: c.current_balance === 0 ? '#aaa' : '#1a1a1a' }}>{formatCurrency(c.current_balance)}</span>
-              <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: c.is_physical ? '#f9f8f6' : '#e8f7f4', color: c.is_physical ? '#808282' : '#87CEBF', width: 'fit-content' }}>
+              <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: c.is_physical ? '#FAF7F2' : '#f5ece6', color: c.is_physical ? '#8a8d83' : '#A76E58', width: 'fit-content' }}>
                 {c.is_physical ? 'Physical' : 'Digital'}
               </span>
-              <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: c.redeemed_at ? '#f5f5f5' : '#e8f7f4', color: c.redeemed_at ? '#aaa' : '#87CEBF', width: 'fit-content' }}>
+              <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: c.redeemed_at ? '#f5f5f5' : '#f5ece6', color: c.redeemed_at ? '#aaa' : '#A76E58', width: 'fit-content' }}>
                 {c.redeemed_at ? 'Redeemed' : 'Active'}
               </span>
             </div>
@@ -205,7 +205,7 @@ export default function AdminGiftCardsPage() {
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 {[{ v: false, label: 'Digital' }, { v: true, label: 'Physical' }].map(opt => (
-                  <button key={String(opt.v)} onClick={() => setNewPhysical(opt.v)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, padding: '0.55rem 1.25rem', borderRadius: '2px', border: `1px solid ${newPhysical === opt.v ? '#1a1a1a' : '#e0e0e0'}`, background: newPhysical === opt.v ? '#1a1a1a' : 'white', color: newPhysical === opt.v ? 'white' : '#808282', cursor: 'pointer' }}>
+                  <button key={String(opt.v)} onClick={() => setNewPhysical(opt.v)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, padding: '0.55rem 1.25rem', borderRadius: '2px', border: `1px solid ${newPhysical === opt.v ? '#1a1a1a' : '#e0e0e0'}`, background: newPhysical === opt.v ? '#1a1a1a' : 'white', color: newPhysical === opt.v ? 'white' : '#8a8d83', cursor: 'pointer' }}>
                     {opt.label}
                   </button>
                 ))}
@@ -213,8 +213,8 @@ export default function AdminGiftCardsPage() {
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setCreating(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, padding: '0.65rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={createCard} disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, padding: '0.65rem 1.25rem', border: 'none', borderRadius: '2px', background: '#87CEBF', color: 'white', cursor: 'pointer' }}>
+              <button onClick={() => setCreating(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, padding: '0.65rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={createCard} disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, padding: '0.65rem 1.25rem', border: 'none', borderRadius: '2px', background: '#A76E58', color: 'white', cursor: 'pointer' }}>
                 {saving ? 'Saving...' : 'Issue Card'}
               </button>
             </div>

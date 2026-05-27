@@ -21,7 +21,7 @@ export default function Logo({ className = "" }: { className?: string }) {
           fontSize: "0.65rem",
           letterSpacing: "0.3em",
           textTransform: "uppercase",
-          color: "#87CEBF",
+          color: "#A76E58",
           lineHeight: 1,
         }}
       >

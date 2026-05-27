@@ -32,7 +32,7 @@ const PREFERRED_TIMES = [
   'Sunday mornings', 'Sunday afternoons',
 ]
 
-const pillStyle = (active: boolean, color = '#87CEBF') => ({
+const pillStyle = (active: boolean, color = '#A76E58') => ({
   fontFamily: "'Raleway', sans-serif",
   fontWeight: 700,
   fontSize: '0.65rem',
@@ -42,7 +42,7 @@ const pillStyle = (active: boolean, color = '#87CEBF') => ({
   borderRadius: '2px',
   border: active ? 'none' : '1px solid #e0e0e0',
   background: active ? color : 'white',
-  color: active ? 'white' : '#808282',
+  color: active ? 'white' : '#8a8d83',
   cursor: 'pointer',
 })
 
@@ -52,7 +52,7 @@ const labelStyle = {
   fontSize: '0.62rem',
   letterSpacing: '0.16em',
   textTransform: 'uppercase' as const,
-  color: '#808282',
+  color: '#8a8d83',
   marginBottom: '0.75rem',
   display: 'block',
 }
@@ -100,7 +100,7 @@ export default function BookPrivatePage() {
       <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
         Request a Private
       </h1>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#808282', marginBottom: '2.5rem' }}>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginBottom: '2.5rem' }}>
         Our team will reach out within 24 hours to confirm your session.
       </p>
 
@@ -202,7 +202,7 @@ export default function BookPrivatePage() {
             style={{
               fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.14em', textTransform: 'uppercase',
               padding: '0.85rem 2.5rem', border: 'none', borderRadius: '2px',
-              background: submitting ? '#b0ddd6' : '#87CEBF', color: 'white',
+              background: submitting ? '#c4a094' : '#A76E58', color: 'white',
               cursor: submitting ? 'not-allowed' : 'pointer',
             }}
           >
@@ -210,7 +210,7 @@ export default function BookPrivatePage() {
           </button>
           <button
             onClick={() => router.back()}
-            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.85rem 1.5rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}
+            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.85rem 1.5rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer' }}
           >
             Cancel
           </button>

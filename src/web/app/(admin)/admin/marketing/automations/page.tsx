@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-const TEAL = '#87CEBF'
+const TEAL = '#A76E58'
 
 type AutomationStep = {
   delay_hours: number
@@ -146,7 +146,7 @@ export default function AutomationsPage() {
   const active = automations.filter(a => a.is_active).length
 
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#f9f8f6', minHeight: '100vh' }}>
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#FAF7F2', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
@@ -269,7 +269,7 @@ export default function AutomationsPage() {
                       <div style={{ width: 28, height: 28, borderRadius: '50%', background: `${TEAL}20`, border: `1px solid ${TEAL}40`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 600, color: TEAL, flexShrink: 0 }}>{i + 1}</div>
                       {i < (selected.steps || []).length - 1 && <div style={{ width: 1, height: 24, background: '#e5e7eb', margin: '2px 0' }} />}
                     </div>
-                    <div style={{ background: '#f9f8f6', borderRadius: 2, padding: '0.75rem', flex: 1 }}>
+                    <div style={{ background: '#FAF7F2', borderRadius: 2, padding: '0.75rem', flex: 1 }}>
                       <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem', alignItems: 'center' }}>
                         <span style={{ background: step.channel === 'email' ? '#eff6ff' : '#f0fdf4', color: step.channel === 'email' ? '#1d4ed8' : '#15803d', padding: '0.1rem 0.4rem', borderRadius: 2, fontSize: '0.6rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>{step.channel}</span>
                         {step.delay_hours > 0 && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>+{step.delay_hours >= 24 ? `${step.delay_hours / 24}d` : `${step.delay_hours}h`}</span>}

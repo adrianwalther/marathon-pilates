@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase'
 
-const TEAL = '#87CEBF'
+const TEAL = '#A76E58'
 
 type Conversation = {
   id: string
@@ -214,7 +214,7 @@ export default function ChatPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search conversations..."
-            style={{ width: '100%', background: '#f9f8f6', border: 'none', borderRadius: 4, padding: '0.4rem 0.75rem', fontSize: '0.8rem', color: '#4b5563', outline: 'none', boxSizing: 'border-box' }}
+            style={{ width: '100%', background: '#FAF7F2', border: 'none', borderRadius: 4, padding: '0.4rem 0.75rem', fontSize: '0.8rem', color: '#4b5563', outline: 'none', boxSizing: 'border-box' }}
           />
         </div>
 
@@ -232,8 +232,8 @@ export default function ChatPage() {
                   style={{
                     padding: '0.875rem 1rem',
                     cursor: 'pointer',
-                    borderBottom: '1px solid #f9f8f6',
-                    background: selectedId === convo.id ? '#f9f8f6' : '#fff',
+                    borderBottom: '1px solid #FAF7F2',
+                    background: selectedId === convo.id ? '#FAF7F2' : '#fff',
                     borderLeft: selectedId === convo.id ? `3px solid ${TEAL}` : '3px solid transparent',
                   }}
                 >
@@ -262,14 +262,14 @@ export default function ChatPage() {
               ))}
               {closed.length > 0 && (
                 <>
-                  <div style={{ padding: '0.5rem 1rem', background: '#f9f8f6', borderBottom: '1px solid #f0f0f0' }}>
+                  <div style={{ padding: '0.5rem 1rem', background: '#FAF7F2', borderBottom: '1px solid #f0f0f0' }}>
                     <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', margin: 0 }}>Closed</p>
                   </div>
                   {closed.map(convo => (
                     <div
                       key={convo.id}
                       onClick={() => setSelectedId(convo.id)}
-                      style={{ padding: '0.875rem 1rem', cursor: 'pointer', borderBottom: '1px solid #f9f8f6', background: selectedId === convo.id ? '#f9f8f6' : '#fff', opacity: 0.6 }}
+                      style={{ padding: '0.875rem 1rem', cursor: 'pointer', borderBottom: '1px solid #FAF7F2', background: selectedId === convo.id ? '#FAF7F2' : '#fff', opacity: 0.6 }}
                     >
                       <p style={{ fontSize: '0.8rem', color: '#4b5563', margin: 0 }}>
                         {convo.client ? `${convo.client.first_name} ${convo.client.last_name}` : 'Unknown'}
@@ -320,7 +320,7 @@ export default function ChatPage() {
           </div>
 
           {/* Messages */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', background: '#f9f8f6', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem', background: '#FAF7F2', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {messages.length === 0 ? (
               <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem', marginTop: '2rem' }}>No messages yet. Say hello!</div>
             ) : messages.map(msg => {

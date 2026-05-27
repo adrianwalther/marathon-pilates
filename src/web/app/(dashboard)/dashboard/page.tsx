@@ -80,7 +80,7 @@ export default function DashboardPage() {
     fontSize: '0.65rem',
     letterSpacing: '0.18em',
     textTransform: 'uppercase' as const,
-    color: '#808282',
+    color: '#8a8d83',
     marginBottom: '1rem',
   }
 
@@ -99,7 +99,7 @@ export default function DashboardPage() {
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.1 }}>
           Hello,<br />{profile?.first_name ?? 'there'}
         </h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#808282', marginTop: '0.5rem', letterSpacing: '0.02em' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginTop: '0.5rem', letterSpacing: '0.02em' }}>
           {profile?.total_classes_completed
             ? `${profile.total_classes_completed} class${profile.total_classes_completed !== 1 ? 'es' : ''} completed`
             : 'Ready to move + restore?'}
@@ -128,7 +128,7 @@ export default function DashboardPage() {
       <div style={{ marginBottom: '3rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <p style={sectionLabel}>Upcoming</p>
-          <Link href="/dashboard/bookings" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none' }}>
+          <Link href="/dashboard/bookings" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
             View all
           </Link>
         </div>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
         {upcomingBookings.length === 0 ? (
           <div style={{ background: 'white', borderRadius: '2px', padding: '2rem', textAlign: 'center', border: '1px solid #eee' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>No upcoming classes</p>
-            <Link href="/dashboard/schedule" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none' }}>
+            <Link href="/dashboard/schedule" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
               Browse Schedule →
             </Link>
           </div>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>
                     {b.scheduled_sessions?.name}
                   </p>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282' }}>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#8a8d83' }}>
                     {b.scheduled_sessions ? `${formatDate(b.scheduled_sessions.starts_at)} · ${formatTime(b.scheduled_sessions.starts_at)}` : ''}
                     {b.scheduled_sessions?.duration_minutes ? ` · ${b.scheduled_sessions.duration_minutes} min` : ''}
                   </p>
@@ -164,8 +164,8 @@ export default function DashboardPage() {
                   textTransform: 'uppercase',
                   padding: '0.3rem 0.75rem',
                   borderRadius: '2px',
-                  background: b.status === 'waitlisted' ? '#fff8e6' : '#e8f7f4',
-                  color: b.status === 'waitlisted' ? '#c8860a' : '#87CEBF',
+                  background: b.status === 'waitlisted' ? '#fff8e6' : '#f5ece6',
+                  color: b.status === 'waitlisted' ? '#c8860a' : '#A76E58',
                 }}>
                   {b.status}
                 </span>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
                 {next - done} more class{next - done !== 1 ? 'es' : ''} to your <strong>{next}-class milestone</strong>
               </p>
               <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px' }}>
-                <div style={{ height: '100%', width: `${pct}%`, background: '#87CEBF', borderRadius: '2px', transition: 'width 0.5s' }} />
+                <div style={{ height: '100%', width: `${pct}%`, background: '#A76E58', borderRadius: '2px', transition: 'width 0.5s' }} />
               </div>
             </div>
           </div>
@@ -224,7 +224,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', color: '#1a1a1a', lineHeight: 1 }}>
         {value}
       </p>
-      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginTop: '0.4rem' }}>
+      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginTop: '0.4rem' }}>
         {label}
       </p>
     </div>
@@ -243,9 +243,9 @@ function QuickBookBtn({ href, label, ghost }: { href: string; label: string; gho
         textTransform: 'uppercase',
         padding: '0.65rem 1.25rem',
         borderRadius: '2px',
-        border: ghost ? '1px solid #87CEBF' : 'none',
-        background: ghost ? 'transparent' : '#87CEBF',
-        color: ghost ? '#87CEBF' : 'white',
+        border: ghost ? '1px solid #A76E58' : 'none',
+        background: ghost ? 'transparent' : '#A76E58',
+        color: ghost ? '#A76E58' : 'white',
         textDecoration: 'none',
         transition: 'all 0.15s',
       }}
@@ -263,7 +263,7 @@ function BuildAClassCard() {
     fontSize: '0.65rem',
     letterSpacing: '0.18em',
     textTransform: 'uppercase' as const,
-    color: '#808282',
+    color: '#8a8d83',
     marginBottom: '1rem',
   }
   return (
@@ -275,7 +275,7 @@ function BuildAClassCard() {
           onMouseLeave={() => setHovered(false)}
           style={{
             padding: '1.5rem',
-            border: `1px solid ${hovered ? '#87CEBF' : '#e8e8e8'}`,
+            border: `1px solid ${hovered ? '#A76E58' : '#e8e8e8'}`,
             borderRadius: '2px',
             background: hovered ? '#f7fcfb' : 'white',
             cursor: 'pointer',
@@ -286,11 +286,11 @@ function BuildAClassCard() {
             <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.1, marginBottom: '0.5rem' }}>
               Build a Class
             </h2>
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', marginTop: '0.4rem', transition: 'transform 0.2s', display: 'inline-block', transform: hovered ? 'translateX(4px)' : 'translateX(0)' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', marginTop: '0.4rem', transition: 'transform 0.2s', display: 'inline-block', transform: hovered ? 'translateX(4px)' : 'translateX(0)' }}>
               Begin →
             </span>
           </div>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#808282', letterSpacing: '0.02em' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83', letterSpacing: '0.02em' }}>
             Personalized mat Pilates · voice cues · music
           </p>
         </div>
@@ -302,10 +302,10 @@ function BuildAClassCard() {
 function LocationCard({ name, address }: { name: string; address: string }) {
   return (
     <div style={{ background: 'white', borderRadius: '2px', padding: '1.25rem 1.5rem', border: '1px solid #eee' }}>
-      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', marginBottom: '0.3rem' }}>
+      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.3rem' }}>
         {name}
       </p>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#808282' }}>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#8a8d83' }}>
         {address}
       </p>
       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#aaa' }}>

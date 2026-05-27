@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-const TEAL = '#87CEBF'
+const TEAL = '#A76E58'
 
 type Lead = {
   id: string
@@ -117,7 +117,7 @@ export default function LeadsPage() {
   const pendingTasks = tasks.filter(t => t.status !== 'done')
 
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#f9f8f6', minHeight: '100vh' }}>
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#FAF7F2', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
@@ -217,7 +217,7 @@ export default function LeadsPage() {
         <div style={{ background: '#fff', borderRadius: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: '#f9f8f6' }}>
+              <tr style={{ background: '#FAF7F2' }}>
                 {['Name', 'Email', 'Phone', 'Source', 'Stage', 'Added', 'Action'].map(h => (
                   <th key={h} style={{ padding: '0.65rem 1rem', fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', textAlign: 'left', fontWeight: 600 }}>{h}</th>
                 ))}

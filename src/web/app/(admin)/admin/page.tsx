@@ -99,13 +99,13 @@ export default function AdminOverviewPage() {
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
   }
 
-  const sectionLabel = { fontFamily: "'Raleway', sans-serif", fontWeight: 700 as const, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: '#808282', marginBottom: '1rem' }
+  const sectionLabel = { fontFamily: "'Raleway', sans-serif", fontWeight: 700 as const, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase' as const, color: '#8a8d83', marginBottom: '1rem' }
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1000px' }}>
       <div style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Overview</h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#808282', marginTop: '0.25rem' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '0.25rem' }}>
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
@@ -133,7 +133,7 @@ export default function AdminOverviewPage() {
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', color: '#1a1a1a', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#808282', marginTop: '0.4rem' }}>{s.label}</p>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginTop: '0.4rem' }}>{s.label}</p>
           </div>
         ))}
       </div>
@@ -153,7 +153,7 @@ export default function AdminOverviewPage() {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <p style={sectionLabel}>Upcoming Classes</p>
-          <Link href="/admin/schedule" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none' }}>View all</Link>
+          <Link href="/admin/schedule" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>View all</Link>
         </div>
 
         {loading ? (
@@ -161,7 +161,7 @@ export default function AdminOverviewPage() {
         ) : upcoming.length === 0 ? (
           <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', textAlign: 'center' }}>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>No upcoming classes scheduled</p>
-            <Link href="/admin/schedule" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#87CEBF', textDecoration: 'none' }}>Add a class →</Link>
+            <Link href="/admin/schedule" style={{ display: 'inline-block', marginTop: '1rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>Add a class →</Link>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
@@ -172,7 +172,7 @@ export default function AdminOverviewPage() {
                 <div key={s.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{s.name}</p>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#8a8d83' }}>
                       {formatDate(s.starts_at)} · {formatTime(s.starts_at)} · {s.locations?.name}
                     </p>
                     {s.profiles && (
@@ -186,7 +186,7 @@ export default function AdminOverviewPage() {
                       {s.booking_count}/{s.max_capacity}
                     </p>
                     <div style={{ height: '3px', background: '#f0f0f0', borderRadius: '2px', marginTop: '0.3rem', width: '80px' }}>
-                      <div style={{ height: '100%', width: `${fillPct}%`, background: isFull ? '#c8860a' : '#87CEBF', borderRadius: '2px', transition: 'width 0.3s' }} />
+                      <div style={{ height: '100%', width: `${fillPct}%`, background: isFull ? '#c8860a' : '#A76E58', borderRadius: '2px', transition: 'width 0.3s' }} />
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function AdminOverviewPage() {
 
 function ActionBtn({ href, label, primary }: { href: string; label: string; primary?: boolean }) {
   return (
-    <Link href={href} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.25rem', borderRadius: '2px', border: primary ? 'none' : '1px solid #87CEBF', background: primary ? '#87CEBF' : 'transparent', color: primary ? 'white' : '#87CEBF', textDecoration: 'none' }}>
+    <Link href={href} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.25rem', borderRadius: '2px', border: primary ? 'none' : '1px solid #A76E58', background: primary ? '#A76E58' : 'transparent', color: primary ? 'white' : '#A76E58', textDecoration: 'none' }}>
       {label}
     </Link>
   )

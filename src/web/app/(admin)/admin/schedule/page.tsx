@@ -63,11 +63,11 @@ const LOCATION_FILTER_OPTIONS = [
 ]
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  confirmed:  { bg: '#e8f7f4', color: '#87CEBF' },
+  confirmed:  { bg: '#f5ece6', color: '#A76E58' },
   waitlisted: { bg: '#fff8e6', color: '#c8860a' },
   cancelled:  { bg: '#fef0f0', color: '#e05555' },
   no_show:    { bg: '#fef0f0', color: '#e05555' },
-  completed:  { bg: '#f0f0f0', color: '#808282' },
+  completed:  { bg: '#f0f0f0', color: '#8a8d83' },
 }
 
 const emptyForm = {
@@ -259,12 +259,12 @@ export default function AdminSchedulePage() {
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
     background: active ? '#1a1a1a' : 'white',
-    color: active ? 'white' : '#808282',
+    color: active ? 'white' : '#8a8d83',
     cursor: 'pointer',
   })
 
   const inputStyle = { width: '100%', padding: '0.65rem 0.9rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.85rem', outline: 'none', background: 'white', fontFamily: "'Poppins', sans-serif" }
-  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#808282', display: 'block', marginBottom: '0.35rem' }
+  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, color: '#8a8d83', display: 'block', marginBottom: '0.35rem' }
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1100px' }}>
@@ -283,7 +283,7 @@ export default function AdminSchedulePage() {
             <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{rosterSession.name}</p>
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#808282' }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#8a8d83' }}>
                   {new Date(rosterSession.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {formatTime(rosterSession.starts_at)} · {rosterSession.locations?.name}
                 </p>
               </div>
@@ -317,7 +317,7 @@ export default function AdminSchedulePage() {
                             <div style={{ display: 'flex', gap: '0.35rem' }}>
                               <button
                                 onClick={() => markAttended(r.id, true)}
-                                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', border: 'none', background: '#e8f7f4', color: '#87CEBF', cursor: 'pointer' }}>
+                                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', border: 'none', background: '#f5ece6', color: '#A76E58', cursor: 'pointer' }}>
                                 ✓ In
                               </button>
                               <button
@@ -327,7 +327,7 @@ export default function AdminSchedulePage() {
                               </button>
                             </div>
                           )}
-                          {r.attended === true && <span style={{ fontSize: '0.75rem', color: '#87CEBF' }}>✓</span>}
+                          {r.attended === true && <span style={{ fontSize: '0.75rem', color: '#A76E58' }}>✓</span>}
                         </div>
                       </div>
                     )
@@ -337,7 +337,7 @@ export default function AdminSchedulePage() {
             </div>
 
             <div style={{ padding: '1rem 2rem', borderTop: '1px solid #eee' }}>
-              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#808282' }}>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83' }}>
                 {rosterSession.booking_count} / {rosterSession.max_capacity} booked
               </p>
             </div>
@@ -348,7 +348,7 @@ export default function AdminSchedulePage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Schedule</h1>
-        <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : '#87CEBF', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+        <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
           {showForm ? '✕ Close' : '+ Add Class'}
         </button>
       </div>
@@ -367,7 +367,7 @@ export default function AdminSchedulePage() {
             <div>
               <label style={labelStyle}>Class Name</label>
               <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Studio</label>
@@ -385,34 +385,34 @@ export default function AdminSchedulePage() {
             <div>
               <label style={labelStyle}>Date</label>
               <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Start Time</label>
               <input type="time" value={form.start_time} onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))} style={inputStyle} required
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Duration (min)</label>
               <input type="number" value={form.duration_minutes} onChange={e => setForm(f => ({ ...f, duration_minutes: parseInt(e.target.value) }))} style={inputStyle} min={15} max={120}
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Max Capacity</label>
               <input type="number" value={form.max_capacity} onChange={e => setForm(f => ({ ...f, max_capacity: parseInt(e.target.value) }))} style={inputStyle} min={1} max={20}
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Drop-in Price ($)</label>
               <input type="number" value={form.drop_in_price} onChange={e => setForm(f => ({ ...f, drop_in_price: e.target.value }))} placeholder="Optional" style={inputStyle} min={0} step="0.01"
-                onFocus={e => (e.target.style.borderColor = '#87CEBF')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button type="submit" disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: saving ? '#b0ddd6' : '#87CEBF', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+            <button type="submit" disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
               {saving ? 'Saving...' : 'Add to Schedule'}
             </button>
-            <button type="button" onClick={() => setShowForm(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: 'white', color: '#808282', border: '1px solid #e0e0e0', borderRadius: '2px', cursor: 'pointer' }}>
+            <button type="button" onClick={() => setShowForm(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: 'white', color: '#8a8d83', border: '1px solid #e0e0e0', borderRadius: '2px', cursor: 'pointer' }}>
               Cancel
             </button>
           </div>
@@ -422,12 +422,12 @@ export default function AdminSchedulePage() {
       {/* Week nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#808282' }}>←</button>
+          <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>←</button>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a', minWidth: '160px', textAlign: 'center' }}>
             {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
-          <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#808282' }}>→</button>
-          {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#87CEBF' }}>This Week</button>}
+          <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>→</button>
+          {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#A76E58' }}>This Week</button>}
         </div>
       </div>
 
@@ -458,10 +458,10 @@ export default function AdminSchedulePage() {
             return (
               <div key={day}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: today ? '#87CEBF' : '#808282' }}>
+                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: today ? '#A76E58' : '#8a8d83' }}>
                     {formatDay(dayDate)}
                   </p>
-                  {today && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.5rem', borderRadius: '2px', background: '#e8f7f4', color: '#87CEBF' }}>Today</span>}
+                  {today && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.5rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>Today</span>}
                   <div style={{ flex: 1, height: '1px', background: '#eee' }} />
                   <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{grouped[day].length} class{grouped[day].length !== 1 ? 'es' : ''}</span>
                 </div>
@@ -475,12 +475,12 @@ export default function AdminSchedulePage() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.2rem' }}>
                             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a' }}>{s.name}</p>
-                            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.45rem', borderRadius: '2px', background: '#f0f0f0', color: '#808282' }}>
+                            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.45rem', borderRadius: '2px', background: '#f0f0f0', color: '#8a8d83' }}>
                               {s.locations?.slug === 'charlotte_park' ? 'CP' : 'GH'}
                             </span>
                             {s.is_cancelled && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.45rem', borderRadius: '2px', background: '#fdd', color: '#e05555' }}>Cancelled</span>}
                           </div>
-                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.74rem', color: '#808282' }}>
+                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.74rem', color: '#8a8d83' }}>
                             {formatTime(s.starts_at)} – {formatTime(s.ends_at)}
                             {s.profiles ? ` · ${s.profiles.first_name} ${s.profiles.last_name}` : ''}
                           </p>
@@ -492,20 +492,20 @@ export default function AdminSchedulePage() {
                               {s.booking_count}/{s.max_capacity}
                             </p>
                             <div style={{ height: '3px', background: '#f0f0f0', borderRadius: '2px', marginTop: '0.25rem', width: '50px' }}>
-                              <div style={{ height: '100%', width: `${fillPct}%`, background: isFull ? '#c8860a' : '#87CEBF', borderRadius: '2px', transition: 'width 0.3s' }} />
+                              <div style={{ height: '100%', width: `${fillPct}%`, background: isFull ? '#c8860a' : '#A76E58', borderRadius: '2px', transition: 'width 0.3s' }} />
                             </div>
                           </div>
 
                           <button
                             onClick={() => openRoster(s)}
-                            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', border: '1px solid #87CEBF', borderRadius: '2px', background: 'white', color: '#87CEBF', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', border: '1px solid #A76E58', borderRadius: '2px', background: 'white', color: '#A76E58', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                             Roster
                           </button>
 
                           {!s.is_cancelled && (
                             <button
                               onClick={() => handleCancelSession(s.id)}
-                              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer', whiteSpace: 'nowrap' }}>
                               Cancel
                             </button>
                           )}

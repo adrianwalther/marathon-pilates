@@ -40,9 +40,9 @@ const LOCATION_LABELS: Record<string, string> = {
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   pending:   { bg: '#fff8e6', color: '#c8860a' },
   proposed:  { bg: '#e8f0fe', color: '#3b5bdb' },
-  confirmed: { bg: '#e8f7f4', color: '#87CEBF' },
+  confirmed: { bg: '#f5ece6', color: '#A76E58' },
   declined:  { bg: '#fef0f0', color: '#e05555' },
-  cancelled: { bg: '#f0f0f0', color: '#808282' },
+  cancelled: { bg: '#f0f0f0', color: '#8a8d83' },
 }
 
 const STATUS_FILTERS = ['all', 'pending', 'proposed', 'confirmed', 'declined', 'cancelled']
@@ -53,7 +53,7 @@ const labelStyle = {
   fontSize: '0.6rem',
   letterSpacing: '0.14em',
   textTransform: 'uppercase' as const,
-  color: '#808282',
+  color: '#8a8d83',
   display: 'block',
   marginBottom: '0.4rem',
 }
@@ -160,7 +160,7 @@ export default function PrivateRequestsPage() {
     padding: '0.35rem 0.9rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #333',
-    background: active ? '#87CEBF' : 'transparent',
+    background: active ? '#A76E58' : 'transparent',
     color: active ? 'white' : '#888',
     cursor: 'pointer',
   })
@@ -180,7 +180,7 @@ export default function PrivateRequestsPage() {
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
           Private Requests
         </h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#808282' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83' }}>
           Review incoming requests, assign an instructor, and propose a time.
         </p>
       </div>
@@ -206,10 +206,10 @@ export default function PrivateRequestsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {requests.map(req => {
-            const statusStyle = STATUS_COLORS[req.status] ?? { bg: '#f0f0f0', color: '#808282' }
+            const statusStyle = STATUS_COLORS[req.status] ?? { bg: '#f0f0f0', color: '#8a8d83' }
             const client = req.profiles
             return (
-              <div key={req.id} style={{ background: 'white', border: activeId === req.id ? '1px solid #87CEBF' : '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
+              <div key={req.id} style={{ background: 'white', border: activeId === req.id ? '1px solid #A76E58' : '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
                   <div style={{ flex: 1 }}>
                     {/* Client + type + status */}
@@ -217,7 +217,7 @@ export default function PrivateRequestsPage() {
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
                         {client ? `${client.first_name} ${client.last_name}` : 'Unknown Client'}
                       </p>
-                      <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: '#f0f0f0', color: '#808282' }}>
+                      <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: '#f0f0f0', color: '#8a8d83' }}>
                         {SESSION_TYPE_LABELS[req.session_type] ?? req.session_type}
                       </span>
                       <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: statusStyle.bg, color: statusStyle.color }}>
@@ -231,7 +231,7 @@ export default function PrivateRequestsPage() {
                       </p>
                     )}
 
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#808282' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>
                       {LOCATION_LABELS[req.location]}{req.focus_area ? ` · ${req.focus_area}` : ''}
                     </p>
 
@@ -261,7 +261,7 @@ export default function PrivateRequestsPage() {
                     <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
                       <button
                         onClick={() => activeId === req.id ? setActiveId(null) : openPanel(req)}
-                        style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: 'none', borderRadius: '2px', background: '#87CEBF', color: 'white', cursor: 'pointer' }}
+                        style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: 'none', borderRadius: '2px', background: '#A76E58', color: 'white', cursor: 'pointer' }}
                       >
                         {activeId === req.id ? 'Close' : req.status === 'proposed' ? 'Edit Proposal' : 'Propose Time'}
                       </button>
@@ -275,7 +275,7 @@ export default function PrivateRequestsPage() {
                       )}
                       <button
                         onClick={() => handleDecline(req.id)}
-                        style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#808282', cursor: 'pointer' }}
+                        style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer' }}
                       >
                         Decline
                       </button>
@@ -323,7 +323,7 @@ export default function PrivateRequestsPage() {
                     <button
                       onClick={handlePropose}
                       disabled={saving || !proposedTime}
-                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.5rem', border: 'none', borderRadius: '2px', background: saving || !proposedTime ? '#b0ddd6' : '#87CEBF', color: 'white', cursor: saving || !proposedTime ? 'not-allowed' : 'pointer' }}
+                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.5rem', border: 'none', borderRadius: '2px', background: saving || !proposedTime ? '#c4a094' : '#A76E58', color: 'white', cursor: saving || !proposedTime ? 'not-allowed' : 'pointer' }}
                     >
                       {saving ? 'Saving...' : 'Send Proposal'}
                     </button>
