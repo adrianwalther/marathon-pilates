@@ -47,10 +47,7 @@ OUTPUT FORMAT — use this exact structure with markdown:
 ---
 [Repeat for all 9 blocks]
 
----
-*Class designed with BASI Block System · Marathon Pilates*
-
-Be specific, warm, and practical — this class should be ready to teach immediately.`
+Be specific, warm, and practical — this class should be ready to teach immediately. Do not add any footer, attribution, or signature at the end of the class.`
 
 export async function POST(req: NextRequest) {
   try {
