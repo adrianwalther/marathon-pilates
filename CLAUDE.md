@@ -10,7 +10,7 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 ## The Studio
 
 - **Owner:** Ruby Ramdhan (CPI, CET)
-- **Brand:** "Move + Restore" — inclusive, judgment-free
+- **Brand:** "Move + Restore" — inclusive, judgment-free, grounded earth aesthetic
 - **Two Nashville locations:**
   - Charlotte Park — group reformer + private sessions
   - Green Hills — **private and duets only** (no group reformer)
@@ -28,11 +28,43 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 | Hosting | Vercel — auto-deploys from `main` branch |
 | Payments | Stripe (live mode) |
 | Video | Bunny.net Stream (Library ID: 620844) — **expired, needs reactivation at launch** |
-| Rate limiting | Upstash Redis |
+| Rate limiting | Upstash Redis (fails open if unavailable) |
 | AI voice | ElevenLabs (Rachel voice) |
 | AI text | Anthropic Claude API |
 | AI images | OpenAI DALL-E 3 |
 | Payroll | Gusto (not yet activated) |
+
+All AI service API keys (Anthropic, OpenAI, ElevenLabs) are configured in Vercel env vars and "Build a Class" is fully functional.
+
+---
+
+## Brand & Design
+
+### Current Brand Guidelines (2026-04, updated)
+Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Marathon_Pilates_Brand_Guidelines.pdf`
+
+**Tagline:** Move + Restore
+**Aesthetic:** Bright + natural light, organic + minimal, warm earth tones
+
+### Color Tokens (new earth palette)
+
+| Token | Hex | Role |
+|-------|-----|------|
+| `--color-brand` | `#4C5246` | Moss Gray — primary brand, headers |
+| `--color-bg-dark` | `#302D27` | Deep Earth — beta gate, login left panel, text primary |
+| `--color-cta` | `#A76E58` | Terracotta — primary action buttons |
+| `--color-accent` | `#BC9C8E` | Rose Clay — soft accents, streaks, badges |
+| `--color-border` | `#DDD1BD` | Sandstone — borders, dividers |
+| `--color-bg` | `#FAF7F2` | Warm white — page backgrounds |
+| `--color-surface` | `#FFFFFF` | Cards, surfaces |
+| `--color-error` | `#C44536` | Earth-toned red — destructive actions |
+
+### Typography
+- **Headlines** — Poppins Thin (100), ALL CAPS
+- **Subheads** — Raleway Regular, ALL CAPS
+- **Body** — Poppins Regular
+
+> ⚠️ **Rebrand in progress (2026-05-27).** Old teal `#87CEBF` and gray `#808282` references are being migrated to the new earth palette via design tokens. Fonts are unchanged.
 
 ---
 
@@ -45,6 +77,8 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 | `manager` | Front desk + sales | Schedule view, client check-ins, CRM, own payroll view. No editing. |
 | `instructor` | Trainers | Own schedule + own payroll view only |
 | `client` | Studio members | Booking, membership, on-demand |
+
+`front_desk` role is retired — `manager` covers that function.
 
 ---
 
@@ -102,10 +136,24 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 | Schedule | /dashboard/schedule |
 | Membership | /dashboard/membership |
 | On Demand + Build a Class | /dashboard/on-demand |
+| Build a Class | /dashboard/generate-class |
 | Book private | /dashboard/book-private |
 | Admin portal | /admin |
 | Admin payroll | /admin/payroll |
 | Admin CRM | /admin/crm |
+| Beta gate | /beta-gate |
+
+---
+
+## Mobile App Specs
+
+| Spec | Audience | Status |
+|------|----------|--------|
+| `specs/12-mobile-app.md` | Clients | ✅ Fully specced |
+| `specs/12b-mobile-trainer-view.md` | Instructors | ✅ Fully specced |
+| `specs/12c-mobile-admin-view.md` | Admins/Owners | ✅ Fully specced |
+
+All three views ship as one app with role-based mode switching.
 
 ---
 
@@ -120,6 +168,17 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 - [ ] Data migration from Arketa (Susan LeGrand)
 - [ ] Rotate all API keys + enable 2FA on launch day
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
+- [ ] Complete brand color migration to new earth palette (in progress)
+- [ ] Implement `owner` role (currently Ruby/Adrian are `admin`)
+
+---
+
+## Ownership / Handoff Plan
+
+- Adrian retains ownership and will hold accounts through a `@marathonpilates.com` email address (not transferring to Jazz)
+- Ruby has a Claude teams account — can collaborate on the platform directly
+- Jazz has admin access for studio operations
+- HANDOFF/ docs are still the source of truth for context restore in any new Claude session
 
 ---
 
@@ -130,7 +189,7 @@ HANDOFF/
 ├── 00-PLATFORM-OVERVIEW.md   ← Full context reference
 ├── 01-ACCOUNT-MIGRATION.md   ← Move services to business accounts
 ├── 02-SALE-READINESS.md      ← Business sale prep
-└── 03-CLAUDE-SETUP.md        ← How to set up Claude Code (for Jazz)
+└── 03-CLAUDE-SETUP.md        ← How to set up Claude Code (for new team members)
 ```
 
 ---
@@ -142,3 +201,4 @@ HANDOFF/
 - **Stripe is in live mode** — real charges happen
 - **On Demand is intentionally offline** until Bunny.net is reactivated at launch
 - **To disable the beta gate at launch:** remove `BETA_PASSWORD` from Vercel env vars
+- **Brand colors are migrating** — when adding new components, use the design tokens (in progress) rather than hardcoding hex values
