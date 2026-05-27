@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server'
 import { getAiRatelimit } from "@/lib/ratelimit"
 
 export const runtime = 'nodejs'
-export const maxDuration = 60  // DALL-E 3 image generation can take 15-30s
+export const maxDuration = 60  // gpt-image-1 generation can take 15-30s
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,26 +27,31 @@ export async function POST(req: NextRequest) {
 
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-    const prompt = `A serene wellness studio scene for a ${difficulty} Pilates class focused on ${focusArea}. Minimal, modern interior. Soft natural light, neutral tones, clean lines. A yoga mat, props, and peaceful atmosphere. No people. Editorial lifestyle photography style. Premium wellness brand aesthetic.`
+    // Marathon Pilates brand: warm earth tones (moss, terracotta, sandstone, rose clay)
+    // Aesthetic: bright + natural light, organic + minimal, "Move + Restore"
+    const prompt = `A serene Pilates studio scene for a ${difficulty} class focused on ${focusArea}. Bright, natural morning light streaming through windows. Warm earth-tone palette: moss green, terracotta, sandstone beige, rose clay accents. Organic minimal interior with wood textures and natural textiles. A yoga mat and a few simple props (resistance band, foam roller) arranged with intention. Peaceful, grounded atmosphere. No people. Editorial lifestyle photography style, soft focus, premium wellness brand aesthetic.`
 
     const response = await client.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt,
       n: 1,
-      size: '1792x1024',
-      quality: 'standard',
+      size: '1536x1024',
+      quality: 'medium',
     })
 
-    const imageUrl = response.data?.[0]?.url
-    if (!imageUrl) {
+    const b64 = response.data?.[0]?.b64_json
+    if (!b64) {
+      console.error('No image returned from OpenAI:', JSON.stringify(response).slice(0, 200))
       return new Response('No image returned', { status: 500 })
     }
 
-    return new Response(JSON.stringify({ url: imageUrl }), {
+    // Return as a data URL so the frontend can use it directly in <img src>
+    const dataUrl = `data:image/png;base64,${b64}`
+    return new Response(JSON.stringify({ url: dataUrl }), {
       headers: { 'Content-Type': 'application/json' },
     })
   } catch (err) {
-    console.error(err)
+    console.error('Image generation error:', err)
     return new Response("Something went wrong. Please try again.", { status: 500 })
   }
 }
