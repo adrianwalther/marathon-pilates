@@ -81,7 +81,7 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 - `front_desk` role is fully retired — removed from codebase 2026-05-27. Use `manager` instead.
 - Jazz and Susan are **admin**, not manager. Manager = front desk / sales only.
 - `owner` role was added to the `user_role` Postgres enum on 2026-05-27.
-- Admin-initiated booking (front desk books a client into a session) is not yet built — deferred to post-beta.
+- Admin-initiated booking (owner/admin/manager books a client into a session from `/admin/schedule`) **is built and live** ✅ 2026-05-28. See `app/api/admin/bookings/route.ts`.
 
 ---
 
@@ -133,6 +133,33 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 | Social content | $25/hr |
 | Front desk | $18/hr |
 | Susan LeGrand | $1,000/period, semi-monthly |
+
+---
+
+## ⚠️ Critical Gotchas (learned the hard way)
+
+### Supabase API keys — NEW format only (legacy JWT keys are DISABLED)
+This project has **disabled legacy JWT API keys** (the long `eyJ...` format). You must use the new key format:
+- **Publishable** (browser/anon): `sb_publishable_...` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **Secret** (server/service-role): `sb_secret_...` → `SUPABASE_SERVICE_ROLE_KEY`
+
+Symptom of a legacy key: API routes fail with `Legacy API keys are disabled`. Vercel (production) already has the new keys; only local `.env.local` is a risk. When editing `.env.local`, do NOT wrap values in quotes from `.env.pulled` carelessly — verify key prefixes.
+
+### The DB has DRIFTED from the migration files — trust the live DB, not `supabase/migrations/`
+Verified 2026-05-28 by querying the live database directly:
+- **Migration `002_rls_policies.sql` NEVER applied** — it targets a table named `class_sessions`, but the real table is `scheduled_sessions`. It errored/rolled back.
+- Therefore the helper functions `is_staff()`, `is_admin()`, `is_instructor()` **do not exist** in the live DB. Do NOT reference them in new policies.
+- The ~63 live RLS policies use an inline idiom instead: `EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role IN (...))`. Match this pattern.
+- Some functions were edited directly in the Supabase SQL editor and never committed back to the repo (e.g. `book_session` had drifted). **Always verify a function/policy against the live DB before assuming the repo `.sql` is accurate.**
+
+### Booking flow architecture
+- All bookings are created by **server API routes using the service-role key** (which bypasses RLS): `app/api/bookings/route.ts` (client self-book, credit/comp), `app/api/admin/bookings/route.ts` (staff books a client), `app/api/webhooks/stripe/route.ts` (paid booking after checkout).
+- `book_session(p_session_id, p_client_id, p_amount_paid, p_payment_status, p_stripe_payment_intent_id)` RPC: `SECURITY DEFINER`, params have defaults, **no `auth.uid()` guard** (a previous drifted version had one that broke every server booking — fixed 2026-05-28 via `migrations/fix_book_session_service_role.sql`). EXECUTE is locked to `service_role` only. Inside the function, `status` and `payment_status` must be cast to their enum types (`::booking_status`, `::payment_status`).
+- `payment_status` enum includes `credit` (booked via credit/membership) and `included` (complimentary) — added via `migrations/add_payment_status_values.sql`.
+- `scheduled_sessions` write policy ("Staff manage sessions", owner+admin) added 2026-05-28 via `migrations/add_scheduled_sessions_write_policy.sql` — without it, staff couldn't add/cancel classes from the UI.
+
+### KNOWN OPEN ISSUE — owners excluded from 25 RLS policies
+25 live RLS policies gate on role but omit `'owner'` (tables incl. `bookings`, `payroll_periods`, `payroll_line_items`, `instructor_profiles`, `private_session_requests`, `time_entries`, `waitlist_entries`). Currently latent because admin pages mostly read via service-role routes, but it should be fixed by adding `'owner'` to each policy's role list. Tracked as a separate task.
 
 ---
 
@@ -195,6 +222,11 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 
 ## Completed (for reference)
 
+- [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
+- [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) ✅ 2026-05-28
+- [x] Fixed `book_session` RPC (was broken for all server bookings incl. paid Stripe) ✅ 2026-05-28
+- [x] Added `scheduled_sessions` write policy so staff can add/cancel classes ✅ 2026-05-28
+- [x] Security + script audit completed ✅ 2026-05-28
 - [x] Owner role implemented end-to-end ✅ 2026-05-27
 - [x] `front_desk` role retired + removed from codebase ✅ 2026-05-27
 - [x] Manager permissions tightened (no payroll/instructors/social content) ✅ 2026-05-27
@@ -237,3 +269,5 @@ HANDOFF/
 - **To disable the beta gate at launch:** remove `BETA_PASSWORD` from Vercel env vars
 - **Brand colors:** always use design tokens, never hardcode hex values
 - **DB foreign keys:** bookings and memberships use `client_id`, not `user_id`
+- **Supabase keys:** new format only (`sb_publishable_` / `sb_secret_`) — legacy `eyJ...` JWT keys are disabled (see Gotchas)
+- **Verify DB objects against the live database** before trusting `supabase/migrations/*.sql` — they have drifted (see Gotchas)
