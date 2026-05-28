@@ -158,8 +158,8 @@ Verified 2026-05-28 by querying the live database directly:
 - `payment_status` enum includes `credit` (booked via credit/membership) and `included` (complimentary) — added via `migrations/add_payment_status_values.sql`.
 - `scheduled_sessions` write policy ("Staff manage sessions", owner+admin) added 2026-05-28 via `migrations/add_scheduled_sessions_write_policy.sql` — without it, staff couldn't add/cancel classes from the UI.
 
-### KNOWN OPEN ISSUE — owners excluded from 25 RLS policies
-25 live RLS policies gate on role but omit `'owner'` (tables incl. `bookings`, `payroll_periods`, `payroll_line_items`, `instructor_profiles`, `private_session_requests`, `time_entries`, `waitlist_entries`). Currently latent because admin pages mostly read via service-role routes, but it should be fixed by adding `'owner'` to each policy's role list. Tracked as a separate task.
+### RESOLVED — owners added to the 25 RLS policies (2026-05-28)
+25 live RLS policies gated on role but omitted `'owner'` (tables incl. `bookings`, `payroll_periods`, `payroll_line_items`, `instructor_profiles`, `private_session_requests`, `time_entries`, `waitlist_entries`). Fixed via `migrations/add_owner_to_rls_policies.sql` (23 array-form policies patched by a regex `ALTER POLICY` loop + 2 single-value payroll policies rewritten by hand), verified `still_missing_owner = 0`. **Note:** `profiles.role` is the `user_role` ENUM — when editing role lists use a bare `'owner'` literal (Postgres coerces it) or `'owner'::user_role`, NEVER `::text` (mixing text into a `user_role[]` array errors).
 
 ---
 
