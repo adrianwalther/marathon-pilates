@@ -4,6 +4,7 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 
 **Live URL:** https://marathon-pilates.vercel.app | **Beta password:** `marathon2026beta`
 **Supabase project:** `vvqeacukwsvbgixabdef`
+**GitHub:** https://github.com/adrianwalther/marathon-pilates
 
 ---
 
@@ -27,7 +28,7 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 | Database | Supabase (Postgres + Auth + RLS) |
 | Hosting | Vercel — auto-deploys from `main` branch |
 | Payments | Stripe (live mode) |
-| Video | Bunny.net Stream (Library ID: 620844) — **expired, needs reactivation at launch** |
+| Video | Bunny.net Stream (Library ID: 620844) — expired trial, needs reactivation at launch |
 | Rate limiting | Upstash Redis (fails open if unavailable) |
 | AI voice | ElevenLabs (Rachel voice) |
 | AI text | Anthropic Claude API |
@@ -46,7 +47,7 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 **Tagline:** Move + Restore
 **Aesthetic:** Bright + natural light, organic + minimal, warm earth tones
 
-### Color Tokens (new earth palette)
+### Color Tokens (earth palette)
 
 | Token | Hex | Role |
 |-------|-----|------|
@@ -64,21 +65,42 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 - **Subheads** — Raleway Regular, ALL CAPS
 - **Body** — Poppins Regular
 
-> ⚠️ **Rebrand in progress (2026-05-27).** Old teal `#87CEBF` and gray `#808282` references are being migrated to the new earth palette via design tokens. Fonts are unchanged.
-
 ---
 
 ## Role Hierarchy
 
-| Role | Who | Access |
-|------|-----|--------|
-| `owner` | Ruby, Adrian | Everything incl. revenue ✅ |
-| `admin` | Jazz, Susan LeGrand | Full operations — schedule, users, payroll, CRM. No revenue. |
-| `manager` | Front desk + sales | Schedule view, client check-ins, CRM, own payroll view. No editing. |
-| `instructor` | Trainers | Own schedule + own payroll view only |
-| `client` | Studio members | Booking, membership, on-demand |
+| Role | Who | UID | Access |
+|------|-----|-----|--------|
+| `owner` | Ruby, Adrian | Ruby: `3a6cd143-6bae-4ba1-8d21-f67d5a50b957` · Adrian: `63323f3e-3215-4264-ae90-bdb1dc4cd602` | Everything incl. revenue |
+| `admin` | Jazz, Susan LeGrand | — | Full operations — schedule, users, payroll, CRM. No revenue. |
+| `manager` | Front desk / sales staff | — | Schedule view, client check-ins, CRM, time clock (own hours). No payroll, no instructors. |
+| `instructor` | Trainers | — | Own schedule + own payroll view only |
+| `client` | Studio members | — | Booking, membership, on-demand |
 
-`front_desk` role is retired — `manager` covers that function.
+**Important notes:**
+- `front_desk` role is fully retired — removed from codebase 2026-05-27. Use `manager` instead.
+- Jazz and Susan are **admin**, not manager. Manager = front desk / sales only.
+- `owner` role was added to the `user_role` Postgres enum on 2026-05-27.
+- Admin-initiated booking (front desk books a client into a session) is not yet built — deferred to post-beta.
+
+---
+
+## Beta Plan
+
+- **Beta cohort:** Adrian, Ruby, Jazz only — live Stripe, real bookings, minimal data
+- **Beta test client account:** `adrianwalther@me.com` (role: client) — use this to QA client-side flows
+- **Strategy:** Validate booking flow on web app first. Build native mobile app as next major phase before public launch.
+- **Jazz** still needs to sign up at marathon-pilates.vercel.app
+
+---
+
+## Known Accounts in DB
+
+| Person | Email | Role |
+|--------|-------|------|
+| Adrian Walther | adrian@marathonpilates.com | owner |
+| Ruby Ramdhan | ruby@marathonpilates.com | owner |
+| Test client | adrianwalther@me.com | client |
 
 ---
 
@@ -120,8 +142,8 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 |-------|---------|
 | `profiles` | All users + roles |
 | `scheduled_sessions` | Calendar classes (both locations) |
-| `bookings` | Client bookings |
-| `memberships` | Active/past membership records |
+| `bookings` | Client bookings — foreign key is `client_id` (not `user_id`) |
+| `memberships` | Active/past membership records — foreign key is `client_id` |
 | `credits` | Group + amenity credit balances |
 | `on_demand_classes` | Video library |
 | `instructor_payroll` | Pay records per session |
@@ -153,7 +175,7 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 | `specs/12b-mobile-trainer-view.md` | Instructors | ✅ Fully specced |
 | `specs/12c-mobile-admin-view.md` | Admins/Owners | ✅ Fully specced |
 
-All three views ship as one app with role-based mode switching.
+All three views ship as one React Native + Expo app with role-based mode switching. Not yet started — planned for after beta.
 
 ---
 
@@ -169,16 +191,26 @@ All three views ship as one app with role-based mode switching.
 - [ ] Rotate all API keys + enable 2FA on launch day
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
 - [ ] Complete brand color migration to new earth palette (in progress)
-- [x] Implement `owner` role ✅ 2026-05-27 — Ruby UID: `3a6cd143-6bae-4ba1-8d21-f67d5a50b957` | Adrian UID: `63323f3e-3215-4264-ae90-bdb1dc4cd602`
+- [ ] Jazz to sign up at marathon-pilates.vercel.app + set role to admin
+
+## Completed (for reference)
+
+- [x] Owner role implemented end-to-end ✅ 2026-05-27
+- [x] `front_desk` role retired + removed from codebase ✅ 2026-05-27
+- [x] Manager permissions tightened (no payroll/instructors/social content) ✅ 2026-05-27
+- [x] Ruby + Adrian set to `owner` in DB ✅ 2026-05-27
+- [x] Adrian's platform email changed to adrian@marathonpilates.com ✅ 2026-05-27
+- [x] Earth-tone rebrand complete — design tokens live in globals.css
+- [x] Build a Class works end-to-end (Anthropic + OpenAI + ElevenLabs)
 
 ---
 
 ## Ownership / Handoff Plan
 
-- Adrian retains ownership and will hold accounts through a `@marathonpilates.com` email address (not transferring to Jazz)
+- Adrian built and owns the platform. Accessible via `adrian@marathonpilates.com`.
 - Ruby has a Claude teams account — can collaborate on the platform directly
-- Jazz has admin access for studio operations
-- HANDOFF/ docs are still the source of truth for context restore in any new Claude session
+- Jazz has admin access for studio operations (needs to sign up)
+- HANDOFF/ docs are the source of truth for deep context
 
 ---
 
@@ -186,10 +218,12 @@ All three views ship as one app with role-based mode switching.
 
 ```
 HANDOFF/
-├── 00-PLATFORM-OVERVIEW.md   ← Full context reference
-├── 01-ACCOUNT-MIGRATION.md   ← Move services to business accounts
-├── 02-SALE-READINESS.md      ← Business sale prep
-└── 03-CLAUDE-SETUP.md        ← How to set up Claude Code (for new team members)
+├── 00-PLATFORM-OVERVIEW.md      ← Full context reference
+├── 01-ACCOUNT-MIGRATION.md      ← Move services to business accounts
+├── 02-SALE-READINESS.md         ← Business sale prep
+├── 03-CLAUDE-SETUP.md           ← How to set up Claude Code
+├── 04-CONSOLIDATION-CHECKLIST.md← Step-by-step account migration plan
+└── 05-BOOTSTRAP-PROMPT.md       ← Copy-paste primer for new Claude sessions
 ```
 
 ---
@@ -201,4 +235,5 @@ HANDOFF/
 - **Stripe is in live mode** — real charges happen
 - **On Demand is intentionally offline** until Bunny.net is reactivated at launch
 - **To disable the beta gate at launch:** remove `BETA_PASSWORD` from Vercel env vars
-- **Brand colors are migrating** — when adding new components, use the design tokens (in progress) rather than hardcoding hex values
+- **Brand colors:** always use design tokens, never hardcode hex values
+- **DB foreign keys:** bookings and memberships use `client_id`, not `user_id`
