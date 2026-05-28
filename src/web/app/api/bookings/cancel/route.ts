@@ -23,40 +23,23 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Cancel the booking
-    const { data: cancelled, error } = await supabase
-      .from('bookings')
-      .update({ status: 'cancelled', cancelled_at: new Date().toISOString() })
-      .eq('client_id', user.id)
-      .eq('session_id', session_id)
-      .in('status', ['confirmed', 'waitlisted'])
-      .select('status')
-      .single()
+    // Atomic cancel via RPC: cancels the booking, refunds the credit unless it's
+    // a late cancel (within 24h of a confirmed class — credit forfeited), and
+    // promotes the next waitlisted booking — all in one transaction.
+    const { data, error } = await supabase.rpc('cancel_booking', {
+      p_session_id: session_id,
+      p_client_id: user.id,
+    })
 
-    if (error || !cancelled) {
-      return Response.json({ error: 'Booking not found' }, { status: 404 })
-    }
-
-    // If a confirmed spot just opened up, promote the first waitlisted booking
-    if (cancelled.status === 'confirmed') {
-      const { data: nextUp } = await supabase
-        .from('bookings')
-        .select('id')
-        .eq('session_id', session_id)
-        .eq('status', 'waitlisted')
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle()
-
-      if (nextUp) {
-        await supabase
-          .from('bookings')
-          .update({ status: 'confirmed' })
-          .eq('id', nextUp.id)
+    if (error) {
+      if (error.message?.includes('Booking not found')) {
+        return Response.json({ error: 'Booking not found' }, { status: 404 })
       }
+      throw error
     }
 
-    return Response.json({ success: true })
+    const result = data as { cancelled: boolean; late_cancel: boolean; refunded: boolean }
+    return Response.json(result)
   } catch (err) {
     console.error('Cancel error:', err)
     return Response.json({ error: 'Failed to cancel booking' }, { status: 500 })

@@ -261,8 +261,9 @@ function SchedulePageInner() {
 
     const { data: { session: authSession } } = await supabase.auth.getSession()
 
-    // Cancel via API so the server can atomically promote the waitlist
-    await fetch('/api/bookings/cancel', {
+    // Cancel via API so the server can atomically refund the credit (unless a
+    // late cancel) and promote the waitlist
+    const res = await fetch('/api/bookings/cancel', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -270,8 +271,17 @@ function SchedulePageInner() {
       },
       body: JSON.stringify({ session_id: session.id }),
     })
+    const result = await res.json().catch(() => ({}))
 
-    showToast('Booking cancelled')
+    if (!res.ok) {
+      showToast(result.error || 'Could not cancel booking', 'error')
+    } else if (result.late_cancel) {
+      showToast('Cancelled — late cancel, credit not refunded')
+    } else if (result.refunded) {
+      showToast('Cancelled — credit refunded')
+    } else {
+      showToast('Booking cancelled')
+    }
     loadSessions()
   }
 
