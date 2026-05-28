@@ -26,12 +26,14 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Check for duplicate booking before hitting the RPC
+    // Check for an ACTIVE duplicate before hitting the RPC. Cancelled rows are
+    // kept for history and must NOT block a rebook (see fix_rebook_after_cancel).
     const { data: existing } = await supabase
       .from('bookings')
       .select('id, status')
       .eq('client_id', user.id)
       .eq('session_id', session_id)
+      .in('status', ['confirmed', 'waitlisted'])
       .maybeSingle()
 
     if (existing) {

@@ -61,12 +61,14 @@ export async function POST(req: Request) {
 
     if (!target) return Response.json({ error: 'Client not found' }, { status: 404 })
 
-    // Prevent duplicate booking
+    // Prevent an ACTIVE duplicate. Cancelled rows are kept for history and must
+    // NOT block a rebook (see fix_rebook_after_cancel).
     const { data: existing } = await supabase
       .from('bookings')
       .select('id, status')
       .eq('client_id', client_id)
       .eq('session_id', session_id)
+      .in('status', ['confirmed', 'waitlisted'])
       .maybeSingle()
 
     if (existing) {
