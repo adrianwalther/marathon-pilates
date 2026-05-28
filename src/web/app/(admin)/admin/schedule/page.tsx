@@ -97,6 +97,12 @@ export default function AdminSchedulePage() {
   const [rosterSession, setRosterSession] = useState<Session | null>(null)
   const [roster, setRoster] = useState<RosterEntry[]>([])
   const [rosterLoading, setRosterLoading] = useState(false)
+  const [canBook, setCanBook] = useState(false)
+  const [showAddClient, setShowAddClient] = useState(false)
+  const [clientQuery, setClientQuery] = useState('')
+  const [clientResults, setClientResults] = useState<{ id: string; first_name: string; last_name: string; email: string }[]>([])
+  const [allClients, setAllClients] = useState<{ id: string; first_name: string; last_name: string; email: string }[]>([])
+  const [addingClientId, setAddingClientId] = useState<string | null>(null)
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
@@ -171,6 +177,46 @@ export default function AdminSchedulePage() {
 
   useEffect(() => { loadData() }, [loadData])
 
+  useEffect(() => {
+    const supabase = createClient()
+    let cancelled = false
+
+    const resolveStaff = async () => {
+      // getUser() can lose a token-refresh race against the (admin) layout's
+      // identical call on first paint; fall back to the cached session and
+      // retry once before giving up.
+      let userId: string | null = null
+      for (let attempt = 0; attempt < 2 && !userId; attempt++) {
+        const { data: ures } = await supabase.auth.getUser()
+        userId = ures?.user?.id ?? null
+        if (!userId) {
+          const { data: sres } = await supabase.auth.getSession()
+          userId = sres?.session?.user?.id ?? null
+        }
+        if (!userId && attempt === 0) await new Promise(r => setTimeout(r, 400))
+      }
+      if (!userId || cancelled) return
+
+      const { data: prof } = await supabase
+        .from('profiles').select('role').eq('id', userId).single()
+      const staff = prof ? ['owner', 'admin', 'manager'].includes(prof.role) : false
+      if (cancelled) return
+      setCanBook(staff)
+
+      if (staff) {
+        const { data: clients } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name, email')
+          .eq('role', 'client')
+          .order('first_name', { ascending: true })
+        if (!cancelled) setAllClients((clients ?? []) as { id: string; first_name: string; last_name: string; email: string }[])
+      }
+    }
+
+    resolveStaff()
+    return () => { cancelled = true }
+  }, [])
+
   const openRoster = async (session: Session) => {
     setRosterSession(session)
     setRosterLoading(true)
@@ -189,6 +235,54 @@ export default function AdminSchedulePage() {
     const supabase = createClient()
     await supabase.from('bookings').update({ attended, status: attended ? 'completed' : 'no_show' }).eq('id', bookingId)
     if (rosterSession) openRoster(rosterSession)
+  }
+
+  const closeRoster = () => {
+    setRosterSession(null)
+    setShowAddClient(false)
+    setClientQuery('')
+    setClientResults([])
+  }
+
+  const searchClients = (q: string) => {
+    setClientQuery(q)
+    const term = q.toLowerCase().trim()
+    if (term.length < 1) { setClientResults([]); return }
+    const matches = allClients.filter(c =>
+      `${c.first_name ?? ''} ${c.last_name ?? ''}`.toLowerCase().includes(term) ||
+      (c.email ?? '').toLowerCase().includes(term)
+    ).slice(0, 8)
+    setClientResults(matches)
+  }
+
+  const addClientToSession = async (clientId: string) => {
+    if (!rosterSession) return
+    setAddingClientId(clientId)
+    const supabase = createClient()
+    const { data: { session: authSession } } = await supabase.auth.getSession()
+    const res = await fetch('/api/admin/bookings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authSession ? `Bearer ${authSession.access_token}` : '',
+      },
+      body: JSON.stringify({ session_id: rosterSession.id, client_id: clientId }),
+    })
+    const result = await res.json()
+    if (!res.ok) {
+      showToast(result.error === 'Already booked' ? 'Client already booked' : (result.error || 'Could not book'), 'error')
+    } else {
+      const label = result.status === 'waitlisted' ? 'Added to waitlist' : 'Client booked'
+      showToast(`${label} (${result.method === 'comp' ? 'comp' : 'credit'})`)
+      setClientQuery('')
+      setClientResults([])
+      setShowAddClient(false)
+      const sid = rosterSession.id
+      setSessions(prev => prev.map(s => s.id === sid ? { ...s, booking_count: s.booking_count + 1 } : s))
+      setRosterSession(rs => rs ? { ...rs, booking_count: rs.booking_count + 1 } : rs)
+      openRoster({ ...rosterSession, booking_count: rosterSession.booking_count + 1 })
+    }
+    setAddingClientId(null)
   }
 
   const handleTypeChange = (type: string) => {
@@ -278,7 +372,7 @@ export default function AdminSchedulePage() {
       {/* Roster Modal */}
       {rosterSession && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
-          onClick={e => { if (e.target === e.currentTarget) setRosterSession(null) }}>
+          onClick={e => { if (e.target === e.currentTarget) closeRoster() }}>
           <div style={{ background: 'white', borderRadius: '2px', width: '100%', maxWidth: '560px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
@@ -287,7 +381,7 @@ export default function AdminSchedulePage() {
                   {new Date(rosterSession.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {formatTime(rosterSession.starts_at)} · {rosterSession.locations?.name}
                 </p>
               </div>
-              <button onClick={() => setRosterSession(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', fontSize: '1.2rem', lineHeight: 1 }}>✕</button>
+              <button onClick={closeRoster} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#aaa', fontSize: '1.2rem', lineHeight: 1 }}>✕</button>
             </div>
 
             <div style={{ padding: '1rem 2rem', overflowY: 'auto', flex: 1 }}>
@@ -337,8 +431,51 @@ export default function AdminSchedulePage() {
             </div>
 
             <div style={{ padding: '1rem 2rem', borderTop: '1px solid #eee' }}>
+              {canBook && !rosterSession.is_cancelled && (
+                <div style={{ marginBottom: '0.85rem' }}>
+                  {!showAddClient ? (
+                    <button
+                      onClick={() => setShowAddClient(true)}
+                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid #A76E58', borderRadius: '2px', background: 'white', color: '#A76E58', cursor: 'pointer' }}>
+                      + Add Client
+                    </button>
+                  ) : (
+                    <div>
+                      <input
+                        autoFocus
+                        value={clientQuery}
+                        onChange={e => searchClients(e.target.value)}
+                        placeholder="Search client by name or email"
+                        style={{ ...inputStyle }}
+                        onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                        onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                      {clientResults.length > 0 ? (
+                        <div style={{ marginTop: '0.5rem', maxHeight: '180px', overflowY: 'auto', border: '1px solid #f0f0f0', borderRadius: '2px' }}>
+                          {clientResults.map(c => (
+                            <button
+                              key={c.id}
+                              disabled={addingClientId !== null}
+                              onClick={() => addClientToSession(c.id)}
+                              style={{ width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.85rem', border: 'none', borderBottom: '1px solid #f5f5f5', background: 'white', cursor: addingClientId !== null ? 'wait' : 'pointer' }}>
+                              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a' }}>{c.first_name} {c.last_name}</span>
+                              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.68rem', color: '#aaa' }}>{c.email}</span>
+                            </button>
+                          ))}
+                        </div>
+                      ) : clientQuery.trim().length >= 1 ? (
+                        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#aaa', padding: '0.5rem 0' }}>No clients found</p>
+                      ) : null}
+                      <button
+                        onClick={() => { setShowAddClient(false); setClientQuery(''); setClientResults([]) }}
+                        style={{ marginTop: '0.5rem', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', color: '#8a8d83', cursor: 'pointer', padding: 0 }}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83' }}>
-                {rosterSession.booking_count} / {rosterSession.max_capacity} booked
+                {rosterSession.booking_count} / {rosterSession.max_capacity} booked{rosterSession.booking_count >= rosterSession.max_capacity ? ' · new adds waitlisted' : ''}
               </p>
             </div>
           </div>

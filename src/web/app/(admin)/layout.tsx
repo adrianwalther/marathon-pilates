@@ -19,6 +19,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
   overview: boolean
   schedule_view: boolean
   schedule_edit: boolean
+  booking_create: boolean
   clients: boolean
   payroll_view: boolean
   payroll_edit: boolean
@@ -28,6 +29,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     overview: true,
     schedule_view: true,
     schedule_edit: true,
+    booking_create: true,
     clients: true,
     payroll_view: true,
     payroll_edit: true,
@@ -37,6 +39,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     overview: true,
     schedule_view: true,
     schedule_edit: true,
+    booking_create: true,
     clients: true,
     payroll_view: true,
     payroll_edit: true,
@@ -48,6 +51,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     overview: true,
     schedule_view: true,
     schedule_edit: false,  // view only — can't add/remove sessions from calendar
+    booking_create: true,  // front desk: can book clients into sessions
     clients: true,         // bookings, check-ins, CRM leads
     payroll_view: false,   // no payroll access — owner/admin only
     payroll_edit: false,
@@ -57,6 +61,7 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     overview: false,
     schedule_view: true,   // own classes only
     schedule_edit: false,
+    booking_create: false, // can mark attendance, but not add clients
     clients: false,        // own class rosters only
     payroll_view: true,    // own pay records only
     payroll_edit: false,
