@@ -85,7 +85,6 @@ export async function POST(req: Request) {
     // Try to use a matching, unexpired credit for this client
     const creditType = creditTypeFor(session.session_type)
     let creditId: string | null = null
-    let usedCredits = 0
 
     if (creditType) {
       const { data: credits } = await supabase
@@ -97,57 +96,25 @@ export async function POST(req: Request) {
         .order('expires_at', { ascending: true, nullsFirst: false })
 
       const usable = credits?.find(c => c.total_credits - c.used_credits > 0)
-      if (usable) {
-        creditId = usable.id
-        usedCredits = usable.used_credits
-      }
+      if (usable) creditId = usable.id
     }
 
-    // Capacity check + insert, done with the service-role client.
-    // We intentionally do NOT use the book_session RPC here: the deployed
-    // version enforces auth.uid() (so a client can only book themselves),
-    // which a staff-initiated, service-role booking can't satisfy. Admin
-    // bookings are low-volume and single-operator, so an inline count+insert
-    // mirrors the RPC's confirmed/waitlisted logic without that guard.
-    const { data: sessionRow, error: capError } = await supabase
-      .from('scheduled_sessions')
-      .select('max_capacity')
-      .eq('id', session_id)
-      .single()
-
-    if (capError || !sessionRow) throw capError ?? new Error('Session not found')
-
-    const { count: bookedCount } = await supabase
-      .from('bookings')
-      .select('id', { count: 'exact', head: true })
-      .eq('session_id', session_id)
-      .in('status', ['confirmed', 'waitlisted'])
-
-    const status = (bookedCount ?? 0) >= sessionRow.max_capacity ? 'waitlisted' : 'confirmed'
-
-    const { data: inserted, error } = await supabase
-      .from('bookings')
-      .insert({
-        client_id,
-        session_id,
-        status,
-        amount_paid: 0,
-        payment_status: creditId ? 'credit' : 'included',
-        stripe_payment_intent_id: null,
-      })
-      .select('id')
-      .single()
+    // Atomically check capacity + insert + deduct the credit via the same
+    // book_session RPC used by the client flow. (The RPC's old auth.uid() guard
+    // — which previously forced this route to inline the insert — was removed
+    // 2026-05-28; EXECUTE is now locked to service_role.) Booking insert and
+    // credit decrement happen in one transaction, so a credit can't be
+    // double-spent or left un-deducted.
+    const { data, error } = await supabase.rpc('book_session', {
+      p_session_id: session_id,
+      p_client_id: client_id,
+      p_amount_paid: 0,
+      p_payment_status: creditId ? 'credit' : 'included',
+      p_credit_id: creditId ?? null,
+    })
 
     if (error) throw error
-    const result = { booking_id: inserted.id, status }
-
-    // Deduct the credit after a successful booking
-    if (creditId) {
-      await supabase
-        .from('credits')
-        .update({ used_credits: usedCredits + 1 })
-        .eq('id', creditId)
-    }
+    const result = data as { booking_id: string; status: string }
 
     return Response.json({ status: result.status, method: creditId ? 'credit' : 'comp' })
   } catch (err: unknown) {
