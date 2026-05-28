@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-const ALLOWED_ROLES = ['admin', 'manager', 'instructor', 'front_desk']
+const ALLOWED_ROLES = ['owner', 'admin', 'manager', 'instructor']
 
 // Beta gate password — override via BETA_PASSWORD env var in Vercel.
 // Remove BETA_PASSWORD env var entirely to disable the gate at launch.

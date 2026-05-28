@@ -82,7 +82,7 @@ export default function ChatPage() {
     const { data } = await supabase
       .from('profiles')
       .select('id, first_name, last_name')
-      .in('role', ['admin', 'manager', 'instructor', 'front_desk'])
+      .in('role', ['owner', 'admin', 'manager', 'instructor'])
       .order('first_name')
     setStaff((data as StaffMember[]) || [])
   }

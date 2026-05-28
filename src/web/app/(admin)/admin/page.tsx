@@ -35,7 +35,7 @@ export default function AdminOverviewPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data: prof } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-        setCanViewRevenue(prof?.role === 'admin')
+        setCanViewRevenue(prof?.role === 'owner')
       }
 
       const todayStart = new Date(); todayStart.setHours(0,0,0,0)

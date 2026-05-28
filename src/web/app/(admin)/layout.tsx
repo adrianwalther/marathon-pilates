@@ -5,15 +5,14 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
-export type StaffRole = 'admin' | 'manager' | 'instructor' | 'front_desk'
+export type StaffRole = 'owner' | 'admin' | 'manager' | 'instructor'
 
 // Role hierarchy (confirmed):
-//   owner   → Ruby, Adrian    — full access incl. revenue (not yet implemented, uses 'admin' for now)
-//   admin   → Jazz, Susan     — full operations, no raw revenue
-//   manager → Front desk + sales staff — schedule view, client check-ins, bookings, CRM. No payroll. No revenue.
-//   instructor → Trainers     — own schedule + own payroll view only
-//   client  → Studio members  — dashboard only (handled by dashboard layout, not here)
-//   (front_desk role retired — manager covers that function)
+//   owner      → Ruby, Adrian  — full access incl. revenue, MRR, Stripe payouts
+//   admin      → Jazz, Susan   — full operations, no raw revenue
+//   manager    → Front desk + sales staff — schedule view, client check-ins, bookings, CRM. No payroll. No revenue.
+//   instructor → Trainers      — own schedule + own payroll view only
+//   client     → Studio members — dashboard only (handled by dashboard layout, not here)
 
 // What each role can access
 export const ROLE_PERMISSIONS: Record<StaffRole, {
@@ -25,6 +24,15 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
   payroll_edit: boolean
   revenue: boolean
 }> = {
+  owner: {
+    overview: true,
+    schedule_view: true,
+    schedule_edit: true,
+    clients: true,
+    payroll_view: true,
+    payroll_edit: true,
+    revenue: true,         // owner-only: revenue, MRR, Stripe payouts
+  },
   admin: {
     overview: true,
     schedule_view: true,
@@ -32,9 +40,9 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     clients: true,
     payroll_view: true,
     payroll_edit: true,
-    revenue: false,  // revenue reserved for 'owner' role only (Ruby, Adrian)
+    revenue: false,        // revenue reserved for 'owner' role only
   },
-  // Front desk + sales staff: schedule view, client bookings & check-ins, CRM/leads, own payroll view
+  // Front desk + sales staff: schedule view, client bookings & check-ins, CRM/leads
   // No payroll editing, no revenue data
   manager: {
     overview: true,
@@ -54,32 +62,23 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     payroll_edit: false,
     revenue: false,
   },
-  front_desk: {            // retired — use 'manager' instead
-    overview: true,
-    schedule_view: true,
-    schedule_edit: false,
-    clients: true,
-    payroll_view: false,
-    payroll_edit: false,
-    revenue: false,
-  },
 }
 
 const ROLE_LABELS: Record<StaffRole, string> = {
+  owner: 'Owner',
   admin: 'Admin',
   manager: 'Manager',
   instructor: 'Instructor',
-  front_desk: 'Front Desk',
 }
 
 const ROLE_COLORS: Record<StaffRole, string> = {
-  admin: '#A76E58',
-  manager: '#6b9fd4',
-  instructor: '#c8860a',
-  front_desk: '#8a8d83',
+  owner: '#4C5246',   // Moss Gray — top of hierarchy
+  admin: '#A76E58',   // Terracotta
+  manager: '#6b9fd4', // Blue
+  instructor: '#c8860a', // Amber
 }
 
-const ALLOWED_ROLES: StaffRole[] = ['admin', 'manager', 'instructor', 'front_desk']
+const ALLOWED_ROLES: StaffRole[] = ['owner', 'admin', 'manager', 'instructor']
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -126,7 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/instructors', label: 'Instructors', icon: '◉', show: perms.payroll_view },
     { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },
     { href: '/admin/social-content', label: 'Social Content', icon: '◎', show: perms.payroll_view || role === 'instructor' },
-    { href: '/admin/timeclock', label: 'Time Clock', icon: '◷', show: perms.payroll_view || role === 'front_desk' },
+    { href: '/admin/timeclock', label: 'Time Clock', icon: '◷', show: perms.payroll_view },
     { href: '/admin/gift-cards', label: 'Gift Cards', icon: '◇', show: perms.clients },
     { href: null, label: 'MARKETING', icon: '', show: perms.overview, divider: true },
     { href: '/admin/marketing/leads', label: 'Leads', icon: '◉', show: perms.clients },

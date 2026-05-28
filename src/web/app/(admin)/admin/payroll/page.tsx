@@ -110,7 +110,7 @@ export default function AdminPayrollPage() {
     const supabase = createClient()
     const [{ data: periodsData }, { data: staffData }] = await Promise.all([
       supabase.from('payroll_periods').select('*').order('period_start', { ascending: false }).limit(12),
-      supabase.from('profiles').select('id, first_name, last_name, role, trainer_level, private_session_rate, hire_date').in('role', ['instructor', 'admin', 'front_desk', 'manager']),
+      supabase.from('profiles').select('id, first_name, last_name, role, trainer_level, private_session_rate, hire_date').in('role', ['owner', 'admin', 'manager', 'instructor']),
     ])
 
     if (periodsData && periodsData.length > 0) {

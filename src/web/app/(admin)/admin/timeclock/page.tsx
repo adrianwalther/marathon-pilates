@@ -76,7 +76,7 @@ export default function TimeClockPage() {
     if (!user) return
 
     const { data: prof } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    const userRole = prof?.role ?? 'front_desk'
+    const userRole = prof?.role ?? 'manager'
     setRole(userRole)
     setUserId(user.id)
 

@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         .single()
       if (profile) {
         setUser(profile)
-        setIsAdmin(['admin', 'manager', 'instructor', 'front_desk'].includes(profile.role))
+        setIsAdmin(['owner', 'admin', 'manager', 'instructor'].includes(profile.role))
         // Redirect new users to onboarding (skip if already on that page)
         if (!profile.intake_completed_at && !pathname.startsWith('/dashboard/onboarding')) {
           router.push('/dashboard/onboarding')
