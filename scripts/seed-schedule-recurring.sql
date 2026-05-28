@@ -4,14 +4,32 @@
 -- Anchored to Monday 2026-05-25; past sessions are filtered out (>= CURRENT_DATE)
 -- Timezone: America/Chicago (DST handled automatically)
 -- Run ONCE in Supabase SQL Editor. Wrapped in a transaction — all-or-nothing.
+-- SAFE TO RE-RUN: the reset below only clears FUTURE, UNBOOKED group sessions
+-- (see STEP 1), so it can never wipe past classes or any session a real client
+-- has booked into.
 
 BEGIN;
 
--- ── STEP 1: Full reset — remove ALL group reformer sessions at Charlotte Park ──
--- (Beta: these are freshly seeded with no real client bookings.)
-DELETE FROM scheduled_sessions
-WHERE session_type = 'group_reformer'
-  AND location_id  = 'd727b8df-d963-4bc5-a080-5908a1f4711e';
+-- ── STEP 1: Reset — clear FUTURE, UNBOOKED group reformer sessions at Charlotte Park ──
+-- Two guards make this safe to re-run after launch:
+--   1) starts_at >= CURRENT_DATE   → never touch past/historical sessions.
+--   2) NOT EXISTS (... active bookings) → never delete a session a client has
+--      booked (confirmed or waitlisted).
+-- Trade-off when re-run AFTER launch: a booked future slot is preserved, but the
+-- INSERT below will still seed a fresh class at that same time → a duplicate.
+-- That's intentional: a visible, easily-deleted duplicate is far safer than
+-- silently destroying a class real clients have booked. This script is meant to
+-- run ONCE during beta seeding; the guards are a safety net, not a merge tool.
+DELETE FROM scheduled_sessions s
+WHERE s.session_type = 'group_reformer'
+  AND s.location_id  = 'd727b8df-d963-4bc5-a080-5908a1f4711e'
+  AND s.starts_at   >= CURRENT_DATE
+  AND NOT EXISTS (
+    SELECT 1
+    FROM bookings b
+    WHERE b.session_id = s.id
+      AND b.status IN ('confirmed', 'waitlisted')
+  );
 
 -- ── STEP 2: Generate the recurring schedule ──
 INSERT INTO scheduled_sessions (
