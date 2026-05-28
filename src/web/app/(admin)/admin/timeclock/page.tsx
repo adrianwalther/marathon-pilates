@@ -80,7 +80,7 @@ export default function TimeClockPage() {
     setRole(userRole)
     setUserId(user.id)
 
-    const isAdmin = userRole === 'admin' || userRole === 'manager'
+    const isAdmin = userRole === 'owner' || userRole === 'admin'
     const { start, end } = getWeekRange()
 
     let query = supabase
@@ -156,7 +156,7 @@ export default function TimeClockPage() {
     loadData()
   }
 
-  const isAdmin = role === 'admin' || role === 'manager'
+  const isAdmin = role === 'owner' || role === 'admin'
 
   const { startDate } = getWeekRange()
   const weekEnd = new Date(startDate); weekEnd.setDate(startDate.getDate() + 6)

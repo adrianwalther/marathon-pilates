@@ -98,7 +98,7 @@ export default function SocialContentPage() {
     loadData()
   }
 
-  const isAdmin = role === 'admin' || role === 'manager'
+  const isAdmin = role === 'owner' || role === 'admin'
 
   const pendingEntries = entries.filter(e => e.status === 'pending')
   const otherEntries = entries.filter(e => e.status !== 'pending')

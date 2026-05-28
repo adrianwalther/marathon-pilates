@@ -43,13 +43,13 @@ export const ROLE_PERMISSIONS: Record<StaffRole, {
     revenue: false,        // revenue reserved for 'owner' role only
   },
   // Front desk + sales staff: schedule view, client bookings & check-ins, CRM/leads
-  // No payroll editing, no revenue data
+  // No payroll, no revenue data
   manager: {
     overview: true,
     schedule_view: true,
     schedule_edit: false,  // view only — can't add/remove sessions from calendar
     clients: true,         // bookings, check-ins, CRM leads
-    payroll_view: true,    // own hours/pay only
+    payroll_view: false,   // no payroll access — owner/admin only
     payroll_edit: false,
     revenue: false,
   },
@@ -125,7 +125,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/instructors', label: 'Instructors', icon: '◉', show: perms.payroll_view },
     { href: '/admin/payroll', label: 'Payroll', icon: '◆', show: perms.payroll_view },
     { href: '/admin/social-content', label: 'Social Content', icon: '◎', show: perms.payroll_view || role === 'instructor' },
-    { href: '/admin/timeclock', label: 'Time Clock', icon: '◷', show: perms.payroll_view },
+    { href: '/admin/timeclock', label: 'Time Clock', icon: '◷', show: perms.payroll_view || role === 'manager' },
     { href: '/admin/gift-cards', label: 'Gift Cards', icon: '◇', show: perms.clients },
     { href: null, label: 'MARKETING', icon: '', show: perms.overview, divider: true },
     { href: '/admin/marketing/leads', label: 'Leads', icon: '◉', show: perms.clients },
