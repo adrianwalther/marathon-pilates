@@ -72,7 +72,7 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 
 | Role | Who | Access |
 |------|-----|--------|
-| `owner` | Ruby, Adrian | Everything incl. revenue *(not yet built — uses admin for now)* |
+| `owner` | Ruby, Adrian | Everything incl. revenue ✅ |
 | `admin` | Jazz, Susan LeGrand | Full operations — schedule, users, payroll, CRM. No revenue. |
 | `manager` | Front desk + sales | Schedule view, client check-ins, CRM, own payroll view. No editing. |
 | `instructor` | Trainers | Own schedule + own payroll view only |
@@ -169,7 +169,7 @@ All three views ship as one app with role-based mode switching.
 - [ ] Rotate all API keys + enable 2FA on launch day
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
 - [ ] Complete brand color migration to new earth palette (in progress)
-- [ ] Implement `owner` role (currently Ruby/Adrian are `admin`)
+- [x] Implement `owner` role ✅ 2026-05-27 — Ruby UID: `3a6cd143-6bae-4ba1-8d21-f67d5a50b957` | Adrian UID: `63323f3e-3215-4264-ae90-bdb1dc4cd602`
 
 ---
 
