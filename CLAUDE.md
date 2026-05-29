@@ -188,6 +188,8 @@ Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 
 | `credits` | Group + amenity credit balances |
 | `on_demand_classes` | Video library |
 | `instructor_payroll` | Pay records per session |
+| `client_events` | Append-only behavioral log (service views, nudge shown/clicked/dismissed) powering the "ever-learning" dashboard. Writes ONLY via service-role route `/api/events` (forces `client_id`); no client INSERT policy. Added 2026-05-29. |
+| `nudge_copy` | Cache of AI-generated dashboard nudge lines, one per (`client_id`, `service_key`). Service-role writes only; regenerates after 30 days. Added 2026-05-29. |
 
 ---
 
@@ -205,6 +207,7 @@ Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 
 | Admin payroll | /admin/payroll |
 | Admin CRM | /admin/crm |
 | Beta gate | /beta-gate |
+| Forgot / reset password | /forgot-password · /reset-password |
 
 ---
 
@@ -236,6 +239,10 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 
 ## Completed (for reference)
 
+- [x] Password reset completed end-to-end — built the missing `/reset-password` page (forgot-password link was a 404) ✅ 2026-05-29
+- [x] "Ever-learning" dashboard nudge engine — surfaces a service the client hasn't tried yet (recovery amenities prioritized), in Ruby's brand voice. `lib/nudges.ts` (pure ranker), warm "For You" card on /dashboard ✅ 2026-05-29
+- [x] Behavioral learning layer — `client_events` log + `/api/events` route + `lib/events.ts`; nudge ranker boosts services a client keeps viewing (intent) and suppresses dismissed ones ✅ 2026-05-29
+- [x] AI nudge copy in Ruby's voice — `/api/nudge-copy` (claude-sonnet-4-6, guardrailed, cached in `nudge_copy`); dashboard renders the static template instantly then swaps to the AI line. Falls back to template on any error/off-spec output ✅ 2026-05-29
 - [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
 - [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) — DELETE now guarded (future + unbooked only), safe to re-run ✅ 2026-05-28
 - [x] Owner added to the 25 RLS policies that omitted it (verified `still_missing_owner = 0`) ✅ 2026-05-28
