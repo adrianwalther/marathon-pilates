@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
+import { notifyBookingConfirmed } from '@/lib/emails/notify'
 
 export async function POST(req: Request) {
   try {
@@ -55,6 +56,13 @@ export async function POST(req: Request) {
     if (error) throw error
 
     const result = data as { booking_id: string; status: string }
+
+    // Send a confirmation (or waitlist) email — best-effort, never blocks booking.
+    await notifyBookingConfirmed(supabase, {
+      clientId: user.id,
+      sessionId: session_id,
+      waitlisted: result.status === 'waitlisted',
+    })
 
     return Response.json({ status: result.status })
   } catch (err: unknown) {

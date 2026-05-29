@@ -1,5 +1,6 @@
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
+import { notifyBookingConfirmed } from '@/lib/emails/notify'
 
 export async function POST(req: Request) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
@@ -64,6 +65,13 @@ export async function POST(req: Request) {
         p_stripe_payment_intent_id: session.payment_intent as string,
       })
     }
+
+    // Confirm the paid booking by email — best-effort, never fails the webhook.
+    await notifyBookingConfirmed(supabase, {
+      clientId: user_id,
+      sessionId: session_id,
+      waitlisted: false,
+    })
   }
 
   return Response.json({ received: true })

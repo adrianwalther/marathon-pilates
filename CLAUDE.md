@@ -161,6 +161,14 @@ Verified 2026-05-28 by querying the live database directly:
 - `scheduled_sessions` write policy ("Staff manage sessions", owner+admin) added 2026-05-28 via `migrations/add_scheduled_sessions_write_policy.sql` — without it, staff couldn't add/cancel classes from the UI.
 - **Rebook after cancel works** (fixed 2026-05-28, `migrations/fix_rebook_after_cancel.sql`): the table-level `UNIQUE(client_id, session_id)` was swapped for a PARTIAL unique index `bookings_active_client_session_uidx` covering only `status IN ('confirmed','waitlisted')`. Cancelled rows are kept for history and never block a rebook; both API dup-checks filter to active statuses.
 
+### Transactional email (added 2026-05-28 — currently in DRY-RUN until a provider is connected)
+All booking touchpoints now send brand-voice emails. Three new files:
+- `lib/email.ts` — provider-agnostic `sendEmail()`. Sends via **Resend's REST API** (`fetch`, no SDK dependency). **If `RESEND_API_KEY` is unset → DRY-RUN**: it `console.log`s a `[email:dry-run]` line instead of sending, so flows never break and templates stay inspectable locally. Env vars to go live: `RESEND_API_KEY` + `EMAIL_FROM` (default `Marathon Pilates <hello@marathonpilates.com>`). To switch to Google Workspace SMTP instead, replace ONLY the `fetch` block with a nodemailer transport — nothing else changes.
+- `lib/emails/templates.ts` — four templates (HTML + plain text, earth palette, "Move + Restore"/#itsamarathon): booking **confirmed**, **waitlisted**, **cancelled** (3 wordings: refunded / late-cancel forfeit / neutral), **promoted-off-waitlist**. Times formatted in `America/Chicago`.
+- `lib/emails/notify.ts` — best-effort orchestration (`notifyBookingConfirmed` / `notifyBookingCancelled` / `notifyWaitlistPromoted`). Loads recipient + class context from the DB and sends. **Never throws** — a failed email can't break a booking/cancel.
+- Wired into: `api/bookings` (self-book), `api/admin/bookings` (staff books client), `api/bookings/cancel` (receipt + the promoted-off-waitlist email — closes the gap where auto-promoted clients were never told), `api/webhooks/stripe` (paid booking). Verified 2026-05-28: all 5 emails render correctly through the real `sendEmail` dry-run path.
+- **Provider choice is the only launch to-do** (Ruby: Google Workspace vs Resend) — isolated to `lib/email.ts` + two env vars.
+
 ### Cancellation policy (📌 PINNED — placeholder, REVISIT with Ruby)
 Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 24h+ before start REFUNDS the credit. Cancelling inside 24h on a CONFIRMED booking = LATE cancel → credit is FORFEITED** (the lost credit is the penalty; any $15 cash fee is handled separately). Waitlisted bookings always refund (they never held a confirmed spot). Two knobs, both marked with `>>> POLICY KNOB <<<` comments in the migration: (1) the window — `interval '24 hours'`; (2) forfeit-vs-refund — the `AND NOT v_is_late` guard. Treat as a placeholder we can redo. **Caveat:** bookings created *before* this migration have `credit_used = NULL`, so cancelling them can't auto-refund (we don't know which credit). Verified end-to-end 2026-05-28: both the late-cancel forfeit path and the >24h refund path (`used_credits` round-trips).
 
@@ -217,7 +225,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Reactivate Bunny.net + re-upload 23 videos + re-seed `video_url` in DB
 - [ ] Activate Gusto for payroll
 - [ ] Confirm amenity pricing with Ruby (sauna, cold plunge, contrast)
-- [ ] Set up email notifications (Ruby to decide: Google Workspace or Resend)
+- [ ] Connect the email provider — system is BUILT & wired (dry-run); just needs Ruby's provider call (Google Workspace or Resend) + `RESEND_API_KEY`/`EMAIL_FROM` env vars. See "Transactional email" under Gotchas.
 - [ ] Point app.marathonpilates.com → Vercel
 - [ ] Hero video footage from Ruby (login page left panel)
 - [ ] Data migration from Arketa (Susan LeGrand)
@@ -234,6 +242,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [x] Credit deduction folded into `book_session` (atomic — no double-spend / un-deducted credits) ✅ 2026-05-28
 - [x] Credit refund on cancel via `cancel_booking` RPC (24h late-cancel forfeit, waitlist promotion) ✅ 2026-05-28
 - [x] Rebook-after-cancel fixed (partial unique index on active bookings) ✅ 2026-05-28
+- [x] Transactional email system built + wired into all booking touchpoints (dry-run until provider connected) ✅ 2026-05-28
 - [x] Fixed `book_session` RPC (was broken for all server bookings incl. paid Stripe) ✅ 2026-05-28
 - [x] Added `scheduled_sessions` write policy so staff can add/cancel classes ✅ 2026-05-28
 - [x] Security + script audit completed ✅ 2026-05-28

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
+import { notifyBookingConfirmed } from '@/lib/emails/notify'
 
 // Admin-initiated booking: a staff member (owner/admin/manager) books a client
 // into a scheduled session. Reuses the same atomic book_session RPC as the
@@ -117,6 +118,13 @@ export async function POST(req: Request) {
 
     if (error) throw error
     const result = data as { booking_id: string; status: string }
+
+    // Email the client their confirmation (or waitlist notice) — best-effort.
+    await notifyBookingConfirmed(supabase, {
+      clientId: client_id,
+      sessionId: session_id,
+      waitlisted: result.status === 'waitlisted',
+    })
 
     return Response.json({ status: result.status, method: creditId ? 'credit' : 'comp' })
   } catch (err: unknown) {

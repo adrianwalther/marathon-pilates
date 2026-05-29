@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
+import { notifyBookingCancelled, notifyWaitlistPromoted } from '@/lib/emails/notify'
 
 export async function POST(req: Request) {
   try {
@@ -38,7 +39,27 @@ export async function POST(req: Request) {
       throw error
     }
 
-    const result = data as { cancelled: boolean; late_cancel: boolean; refunded: boolean }
+    const result = data as {
+      cancelled: boolean
+      late_cancel: boolean
+      refunded: boolean
+      promoted_booking_id: string | null
+    }
+
+    // Email the canceller their receipt — best-effort, never blocks the cancel.
+    await notifyBookingCancelled(supabase, {
+      clientId: user.id,
+      sessionId: session_id,
+      refunded: result.refunded,
+      lateCancel: result.late_cancel,
+    })
+
+    // If a waitlisted client was just auto-promoted into the freed spot, let
+    // them know they're in — otherwise they'd never find out.
+    if (result.promoted_booking_id) {
+      await notifyWaitlistPromoted(supabase, { bookingId: result.promoted_booking_id })
+    }
+
     return Response.json(result)
   } catch (err) {
     console.error('Cancel error:', err)
