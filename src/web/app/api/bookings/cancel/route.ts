@@ -1,11 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
 import { notifyBookingCancelled, notifyWaitlistPromoted } from '@/lib/emails/notify'
+import { isUuid } from '@/lib/validation'
 
 export async function POST(req: Request) {
   try {
     const { session_id } = await req.json()
     if (!session_id) return Response.json({ error: 'Missing session_id' }, { status: 400 })
+    if (!isUuid(session_id)) return Response.json({ error: 'Invalid session_id' }, { status: 400 })
 
     // Verify auth
     const authSupabase = createClient(

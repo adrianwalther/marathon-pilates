@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
 import { notifyBookingConfirmed } from '@/lib/emails/notify'
+import { isUuid } from '@/lib/validation'
 
 // Admin-initiated booking: a staff member (owner/admin/manager) books a client
 // into a scheduled session. Reuses the same atomic book_session RPC as the
@@ -22,6 +23,10 @@ export async function POST(req: Request) {
 
     if (!session_id || !client_id) {
       return Response.json({ error: 'Missing session_id or client_id' }, { status: 400 })
+    }
+
+    if (!isUuid(session_id) || !isUuid(client_id)) {
+      return Response.json({ error: 'Invalid session_id or client_id' }, { status: 400 })
     }
 
     // Verify the caller is authenticated
@@ -53,10 +58,12 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // Confirm the target client exists and is a client
+    // Confirm the target profile exists. NOTE: we intentionally do NOT require
+    // role = 'client' here — staff (e.g. an instructor) may legitimately be
+    // booked into a class as a participant. Revisit if that's not desired.
     const { data: target } = await supabase
       .from('profiles')
-      .select('id, role')
+      .select('id')
       .eq('id', client_id)
       .single()
 

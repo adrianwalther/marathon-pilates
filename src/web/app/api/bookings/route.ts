@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
 import { notifyBookingConfirmed } from '@/lib/emails/notify'
+import { isUuid } from '@/lib/validation'
 
 export async function POST(req: Request) {
   try {
@@ -8,6 +9,12 @@ export async function POST(req: Request) {
 
     if (!session_id) {
       return Response.json({ error: 'Missing session_id' }, { status: 400 })
+    }
+
+    // Reject malformed ids up front → clean 400 instead of a DB-level 500.
+    // credit_id is optional, but if supplied it must be a valid UUID.
+    if (!isUuid(session_id) || (credit_id != null && !isUuid(credit_id))) {
+      return Response.json({ error: 'Invalid session_id or credit_id' }, { status: 400 })
     }
 
     // Verify auth
