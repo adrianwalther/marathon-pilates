@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+import { pickNudge, type Nudge } from '@/lib/nudges'
 
 type Profile = {
   first_name: string
@@ -34,6 +35,7 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([])
   const [credits, setCredits] = useState<Credit[]>([])
+  const [nudge, setNudge] = useState<Nudge | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const [{ data: prof }, { data: bookings }, { data: creds }] = await Promise.all([
+      const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }] = await Promise.all([
         supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location').eq('id', user.id).single(),
         supabase.from('bookings')
           .select('id, status, scheduled_sessions(name, starts_at, ends_at, duration_minutes, location_id, locations(name))')
@@ -52,11 +54,29 @@ export default function DashboardPage() {
           .order('scheduled_sessions.starts_at', { ascending: true })
           .limit(3),
         supabase.from('credits').select('credit_type, total_credits, used_credits').eq('client_id', user.id),
+        // Every service this client has ever engaged with (any non-cancelled
+        // booking) — feeds the "haven't tried yet" nudge.
+        supabase.from('bookings')
+          .select('scheduled_sessions(session_type)')
+          .eq('client_id', user.id)
+          .neq('status', 'cancelled'),
       ])
 
       if (prof) setProfile(prof)
       if (bookings) setUpcomingBookings(bookings as unknown as Booking[])
       if (creds) setCredits(creds)
+
+      // Build the nudge from the client's tried services. Supabase returns the
+      // joined row as an object (or array, defensively) — normalize to a flat
+      // list of session_type strings.
+      const triedTypes = ((tried ?? []) as Array<{ scheduled_sessions: { session_type: string } | { session_type: string }[] | null }>)
+        .flatMap(r => {
+          const s = r.scheduled_sessions
+          if (!s) return []
+          return Array.isArray(s) ? s.map(x => x.session_type) : [s.session_type]
+        })
+      setNudge(pickNudge(prof?.first_name, triedTypes))
+
       setLoading(false)
     }
     load()
@@ -105,6 +125,9 @@ export default function DashboardPage() {
             : 'Ready to move + restore?'}
         </p>
       </div>
+
+      {/* Personalized nudge — surfaces a service the client hasn't tried yet */}
+      {nudge && <NudgeCard nudge={nudge} />}
 
       {/* Quick stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
@@ -213,6 +236,51 @@ export default function DashboardPage() {
           <LocationCard name="Charlotte Park" address="4701 Charlotte Ave" />
           <LocationCard name="Green Hills" address="2222 Bandywood Dr" />
         </div>
+      </div>
+    </div>
+  )
+}
+
+function NudgeCard({ nudge }: { nudge: Nudge }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <div style={{ marginBottom: '3rem' }}>
+      <div
+        style={{
+          background: '#f5ece6',
+          border: '1px solid var(--color-accent-light)',
+          borderRadius: '2px',
+          padding: '1.75rem',
+        }}
+      >
+        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
+          For You
+        </p>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.95rem', color: 'var(--color-text)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
+          {nudge.message}
+        </p>
+        <Link
+          href={nudge.service.href}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            display: 'inline-block',
+            fontFamily: "'Raleway', sans-serif",
+            fontWeight: 700,
+            fontSize: '0.7rem',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            padding: '0.65rem 1.5rem',
+            borderRadius: '2px',
+            background: 'var(--color-cta)',
+            color: 'white',
+            textDecoration: 'none',
+            transition: 'transform 0.15s',
+            transform: hovered ? 'translateX(3px)' : 'translateX(0)',
+          }}
+        >
+          Book {nudge.service.label} →
+        </Link>
       </div>
     </div>
   )
