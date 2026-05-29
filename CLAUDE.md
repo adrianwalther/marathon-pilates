@@ -190,6 +190,7 @@ Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 
 | `instructor_payroll` | Pay records per session |
 | `client_events` | Append-only behavioral log (service views, nudge shown/clicked/dismissed) powering the "ever-learning" dashboard. Writes ONLY via service-role route `/api/events` (forces `client_id`); no client INSERT policy. Added 2026-05-29. |
 | `nudge_copy` | Cache of AI-generated dashboard nudge lines, one per (`client_id`, `service_key`). Service-role writes only; regenerates after 30 days. Added 2026-05-29. |
+| `profiles.health_flags` (column) | AI-structured trainer flags (text[]) derived from the client's intake health note; shown on the My Classes roster. `health_conditions` remains the raw source of truth. Added 2026-05-29. |
 
 ---
 
@@ -247,6 +248,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [x] Staff engagement analytics — `/admin/marketing/engagement`: nudge funnel (shown/clicked/dismissed/CTR) per service + recent activity, over `client_events` ✅ 2026-05-29
 - [x] Post-cancel rebook modal (retention) — when a client cancels, `components/RebookModal.tsx` offers other upcoming same-type sessions for one-tap rebooking. Books via shared `lib/bookClass.ts`. Logs `rebook_offered`/`rebook_booked` ✅ 2026-05-29
 - [x] Fixed "My Bookings" cancel — was a bare status update (no credit refund, no waitlist promotion, no email, wrong 12h window); now uses the `/api/bookings/cancel` RPC like the schedule page (refund + promote + email + 24h) ✅ 2026-05-29
+- [x] AI health flags — `/api/health-flags` structures a client's free-text intake note into clean trainer-facing flags (`profiles.health_flags`); My Classes roster shows them as chips. Guardrailed to restate, never advise ✅ 2026-05-29
 - [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
 - [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) — DELETE now guarded (future + unbooked only), safe to re-run ✅ 2026-05-28
 - [x] Owner added to the 25 RLS policies that omitted it (verified `still_missing_owner = 0`) ✅ 2026-05-28
