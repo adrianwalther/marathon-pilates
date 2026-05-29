@@ -97,9 +97,29 @@ export default function DashboardPage() {
           dismissed.push(e.service_key)
         }
       }
-      setNudge(pickNudge(prof?.first_name, triedTypes, { viewed, dismissed }))
+      const picked = pickNudge(prof?.first_name, triedTypes, { viewed, dismissed })
+      setNudge(picked)
 
       setLoading(false)
+
+      // Progressive enhancement: render the template immediately (above), then
+      // quietly upgrade to an AI-written line in Ruby's voice when it arrives.
+      // Fire-and-forget — any failure leaves the safe template in place.
+      if (picked) {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          fetch('/api/nudge-copy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+            body: JSON.stringify({ service_key: picked.service.key }),
+          })
+            .then(r => (r.ok ? r.json() : null))
+            .then(d => {
+              if (d?.message) setNudge(n => (n && n.service.key === picked.service.key ? { ...n, message: d.message } : n))
+            })
+            .catch(() => {})
+        }
+      }
     }
     load()
   }, [])
