@@ -352,7 +352,7 @@ export default function AdminSchedulePage() {
     padding: '0.35rem 0.9rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#1a1a1a' : 'white',
+    background: active ? 'var(--color-text)' : 'white',
     color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
@@ -364,7 +364,7 @@ export default function AdminSchedulePage() {
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1100px' }}>
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
@@ -376,7 +376,7 @@ export default function AdminSchedulePage() {
           <div style={{ background: 'white', borderRadius: '2px', width: '100%', maxWidth: '560px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{rosterSession.name}</p>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>{rosterSession.name}</p>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                   {new Date(rosterSession.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {formatTime(rosterSession.starts_at)} · {rosterSession.locations?.name}
                 </p>
@@ -396,7 +396,7 @@ export default function AdminSchedulePage() {
                     return (
                       <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 0', borderBottom: '1px solid #f5f5f5' }}>
                         <div>
-                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>
+                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)' }}>
                             {r.profiles?.first_name} {r.profiles?.last_name}
                           </p>
                           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginTop: '0.1rem' }}>
@@ -457,7 +457,7 @@ export default function AdminSchedulePage() {
                               disabled={addingClientId !== null}
                               onClick={() => addClientToSession(c.id)}
                               style={{ width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 0.85rem', border: 'none', borderBottom: '1px solid #f5f5f5', background: 'white', cursor: addingClientId !== null ? 'wait' : 'pointer' }}>
-                              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a' }}>{c.first_name} {c.last_name}</span>
+                              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'var(--color-text)' }}>{c.first_name} {c.last_name}</span>
                               <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.68rem', color: '#aaa' }}>{c.email}</span>
                             </button>
                           ))}
@@ -484,8 +484,8 @@ export default function AdminSchedulePage() {
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Schedule</h1>
-        <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Schedule</h1>
+        <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? 'var(--color-text)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
           {showForm ? '✕ Close' : '+ Add Class'}
         </button>
       </div>
@@ -493,7 +493,7 @@ export default function AdminSchedulePage() {
       {/* Add class form */}
       {showForm && (
         <form onSubmit={handleSubmit} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', marginBottom: '2rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '1.5rem' }}>New Class</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '1.5rem' }}>New Class</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             <div>
               <label style={labelStyle}>Class Type</label>
@@ -560,7 +560,7 @@ export default function AdminSchedulePage() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>←</button>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a', minWidth: '160px', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text)', minWidth: '160px', textAlign: 'center' }}>
             {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
           <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>→</button>
@@ -611,7 +611,7 @@ export default function AdminSchedulePage() {
                       <div key={s.id} style={{ background: s.is_cancelled ? '#fef9f9' : 'white', border: `1px solid ${s.is_cancelled ? '#fdd' : '#eee'}`, borderRadius: '2px', padding: '0.9rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', opacity: s.is_cancelled ? 0.65 : 1 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.2rem' }}>
-                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a' }}>{s.name}</p>
+                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)' }}>{s.name}</p>
                             <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.45rem', borderRadius: '2px', background: '#f0f0f0', color: 'var(--color-text-muted)' }}>
                               {s.locations?.slug === 'charlotte_park' ? 'CP' : 'GH'}
                             </span>
@@ -625,7 +625,7 @@ export default function AdminSchedulePage() {
 
                         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
                           <div style={{ textAlign: 'right' }}>
-                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: isFull ? '#c8860a' : '#1a1a1a' }}>
+                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: isFull ? '#c8860a' : 'var(--color-text)' }}>
                               {s.booking_count}/{s.max_capacity}
                             </p>
                             <div style={{ height: '3px', background: '#f0f0f0', borderRadius: '2px', marginTop: '0.25rem', width: '50px' }}>

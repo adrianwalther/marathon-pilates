@@ -70,7 +70,7 @@ export default function MilestonesPage() {
     <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div style={{ marginBottom: '2rem' }}>
         <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Client Milestones</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: '0.25rem 0 0' }}>Client Milestones</h1>
       </div>
 
       {/* Pending alert */}
@@ -131,7 +131,7 @@ export default function MilestonesPage() {
                     {m.milestone_type === 'anniversary' ? '🎂' : m.milestone_type === 'private_count' ? '⭐' : '🏆'}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.15rem' }}>
+                    <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text)', margin: '0 0 0.15rem' }}>
                       {m.profiles ? `${m.profiles.first_name} ${m.profiles.last_name}` : 'Unknown Client'}
                     </p>
                     <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: 0 }}>
@@ -167,7 +167,7 @@ export default function MilestonesPage() {
             {MILESTONE_TIERS.map(tier => (
               <div key={`${tier.type}-${tier.value}`} style={{ background: 'var(--color-bg)', borderRadius: 2, padding: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <p style={{ fontSize: '0.8rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>{tier.label}</p>
+                  <p style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--color-text)', margin: 0 }}>{tier.label}</p>
                   <span style={{ fontSize: '0.75rem', color: milestones.filter(m => m.milestone_type === tier.type && m.milestone_value === tier.value).length > 0 ? TEAL : '#9ca3af' }}>
                     {milestones.filter(m => m.milestone_type === tier.type && m.milestone_value === tier.value).length}
                   </span>

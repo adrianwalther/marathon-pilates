@@ -121,7 +121,7 @@ export default function OnboardingPage() {
     padding: '0.65rem 2rem',
     borderRadius: '2px',
     border: current === val ? 'none' : '1px solid #e0e0e0',
-    background: current === val ? '#1a1a1a' : 'white',
+    background: current === val ? 'var(--color-text)' : 'white',
     color: current === val ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
@@ -171,7 +171,7 @@ export default function OnboardingPage() {
             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
               Step 1 of 3
             </p>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Let&apos;s get to know you
             </h2>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>
@@ -221,7 +221,7 @@ export default function OnboardingPage() {
             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
               Step 2 of 3
             </p>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Health &amp; safety
             </h2>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>
@@ -274,7 +274,7 @@ export default function OnboardingPage() {
             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
               Step 3 of 3
             </p>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.2, marginBottom: '0.5rem' }}>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.2, marginBottom: '0.5rem' }}>
               Almost there
             </h2>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>

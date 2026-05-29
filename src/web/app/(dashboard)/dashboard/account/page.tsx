@@ -198,7 +198,7 @@ export default function AccountPage() {
     padding: '0.6rem 1.25rem',
     borderRadius: '2px',
     border: 'none',
-    background: active ? '#1a1a1a' : 'white',
+    background: active ? 'var(--color-text)' : 'white',
     color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
@@ -214,12 +214,12 @@ export default function AccountPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '700px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
 
-      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '2rem' }}>
+      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2rem' }}>
         Account
       </h1>
 
@@ -328,7 +328,7 @@ export default function AccountPage() {
                   onChange={() => toggleCondition(c.key)}
                   style={{ accentColor: 'var(--color-cta)', width: '16px', height: '16px' }}
                 />
-                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>
+                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text)' }}>
                   {c.label}
                 </span>
               </label>

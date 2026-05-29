@@ -99,7 +99,7 @@ export default function ReferralsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Referral Program</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: '0.25rem 0 0' }}>Referral Program</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -119,7 +119,7 @@ export default function ReferralsPage() {
         ].map(s => (
           <div key={s.label} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
             <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>{s.label}</p>
-            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{s.value}</p>
+            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--color-text)', margin: 0 }}>{s.value}</p>
           </div>
         ))}
       </div>
@@ -146,7 +146,7 @@ export default function ReferralsPage() {
               <tbody>
                 {referrals.map(r => (
                   <tr key={r.id} style={{ borderTop: '1px solid #f3f4f6' }}>
-                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: '#1a1a1a' }}>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--color-text)' }}>
                       {r.referrer ? `${r.referrer.first_name} ${r.referrer.last_name}` : '—'}
                     </td>
                     <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: '#4b5563' }}>{r.referred_email}</td>
@@ -188,7 +188,7 @@ export default function ReferralsPage() {
               ].map(item => (
                 <div key={item.label} style={{ background: 'var(--color-bg)', borderRadius: 2, padding: '0.875rem' }}>
                   <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 0.25rem' }}>{item.label}</p>
-                  <p style={{ fontSize: '0.875rem', color: '#1a1a1a', margin: 0 }}>{item.value}</p>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--color-text)', margin: 0 }}>{item.value}</p>
                 </div>
               ))}
             </div>
@@ -199,7 +199,7 @@ export default function ReferralsPage() {
             {(['pending', 'signed_up', 'converted', 'rewarded'] as const).map(stage => (
               <div key={stage} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0', borderBottom: '1px solid #f3f4f6' }}>
                 <span style={{ fontSize: '0.8rem', color: '#4b5563', textTransform: 'capitalize' }}>{stage.replace('_', ' ')}</span>
-                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a' }}>{referrals.filter(r => r.status === stage).length}</span>
+                <span style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text)' }}>{referrals.filter(r => r.status === stage).length}</span>
               </div>
             ))}
           </div>
@@ -210,14 +210,14 @@ export default function ReferralsPage() {
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: '0 0 1.5rem' }}>Add Referral</h2>
+            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Referral</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Referrer (Client)</label>
                 <select
                   value={form.referrer_id}
                   onChange={e => setForm(f => ({ ...f, referrer_id: e.target.value }))}
-                  style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: '#1a1a1a' }}
+                  style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: 2, padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: 'var(--color-text)' }}
                 >
                   <option value=''>Select client...</option>
                   {profiles.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>)}

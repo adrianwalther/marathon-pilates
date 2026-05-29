@@ -157,13 +157,13 @@ export default function AdminInstructorsPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1100px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: '#1a1a1a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: 'var(--color-text)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast}
         </div>
       )}
 
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Instructors</h1>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Instructors</h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
           {loading ? '—' : instructors.length} team member{instructors.length !== 1 ? 's' : ''}
         </p>
@@ -188,7 +188,7 @@ export default function AdminInstructorsPage() {
                   style={{ background: isSelected ? '#f0faf8' : 'white', border: `1px solid ${isSelected ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', padding: '1rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}
                 >
                   <div>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.15rem' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', marginBottom: '0.15rem' }}>
                       {inst.first_name} {inst.last_name}
                     </p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{inst.email}</p>
@@ -220,7 +220,7 @@ export default function AdminInstructorsPage() {
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                   <div>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '1rem', color: '#1a1a1a' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '1rem', color: 'var(--color-text)' }}>
                       {selected.first_name} {selected.last_name}
                     </p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{selected.email}</p>
@@ -360,7 +360,7 @@ export default function AdminInstructorsPage() {
 function StatItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', color: '#1a1a1a', lineHeight: 1 }}>{value}</p>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', color: 'var(--color-text)', lineHeight: 1 }}>{value}</p>
       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginTop: '0.2rem' }}>{label}</p>
     </div>
   )

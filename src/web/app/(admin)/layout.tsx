@@ -144,7 +144,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
-      <aside className="hidden lg:flex flex-col w-64 min-h-screen" style={{ background: '#1a1a1a', position: 'fixed', top: 0, left: 0, bottom: 0 }}>
+      <aside className="hidden lg:flex flex-col w-64 min-h-screen" style={{ background: 'var(--color-text)', position: 'fixed', top: 0, left: 0, bottom: 0 }}>
         <div style={{ padding: '2rem 1.75rem 1rem' }}>
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.3rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'white' }}>Marathon</span>
           <br />

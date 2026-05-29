@@ -126,7 +126,7 @@ export default function SocialContentPage() {
               {entry.profiles.first_name} {entry.profiles.last_name}
             </p>
           )}
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{entry.description}</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>{entry.description}</p>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
             {new Date(entry.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
             {' · '}{entry.hours} hr{entry.hours !== 1 ? 's' : ''} · ${pay.toFixed(2)}
@@ -154,18 +154,18 @@ export default function SocialContentPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Social Content</h1>
+          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Social Content</h1>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>$25/hr · Rounds to nearest 15 min · Admin approval required</p>
         </div>
         {!isAdmin && (
-          <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? '#1a1a1a' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+          <button onClick={() => setShowForm(!showForm)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showForm ? 'var(--color-text)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
             {showForm ? '✕ Close' : '+ Log Hours'}
           </button>
         )}
@@ -180,7 +180,7 @@ export default function SocialContentPage() {
             { label: 'Approved Pay', value: `$${totalApprovedPay.toFixed(2)}` },
           ].map(s => (
             <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.1rem 1.4rem' }}>
-              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: '#1a1a1a', lineHeight: 1 }}>{s.value}</p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: 'var(--color-text)', lineHeight: 1 }}>{s.value}</p>
               <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: '0.3rem' }}>{s.label}</p>
             </div>
           ))}
@@ -190,7 +190,7 @@ export default function SocialContentPage() {
       {/* Submit form (instructor) */}
       {showForm && !isAdmin && (
         <form onSubmit={submitEntry} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', marginBottom: '2rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '1.25rem' }}>Log Content Hours</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '1.25rem' }}>Log Content Hours</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
             <div>
               <label style={labelStyle}>Date</label>

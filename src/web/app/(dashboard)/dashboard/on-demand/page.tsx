@@ -104,7 +104,7 @@ export default function OnDemandPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
           On Demand
         </h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
@@ -142,12 +142,12 @@ export default function OnDemandPage() {
                         {c.duration} MIN
                       </div>
                     )}
-                    <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
+                    <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: 'var(--color-text)', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
                       ✦ Custom
                     </div>
                   </div>
                   <div style={{ padding: '0.875rem 1rem' }}>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: '#1a1a1a', marginBottom: '0.35rem', lineHeight: 1.3 }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: 'var(--color-text)', marginBottom: '0.35rem', lineHeight: 1.3 }}>
                       {c.title ?? 'Untitled Class'}
                     </p>
                     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -221,7 +221,7 @@ function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }
           {cls.duration_minutes} MIN
         </div>
         {cls.is_ai_generated && (
-          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
+          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: 'var(--color-text)', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
             ✦ Custom
           </div>
         )}
@@ -234,7 +234,7 @@ function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }
 
       {/* Info */}
       <div style={{ padding: '1rem' }}>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.3rem', lineHeight: 1.3 }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', marginBottom: '0.3rem', lineHeight: 1.3 }}>
           {cls.title}
         </p>
         {(cls.profiles || cls.instructor_name) && (
@@ -303,7 +303,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
       </button>
 
       {/* Video player */}
-      <div style={{ background: '#1a1a1a', borderRadius: '2px', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', overflow: 'hidden', position: 'relative' }}>
+      <div style={{ background: 'var(--color-text)', borderRadius: '2px', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem', overflow: 'hidden', position: 'relative' }}>
         {canWatch === null ? (
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#555' }}>Loading...</p>
         ) : canWatch && cls.video_url ? (
@@ -338,11 +338,11 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
       {/* Title + meta */}
       <div style={{ marginBottom: '2rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: 0 }}>
+          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', margin: 0 }}>
             {cls.title}
           </h1>
           {cls.is_ai_generated && (
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: 'var(--color-cta)' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: 'var(--color-text)', color: 'var(--color-cta)' }}>
               ✦ Custom
             </span>
           )}
@@ -391,7 +391,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
               const shop = PROPS_SHOP[prop.toLowerCase()]
               return (
                 <div key={prop} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>{prop}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text)' }}>{prop}</span>
                   {shop && (
                     <a href={shop.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
                       Shop →
@@ -411,10 +411,10 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
 }
 
 function renderLine(line: string, idx: number) {
-  if (line.startsWith('# ')) return <h2 key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: '0 0 0.25rem' }}>{line.slice(2)}</h2>
+  if (line.startsWith('# ')) return <h2 key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', margin: '0 0 0.25rem' }}>{line.slice(2)}</h2>
   if (line.startsWith('## ')) return <div key={idx} style={{ marginTop: '1.75rem', marginBottom: '0.6rem', paddingBottom: '0.4rem', borderBottom: '1px solid #e8e8e8' }}><span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>{line.slice(3)}</span></div>
-  if (line.startsWith('### ')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginTop: '1rem', marginBottom: '0.25rem' }}>{line.slice(4)}</p>
-  if (line.startsWith('**') && line.endsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: '#1a1a1a', margin: '0.25rem 0' }}>{line.slice(2, -2)}</p>
+  if (line.startsWith('### ')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', marginTop: '1rem', marginBottom: '0.25rem' }}>{line.slice(4)}</p>
+  if (line.startsWith('**') && line.endsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: 'var(--color-text)', margin: '0.25rem 0' }}>{line.slice(2, -2)}</p>
   if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-cta)', fontStyle: 'italic', margin: '0.2rem 0 0.2rem 1rem' }}>{line.slice(1, -1)}</p>
   if (line.startsWith('- ')) return <li key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#555', marginBottom: '0.2rem' }}>{line.slice(2)}</li>
   if (line.trim() === '') return <div key={idx} style={{ height: '0.4rem' }} />
@@ -436,10 +436,10 @@ function GeneratedClassDetail({ cls, onBack }: { cls: GeneratedClass; onBack: ()
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: 0 }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', margin: 0 }}>
           {cls.title ?? 'Custom Class'}
         </h1>
-        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: 'var(--color-cta)' }}>✦ Custom</span>
+        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: 'var(--color-text)', color: 'var(--color-cta)' }}>✦ Custom</span>
       </div>
 
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>

@@ -54,7 +54,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar — desktop */}
       <aside
         className="hidden lg:flex flex-col w-64 min-h-screen"
-        style={{ background: '#1a1a1a', position: 'fixed', top: 0, left: 0, bottom: 0 }}
+        style={{ background: 'var(--color-text)', position: 'fixed', top: 0, left: 0, bottom: 0 }}
       >
         {/* Logo */}
         <div style={{ padding: '2rem 1.75rem 1.5rem' }}>
@@ -128,7 +128,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile top bar */}
       <div
         className="lg:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 py-4"
-        style={{ background: '#1a1a1a' }}
+        style={{ background: 'var(--color-text)' }}
       >
         <div>
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.1rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'white' }}>Marathon </span>
@@ -146,7 +146,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {mobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 z-40 flex flex-col pt-16"
-          style={{ background: '#1a1a1a' }}
+          style={{ background: 'var(--color-text)' }}
         >
           <nav style={{ flex: 1, paddingTop: '1rem' }}>
             {nav.map(item => (

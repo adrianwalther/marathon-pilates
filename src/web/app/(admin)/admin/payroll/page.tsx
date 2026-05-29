@@ -372,7 +372,7 @@ export default function AdminPayrollPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1000px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
@@ -380,12 +380,12 @@ export default function AdminPayrollPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Payroll</h1>
+          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Payroll</h1>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>Semi-monthly · Processed via Gusto</p>
         </div>
         <button
           onClick={() => setShowNewForm(!showNewForm)}
-          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showNewForm ? '#1a1a1a' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showNewForm ? 'var(--color-text)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
         >
           {showNewForm ? '✕ Close' : '+ New Period'}
         </button>
@@ -409,7 +409,7 @@ export default function AdminPayrollPage() {
             ['Manager (Susan)', '$1,000/period semi-monthly'],
           ].map(([label, val]) => (
             <div key={label + val} style={{ display: 'flex', gap: '0.5rem' }}>
-              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.05em', color: '#1a1a1a', minWidth: '90px' }}>{label}</p>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.05em', color: 'var(--color-text)', minWidth: '90px' }}>{label}</p>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#555' }}>{val}</p>
             </div>
           ))}
@@ -419,7 +419,7 @@ export default function AdminPayrollPage() {
       {/* New period form */}
       {showNewForm && (
         <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', marginBottom: '2rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '1.25rem' }}>New Pay Period</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '1.25rem' }}>New Pay Period</p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: 1, minWidth: '160px' }}>
               <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.35rem' }}>Period Start</label>
@@ -468,7 +468,7 @@ export default function AdminPayrollPage() {
                   style={{ padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', gap: '1rem' }}
                 >
                   <div>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>
                       {formatDate(p.period_start)} – {formatDate(p.period_end)}
                     </p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>
@@ -478,7 +478,7 @@ export default function AdminPayrollPage() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', color: '#1a1a1a', lineHeight: 1 }}>${total.toFixed(2)}</p>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', color: 'var(--color-text)', lineHeight: 1 }}>${total.toFixed(2)}</p>
                       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa' }}>total</p>
                     </div>
                     <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: p.processed_at ? '#f5ece6' : '#fff8e6', color: p.processed_at ? 'var(--color-cta)' : '#c8860a' }}>
@@ -500,7 +500,7 @@ export default function AdminPayrollPage() {
                         {employeeBreakdown.map(emp => (
                           <div key={emp.name} style={{ marginBottom: '1.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', paddingBottom: '0.4rem', borderBottom: '2px solid #f0f0f0' }}>
-                              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a' }}>{emp.name}</p>
+                              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text)' }}>{emp.name}</p>
                               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-cta)' }}>${emp.total.toFixed(2)}</p>
                             </div>
                             {emp.lines.map(l => {
@@ -521,7 +521,7 @@ export default function AdminPayrollPage() {
                                     )}
                                   </div>
                                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a', textAlign: 'right', minWidth: '60px' }}>${l.amount.toFixed(2)}</p>
+                                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'var(--color-text)', textAlign: 'right', minWidth: '60px' }}>${l.amount.toFixed(2)}</p>
                                     {!p.processed_at && (
                                       <button
                                         onClick={() => deleteLineItem(l.id)}
@@ -537,9 +537,9 @@ export default function AdminPayrollPage() {
                         ))}
 
                         {/* Total row */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderTop: '2px solid #1a1a1a', marginTop: '0.5rem' }}>
-                          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#1a1a1a' }}>Total Payroll</p>
-                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '1rem', color: '#1a1a1a' }}>${total.toFixed(2)}</p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderTop: '2px solid var(--color-text)', marginTop: '0.5rem' }}>
+                          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Total Payroll</p>
+                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '1rem', color: 'var(--color-text)' }}>${total.toFixed(2)}</p>
                         </div>
                       </div>
                     )}
@@ -640,7 +640,7 @@ export default function AdminPayrollPage() {
                           >
                             + Manual Entry
                           </button>
-                          <button onClick={() => markProcessed(p.id)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: '#1a1a1a', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+                          <button onClick={() => markProcessed(p.id)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: 'var(--color-text)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
                             Mark Processed
                           </button>
                         </>

@@ -194,13 +194,13 @@ export default function TimeClockPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
 
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Time Clock</h1>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Time Clock</h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
           $18/hr · OT ${OT_RATE}/hr after {OT_THRESHOLD}h/week · Rounds to nearest 15 min
         </p>
@@ -212,7 +212,7 @@ export default function TimeClockPage() {
           {activeEntry ? (
             <>
               <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.5rem' }}>Currently Clocked In</p>
-              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.8rem', color: '#1a1a1a', lineHeight: 1, marginBottom: '0.25rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.8rem', color: 'var(--color-text)', lineHeight: 1, marginBottom: '0.25rem' }}>
                 {formatDuration(activeElapsed)}
               </p>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa', marginBottom: '1.5rem' }}>
@@ -221,7 +221,7 @@ export default function TimeClockPage() {
               <button
                 onClick={clockOut}
                 disabled={clockingOut}
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingOut ? 'var(--color-cta-disabled)' : '#1a1a1a', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingOut ? 'not-allowed' : 'pointer' }}
+                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingOut ? 'var(--color-cta-disabled)' : 'var(--color-text)', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingOut ? 'not-allowed' : 'pointer' }}
               >
                 {clockingOut ? 'Clocking Out...' : 'Clock Out'}
               </button>
@@ -258,13 +258,13 @@ export default function TimeClockPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {Object.values(totalsByPerson).map(p => (
               <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f8f8f8' }}>
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>{p.name}</p>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)' }}>{p.name}</p>
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: p.hours > OT_THRESHOLD ? '#e05555' : 'var(--color-text-muted)' }}>
                     {formatDuration(p.hours)}
                     {p.hours > OT_THRESHOLD && ' ⚠ OT'}
                   </p>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>${p.pay.toFixed(2)}</p>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)' }}>${p.pay.toFixed(2)}</p>
                 </div>
               </div>
             ))}
@@ -275,7 +275,7 @@ export default function TimeClockPage() {
       {/* Week nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
         <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>←</button>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text)' }}>
           {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
         <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>→</button>
@@ -325,7 +325,7 @@ export default function TimeClockPage() {
                           {e.profiles.first_name} {e.profiles.last_name}
                         </p>
                       )}
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)' }}>
                         {formatDate(e.clock_in)} · {formatTime(e.clock_in)} – {e.clock_out ? formatTime(e.clock_out) : <span style={{ color: 'var(--color-cta)' }}>Active</span>}
                       </p>
                       {e.notes && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginTop: '0.15rem' }}>{e.notes}</p>}
@@ -333,7 +333,7 @@ export default function TimeClockPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
                       {hrs != null && (
                         <div style={{ textAlign: 'right' }}>
-                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: '#1a1a1a' }}>{formatDuration(hrs)}</p>
+                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: 'var(--color-text)' }}>{formatDuration(hrs)}</p>
                           {pay != null && <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#aaa' }}>${pay.toFixed(2)}</p>}
                         </div>
                       )}

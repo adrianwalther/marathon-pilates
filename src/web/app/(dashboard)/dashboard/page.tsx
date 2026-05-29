@@ -96,7 +96,7 @@ export default function DashboardPage() {
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
       {/* Greeting */}
       <div style={{ marginBottom: '3rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.1 }}>
           Hello,<br />{profile?.first_name ?? 'there'}
         </h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.5rem', letterSpacing: '0.02em' }}>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
             {upcomingBookings.map(b => (
               <div key={b.id} style={{ background: 'white', borderRadius: '2px', padding: '1.25rem 1.5rem', border: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>
                     {b.scheduled_sessions?.name}
                   </p>
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
@@ -192,7 +192,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.75rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: 'var(--color-text)', marginBottom: '0.75rem' }}>
                 {next - done} more class{next - done !== 1 ? 'es' : ''} to your <strong>{next}-class milestone</strong>
               </p>
               <div style={{ height: '4px', background: '#f0f0f0', borderRadius: '2px' }}>
@@ -221,7 +221,7 @@ export default function DashboardPage() {
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
     <div style={{ background: 'white', borderRadius: '2px', padding: '1.25rem 1.5rem', border: '1px solid #eee' }}>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', color: '#1a1a1a', lineHeight: 1 }}>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', color: 'var(--color-text)', lineHeight: 1 }}>
         {value}
       </p>
       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>
@@ -283,7 +283,7 @@ function BuildAClassCard() {
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', lineHeight: 1.1, marginBottom: '0.5rem' }}>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.1, marginBottom: '0.5rem' }}>
               Build a Class
             </h2>
             <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-cta)', marginTop: '0.4rem', transition: 'transform 0.2s', display: 'inline-block', transform: hovered ? 'translateX(4px)' : 'translateX(0)' }}>

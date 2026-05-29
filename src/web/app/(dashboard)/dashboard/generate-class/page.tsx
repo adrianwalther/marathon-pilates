@@ -34,7 +34,7 @@ function renderLine(line: string, idx: number) {
   // H1 — class title
   if (line.startsWith('# ')) {
     return (
-      <h2 key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: '0 0 0.25rem' }}>
+      <h2 key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', margin: '0 0 0.25rem' }}>
         {line.slice(2)}
       </h2>
     )
@@ -65,7 +65,7 @@ function renderLine(line: string, idx: number) {
   if (line.startsWith('**') && line.includes('**')) {
     const stripped = line.replace(/\*\*/g, '')
     return (
-      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', margin: '0.85rem 0 0.15rem' }}>
+      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', margin: '0.85rem 0 0.15rem' }}>
         {stripped}
       </p>
     )
@@ -336,7 +336,7 @@ export default function GenerateClassPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '860px' }}>
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
           AI Class Generator
         </h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
@@ -506,7 +506,7 @@ export default function GenerateClassPage() {
                                   </span>
                                 )}
                                 {cueTimings[currentCueIndex].exercise && (
-                                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.78rem', color: '#1a1a1a' }}>
+                                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.78rem', color: 'var(--color-text)' }}>
                                     {cueTimings[currentCueIndex].exercise}
                                   </span>
                                 )}
@@ -547,7 +547,7 @@ export default function GenerateClassPage() {
                         onClick={handlePlayPause}
                         style={{
                           width: '100%', padding: '0.75rem',
-                          background: isPlaying ? '#1a1a1a' : 'var(--color-cta)',
+                          background: isPlaying ? 'var(--color-text)' : 'var(--color-cta)',
                           border: 'none', borderRadius: '2px', cursor: 'pointer',
                           fontFamily: "'Raleway', sans-serif", fontWeight: 700,
                           fontSize: '0.65rem', letterSpacing: '0.14em',
@@ -570,7 +570,7 @@ export default function GenerateClassPage() {
                 <button
                   onClick={saveClass}
                   disabled={saving || saved}
-                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: saved ? '#f5ece6' : '#1a1a1a', color: saved ? 'var(--color-cta)' : 'white', cursor: saved ? 'default' : 'pointer' }}>
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: saved ? '#f5ece6' : 'var(--color-text)', color: saved ? 'var(--color-cta)' : 'white', cursor: saved ? 'default' : 'pointer' }}>
                   {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Class'}
                 </button>
                 <button
@@ -600,7 +600,7 @@ export default function GenerateClassPage() {
             {savedClasses.map(c => (
               <div key={c.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a', margin: '0 0 0.2rem' }}>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: 'var(--color-text)', margin: '0 0 0.2rem' }}>
                     {c.title ?? 'Untitled Class'}
                   </p>
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', margin: 0 }}>

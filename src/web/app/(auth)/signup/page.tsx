@@ -85,7 +85,7 @@ export default function SignupPage() {
             Check Your Email
           </h1>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
-            We sent a confirmation link to <strong style={{ color: '#1a1a1a' }}>{email}</strong>. Click it to activate your account.
+            We sent a confirmation link to <strong style={{ color: 'var(--color-text)' }}>{email}</strong>. Click it to activate your account.
           </p>
           <Link href="/login" style={{ display: 'inline-block', marginTop: '2rem', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
             Back to Sign In
@@ -98,7 +98,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16" style={{ background: '#1a1a1a' }}>
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16" style={{ background: 'var(--color-text)' }}>
         <Logo />
         <div>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.8rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'white', lineHeight: 1.2 }}>
@@ -120,7 +120,7 @@ export default function SignupPage() {
             <Logo />
           </div>
 
-          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+          <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
             Create Account
           </h1>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem', letterSpacing: '0.02em' }}>

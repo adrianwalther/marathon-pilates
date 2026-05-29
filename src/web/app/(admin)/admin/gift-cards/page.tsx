@@ -101,13 +101,13 @@ export default function AdminGiftCardsPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: '#1a1a1a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: 'var(--color-text)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast}
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Gift Cards</h1>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Gift Cards</h1>
         <button onClick={() => setCreating(true)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.65rem 1.25rem', borderRadius: '2px', background: 'var(--color-cta)', color: 'white', border: 'none', cursor: 'pointer' }}>
           + Issue Card
         </button>
@@ -122,7 +122,7 @@ export default function AdminGiftCardsPage() {
           { label: 'Total Issued Value', value: formatCurrency(stats.issuedValue) },
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: '#1a1a1a', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', color: 'var(--color-text)', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>{s.label}</p>
           </div>
         ))}
@@ -132,7 +132,7 @@ export default function AdminGiftCardsPage() {
       <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', border: '1px solid #e0e0e0', borderRadius: '2px', overflow: 'hidden' }}>
           {(['all', 'active', 'redeemed', 'physical'] as const).map(f => (
-            <button key={f} onClick={() => setFilter(f)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 0.9rem', border: 'none', background: filter === f ? '#1a1a1a' : 'white', color: filter === f ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
+            <button key={f} onClick={() => setFilter(f)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 0.9rem', border: 'none', background: filter === f ? 'var(--color-text)' : 'white', color: filter === f ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
               {f}
             </button>
           ))}
@@ -161,14 +161,14 @@ export default function AdminGiftCardsPage() {
           </div>
           {filtered.map(c => (
             <div key={c.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.25rem', display: 'grid', gridTemplateColumns: '1fr 1fr 80px 80px 80px 80px', gap: '1rem', alignItems: 'center' }}>
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a', letterSpacing: '0.08em' }}>{c.code}</span>
+              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'var(--color-text)', letterSpacing: '0.08em' }}>{c.code}</span>
               <div>
-                {c.recipient_name && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a' }}>{c.recipient_name}</p>}
+                {c.recipient_name && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'var(--color-text)' }}>{c.recipient_name}</p>}
                 {c.recipient_email && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{c.recipient_email}</p>}
                 {!c.recipient_name && !c.recipient_email && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#ccc' }}>—</span>}
               </div>
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>{formatCurrency(c.initial_balance)}</span>
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: c.current_balance < c.initial_balance ? 400 : 300, fontSize: '0.82rem', color: c.current_balance === 0 ? '#aaa' : '#1a1a1a' }}>{formatCurrency(c.current_balance)}</span>
+              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text)' }}>{formatCurrency(c.initial_balance)}</span>
+              <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: c.current_balance < c.initial_balance ? 400 : 300, fontSize: '0.82rem', color: c.current_balance === 0 ? '#aaa' : 'var(--color-text)' }}>{formatCurrency(c.current_balance)}</span>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: c.is_physical ? 'var(--color-bg)' : '#f5ece6', color: c.is_physical ? 'var(--color-text-muted)' : 'var(--color-cta)', width: 'fit-content' }}>
                 {c.is_physical ? 'Physical' : 'Digital'}
               </span>
@@ -184,7 +184,7 @@ export default function AdminGiftCardsPage() {
       {creating && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '1rem' }}>
           <div style={{ background: 'white', borderRadius: '2px', padding: '2.5rem', width: '100%', maxWidth: '480px' }}>
-            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '2rem' }}>Issue Gift Card</h2>
+            <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2rem' }}>Issue Gift Card</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>
               <div>
@@ -205,7 +205,7 @@ export default function AdminGiftCardsPage() {
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 {[{ v: false, label: 'Digital' }, { v: true, label: 'Physical' }].map(opt => (
-                  <button key={String(opt.v)} onClick={() => setNewPhysical(opt.v)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, padding: '0.55rem 1.25rem', borderRadius: '2px', border: `1px solid ${newPhysical === opt.v ? '#1a1a1a' : '#e0e0e0'}`, background: newPhysical === opt.v ? '#1a1a1a' : 'white', color: newPhysical === opt.v ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
+                  <button key={String(opt.v)} onClick={() => setNewPhysical(opt.v)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase' as const, padding: '0.55rem 1.25rem', borderRadius: '2px', border: `1px solid ${newPhysical === opt.v ? 'var(--color-text)' : '#e0e0e0'}`, background: newPhysical === opt.v ? 'var(--color-text)' : 'white', color: newPhysical === opt.v ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
                     {opt.label}
                   </button>
                 ))}

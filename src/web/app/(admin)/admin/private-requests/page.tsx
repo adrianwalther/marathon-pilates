@@ -171,13 +171,13 @@ export default function PrivateRequestsPage() {
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1000px' }}>
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
 
       <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
           Private Requests
         </h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)' }}>
@@ -214,7 +214,7 @@ export default function PrivateRequestsPage() {
                   <div style={{ flex: 1 }}>
                     {/* Client + type + status */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem', flexWrap: 'wrap' }}>
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)' }}>
                         {client ? `${client.first_name} ${client.last_name}` : 'Unknown Client'}
                       </p>
                       <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: '#f0f0f0', color: 'var(--color-text-muted)' }}>
@@ -268,7 +268,7 @@ export default function PrivateRequestsPage() {
                       {req.status === 'proposed' && (
                         <button
                           onClick={() => handleConfirm(req.id)}
-                          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: 'none', borderRadius: '2px', background: '#1a1a1a', color: 'white', cursor: 'pointer' }}
+                          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: 'none', borderRadius: '2px', background: 'var(--color-text)', color: 'white', cursor: 'pointer' }}
                         >
                           Confirm
                         </button>

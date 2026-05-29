@@ -128,7 +128,7 @@ export default function LoginPage() {
               fontSize: '1.8rem',
               letterSpacing: '0.1em',
               textTransform: 'uppercase',
-              color: '#1a1a1a',
+              color: 'var(--color-text)',
               marginBottom: '0.5rem',
             }}
           >

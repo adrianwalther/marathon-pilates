@@ -104,7 +104,7 @@ export default function AdminOverviewPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1000px' }}>
       <div style={{ marginBottom: '2.5rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Overview</h1>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Overview</h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
           {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
@@ -132,7 +132,7 @@ export default function AdminOverviewPage() {
           ...(canViewRevenue ? [{ label: 'Revenue Today', value: `$${stats.revenueToday}` }] : []),
         ].map(s => (
           <div key={s.label} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', color: '#1a1a1a', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', color: 'var(--color-text)', lineHeight: 1 }}>{loading ? '—' : s.value}</p>
             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>{s.label}</p>
           </div>
         ))}
@@ -171,7 +171,7 @@ export default function AdminOverviewPage() {
               return (
                 <div key={s.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.2rem' }}>{s.name}</p>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>{s.name}</p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                       {formatDate(s.starts_at)} · {formatTime(s.starts_at)} · {s.locations?.name}
                     </p>
@@ -182,7 +182,7 @@ export default function AdminOverviewPage() {
                     )}
                   </div>
                   <div style={{ textAlign: 'right', minWidth: '80px' }}>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: isFull ? '#c8860a' : '#1a1a1a' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.88rem', color: isFull ? '#c8860a' : 'var(--color-text)' }}>
                       {s.booking_count}/{s.max_capacity}
                     </p>
                     <div style={{ height: '3px', background: '#f0f0f0', borderRadius: '2px', marginTop: '0.3rem', width: '80px' }}>

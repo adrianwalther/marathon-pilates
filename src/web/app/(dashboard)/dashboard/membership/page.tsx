@@ -229,7 +229,7 @@ function MembershipPage() {
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
-      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '2.5rem' }}>
+      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2.5rem' }}>
         Membership
       </h1>
 
@@ -237,7 +237,7 @@ function MembershipPage() {
       {membership ? (
         <div style={{ marginBottom: '3rem' }}>
           <p style={sectionLabel}>Current Plan</p>
-          <div style={{ background: '#1a1a1a', borderRadius: '2px', padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ background: 'var(--color-text)', borderRadius: '2px', padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'white' }}>
@@ -293,7 +293,7 @@ function MembershipPage() {
               return (
                 <div key={c.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '0.75rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a' }}>
+                    <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text)' }}>
                       {c.credit_type} — {c.source}
                     </p>
                     {c.expires_at && (
@@ -317,7 +317,7 @@ function MembershipPage() {
       {successPlan && (
         <div style={{ background: '#f5ece6', border: '1px solid var(--color-cta)', borderRadius: '2px', padding: '1rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span style={{ color: 'var(--color-cta)', fontSize: '1.2rem' }}>✓</span>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text)' }}>
             Payment confirmed — your membership is now active.
           </p>
         </div>
@@ -331,12 +331,12 @@ function MembershipPage() {
             const isCurrent = membership?.membership_type === plan.key
             const isLoading = checkingOut === plan.key
             return (
-              <div key={plan.key} style={{ background: plan.highlight ? '#1a1a1a' : 'white', border: plan.highlight ? 'none' : '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+              <div key={plan.key} style={{ background: plan.highlight ? 'var(--color-text)' : 'white', border: plan.highlight ? 'none' : '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                 <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
                   {plan.name}
                 </p>
                 <div style={{ marginBottom: '1rem' }}>
-                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: plan.highlight ? 'white' : '#1a1a1a', lineHeight: 1 }}>{plan.price}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: plan.highlight ? 'white' : 'var(--color-text)', lineHeight: 1 }}>{plan.price}</span>
                   {plan.priceNote && (
                     <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{plan.priceNote}</span>
                   )}
@@ -378,7 +378,7 @@ function MembershipPage() {
               <div key={pack.key} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                 <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>{pack.name}</p>
                 <div style={{ marginBottom: '1rem' }}>
-                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: '#1a1a1a', lineHeight: 1 }}>{pack.price}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: 'var(--color-text)', lineHeight: 1 }}>{pack.price}</span>
                   <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{pack.priceNote}</span>
                 </div>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)', flex: 1, marginBottom: '1.25rem' }}>{pack.description}</p>
@@ -408,7 +408,7 @@ function MembershipPage() {
               <div key={pack.key} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
                 <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>{pack.name}</p>
                 <div style={{ marginBottom: '1rem' }}>
-                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: '#1a1a1a', lineHeight: 1 }}>{pack.price}</span>
+                  <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', color: 'var(--color-text)', lineHeight: 1 }}>{pack.price}</span>
                   <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginLeft: '0.35rem' }}>{pack.priceNote}</span>
                 </div>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)', flex: 1, marginBottom: '1.25rem' }}>{pack.description}</p>
@@ -435,7 +435,7 @@ function MembershipPage() {
 function CreditCard({ label, count }: { label: string; count: number }) {
   return (
     <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', color: count > 0 ? '#1a1a1a' : '#ddd', lineHeight: 1 }}>{count}</p>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', color: count > 0 ? 'var(--color-text)' : '#ddd', lineHeight: 1 }}>{count}</p>
       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>{label}</p>
     </div>
   )

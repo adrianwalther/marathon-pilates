@@ -310,7 +310,7 @@ function SchedulePageInner() {
       {toast && (
         <div style={{
           position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100,
-          background: toast.type === 'success' ? '#1a1a1a' : '#e05555',
+          background: toast.type === 'success' ? 'var(--color-text)' : '#e05555',
           color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px',
           fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em',
         }}>
@@ -318,7 +318,7 @@ function SchedulePageInner() {
         </div>
       )}
 
-      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '2rem' }}>
+      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2rem' }}>
         Schedule
       </h1>
 
@@ -331,14 +331,14 @@ function SchedulePageInner() {
             style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',
               padding: '0.6rem 0.9rem', borderRadius: '2px', border: 'none', cursor: 'pointer',
-              background: selectedDay === i ? '#1a1a1a' : 'white',
+              background: selectedDay === i ? 'var(--color-text)' : 'white',
               minWidth: '52px', flexShrink: 0,
             }}
           >
             <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: selectedDay === i ? 'var(--color-cta)' : '#aaa' }}>
               {formatDay(w.date)}
             </span>
-            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: selectedDay === i ? 400 : 100, fontSize: '1.2rem', color: selectedDay === i ? 'white' : '#1a1a1a', lineHeight: 1.3 }}>
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: selectedDay === i ? 400 : 100, fontSize: '1.2rem', color: selectedDay === i ? 'white' : 'var(--color-text)', lineHeight: 1.3 }}>
               {formatDayNum(w.date)}
             </span>
             {isToday(w.date) && (
@@ -385,7 +385,7 @@ function SchedulePageInner() {
               <div key={s.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.3rem' }}>
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)' }}>
                       {s.name}
                     </p>
                     <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.15rem 0.5rem', borderRadius: '2px', background: '#f0f0f0', color: 'var(--color-text-muted)' }}>

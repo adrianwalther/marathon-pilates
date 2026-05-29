@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
           </div>
         ) : (
           <>
-            <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.5rem' }}>
+            <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
               Reset Password
             </h1>
             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>

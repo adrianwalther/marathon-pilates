@@ -97,7 +97,7 @@ export default function BookPrivatePage() {
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '720px' }}>
-      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
+      <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
         Request a Private
       </h1>
       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>
@@ -182,7 +182,7 @@ export default function BookPrivatePage() {
             rows={4}
             style={{
               width: '100%', boxSizing: 'border-box',
-              fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a',
+              fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text)',
               border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.85rem 1rem',
               resize: 'vertical', outline: 'none', lineHeight: 1.6,
             }}

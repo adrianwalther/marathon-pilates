@@ -150,7 +150,7 @@ export default function AutomationsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Automations</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: '0.25rem 0 0' }}>Automations</h1>
         </div>
         {automations.length === 0 && (
           <button
@@ -172,7 +172,7 @@ export default function AutomationsPage() {
         ].map(s => (
           <div key={s.label} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
             <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>{s.label}</p>
-            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{s.value}</p>
+            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--color-text)', margin: 0 }}>{s.value}</p>
           </div>
         ))}
       </div>
@@ -194,7 +194,7 @@ export default function AutomationsPage() {
             >
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
-                  <p style={{ fontSize: '0.9rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>{a.name}</p>
+                  <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--color-text)', margin: 0 }}>{a.name}</p>
                   <span style={{ background: a.is_active ? '#d1fae5' : '#f3f4f6', color: a.is_active ? '#065f46' : '#6b7280', padding: '0.15rem 0.5rem', borderRadius: 2, fontSize: '0.65rem', fontFamily: 'Raleway, sans-serif', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                     {a.is_active ? 'Active' : 'Paused'}
                   </span>
@@ -248,7 +248,7 @@ export default function AutomationsPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
               <div>
                 <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', margin: '0 0 0.25rem' }}>Automation</p>
-                <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: 0 }}>{selected.name}</h2>
+                <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: 0 }}>{selected.name}</h2>
               </div>
               <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: '1.1rem' }}>×</button>
             </div>
@@ -275,7 +275,7 @@ export default function AutomationsPage() {
                         {step.delay_hours > 0 && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>+{step.delay_hours >= 24 ? `${step.delay_hours / 24}d` : `${step.delay_hours}h`}</span>}
                         {step.delay_hours === 0 && i === 0 && <span style={{ fontSize: '0.7rem', color: '#9ca3af' }}>Immediately</span>}
                       </div>
-                      {step.subject && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.2rem' }}>{step.subject}</p>}
+                      {step.subject && <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-text)', margin: '0 0 0.2rem' }}>{step.subject}</p>}
                       <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0, lineHeight: 1.5 }}>{step.message}</p>
                     </div>
                   </div>

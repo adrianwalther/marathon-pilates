@@ -205,7 +205,7 @@ export default function ChatPage() {
       <div style={{ width: 300, borderRight: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', background: '#fff', flexShrink: 0 }}>
         <div style={{ padding: '1rem', borderBottom: '1px solid #f0f0f0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <p style={{ fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a', margin: 0 }}>Messages</p>
+            <p style={{ fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)', margin: 0 }}>Messages</p>
             {totalUnread > 0 && (
               <span style={{ background: TEAL, color: '#fff', fontSize: '0.7rem', padding: '0.1rem 0.5rem', borderRadius: '999px' }}>{totalUnread}</span>
             )}
@@ -243,7 +243,7 @@ export default function ChatPage() {
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <p style={{ fontSize: '0.8rem', fontWeight: 500, color: '#1a1a1a', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--color-text)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {convo.client ? `${convo.client.first_name} ${convo.client.last_name}` : 'Unknown'}
                         </p>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0, marginLeft: '0.5rem' }}>
@@ -293,7 +293,7 @@ export default function ChatPage() {
                 {selected.client?.first_name?.charAt(0) || '?'}
               </div>
               <div>
-                <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text)', margin: 0 }}>
                   {selected.client ? `${selected.client.first_name} ${selected.client.last_name}` : 'Unknown'}
                 </p>
                 <p style={{ fontSize: '0.72rem', color: '#9ca3af', margin: 0 }}>{selected.client?.email}</p>
@@ -335,7 +335,7 @@ export default function ChatPage() {
                       padding: '0.6rem 0.875rem',
                       borderRadius: isStaff ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                       background: isStaff ? TEAL : '#fff',
-                      color: isStaff ? '#fff' : '#1a1a1a',
+                      color: isStaff ? '#fff' : 'var(--color-text)',
                       fontSize: '0.875rem',
                       lineHeight: 1.5,
                       boxShadow: isStaff ? 'none' : '0 1px 2px rgba(0,0,0,0.06)',

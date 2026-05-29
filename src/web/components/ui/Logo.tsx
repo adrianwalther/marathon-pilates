@@ -8,7 +8,7 @@ export default function Logo({ className = "" }: { className?: string }) {
           fontSize: "1.6rem",
           letterSpacing: "0.18em",
           textTransform: "uppercase",
-          color: "#1a1a1a",
+          color: "var(--color-text)",
           lineHeight: 1,
         }}
       >

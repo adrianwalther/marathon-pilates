@@ -121,7 +121,7 @@ export default function LeadsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Lead Management</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: '0.25rem 0 0' }}>Lead Management</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -136,7 +136,7 @@ export default function LeadsPage() {
         {STAGES.map(s => (
           <div key={s.key} style={{ background: '#fff', borderRadius: 2, padding: '0.875rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
             <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.6rem', letterSpacing: '0.08em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.4rem' }}>{s.label}</p>
-            <p style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{leads.filter(l => l.stage === s.key).length}</p>
+            <p style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: 0 }}>{leads.filter(l => l.stage === s.key).length}</p>
           </div>
         ))}
       </div>
@@ -185,7 +185,7 @@ export default function LeadsPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {leads.filter(l => l.stage === stage.key).map(lead => (
                   <div key={lead.id} style={{ background: '#fff', borderRadius: 2, padding: '0.875rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', opacity: movingId === lead.id ? 0.5 : 1 }}>
-                    <p style={{ fontSize: '0.8rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.2rem' }}>{lead.first_name} {lead.last_name}</p>
+                    <p style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--color-text)', margin: '0 0 0.2rem' }}>{lead.first_name} {lead.last_name}</p>
                     <p style={{ fontSize: '0.72rem', color: '#6b7280', margin: '0 0 0.5rem' }}>{lead.email}</p>
                     <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
                       <span style={{ background: '#f3f4f6', color: '#4b5563', padding: '0.1rem 0.4rem', borderRadius: 2, fontSize: '0.6rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
@@ -230,12 +230,12 @@ export default function LeadsPage() {
                 const stageInfo = STAGES.find(s => s.key === lead.stage)
                 return (
                   <tr key={lead.id} style={{ borderTop: '1px solid #f3f4f6' }}>
-                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: '#1a1a1a', fontWeight: 500 }}>{lead.first_name} {lead.last_name}</td>
+                    <td style={{ padding: '0.875rem 1rem', fontSize: '0.875rem', color: 'var(--color-text)', fontWeight: 500 }}>{lead.first_name} {lead.last_name}</td>
                     <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#4b5563' }}>{lead.email}</td>
                     <td style={{ padding: '0.875rem 1rem', fontSize: '0.8rem', color: '#6b7280' }}>{lead.phone || '—'}</td>
                     <td style={{ padding: '0.875rem 1rem', fontSize: '0.75rem', color: '#6b7280' }}>{SOURCE_LABELS[lead.source] || lead.source}</td>
                     <td style={{ padding: '0.875rem 1rem' }}>
-                      <span style={{ background: stageInfo?.color || '#f3f4f6', color: '#1a1a1a', padding: '0.2rem 0.6rem', borderRadius: 2, fontSize: '0.7rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
+                      <span style={{ background: stageInfo?.color || '#f3f4f6', color: 'var(--color-text)', padding: '0.2rem 0.6rem', borderRadius: 2, fontSize: '0.7rem', fontFamily: 'Raleway, sans-serif', textTransform: 'uppercase' }}>
                         {stageInfo?.label}
                       </span>
                     </td>
@@ -273,7 +273,7 @@ export default function LeadsPage() {
                 <div key={task.id} style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid #f3f4f6', display: 'flex', gap: '0.875rem', alignItems: 'flex-start' }}>
                   <button onClick={() => completeTask(task.id)} style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${TEAL}`, background: 'none', cursor: 'pointer', flexShrink: 0, marginTop: 2 }} />
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '0.875rem', color: '#1a1a1a', margin: '0 0 0.2rem' }}>{task.title}</p>
+                    <p style={{ fontSize: '0.875rem', color: 'var(--color-text)', margin: '0 0 0.2rem' }}>{task.title}</p>
                     {lead && <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>{lead.first_name} {lead.last_name} · {STAGES.find(s => s.key === lead.stage)?.label}</p>}
                   </div>
                   {task.due_at && (
@@ -293,7 +293,7 @@ export default function LeadsPage() {
             {leads.filter(l => l.stage === 'new_lead' || l.stage === 'contacted').map(lead => (
               <div key={lead.id} style={{ padding: '0.875rem 1.25rem', borderBottom: '1px solid #f3f4f6', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: '0 0 0.2rem' }}>{lead.first_name} {lead.last_name}</p>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text)', margin: '0 0 0.2rem' }}>{lead.first_name} {lead.last_name}</p>
                   <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0 }}>
                     {STAGES.find(s => s.key === lead.stage)?.label} · {SOURCE_LABELS[lead.source] || lead.source}
                   </p>
@@ -314,7 +314,7 @@ export default function LeadsPage() {
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: '0 0 1.5rem' }}>Add Lead</h2>
+            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Lead</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
@@ -367,7 +367,7 @@ export default function LeadsPage() {
       {showTaskModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 380, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: '0 0 1.5rem' }}>Add Task</h2>
+            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Task</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
               <div>
                 <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Task</label>

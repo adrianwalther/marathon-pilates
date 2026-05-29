@@ -143,7 +143,7 @@ export default function AdminClientsPage() {
     padding: '0.3rem 0.8rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#1a1a1a' : 'white',
+    background: active ? 'var(--color-text)' : 'white',
     color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
@@ -159,13 +159,13 @@ export default function AdminClientsPage() {
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1100px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: '#1a1a1a', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: 'var(--color-text)', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast}
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Clients</h1>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>Clients</h1>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#aaa', marginTop: '0.6rem' }}>
           {loading ? '—' : clients.length} total
         </p>
@@ -214,7 +214,7 @@ export default function AdminClientsPage() {
                 >
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.1rem' }}>
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.87rem', color: '#1a1a1a' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.87rem', color: 'var(--color-text)' }}>
                         {c.first_name} {c.last_name}
                       </p>
                       {isNew && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.12rem 0.4rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>New</span>}
@@ -240,7 +240,7 @@ export default function AdminClientsPage() {
 
               {/* Identity */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem' }}>
-                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '1rem', color: '#1a1a1a', marginBottom: '0.1rem' }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '1rem', color: 'var(--color-text)', marginBottom: '0.1rem' }}>
                   {selected.first_name} {selected.last_name}
                 </p>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#aaa', marginBottom: '0.1rem' }}>{selected.email}</p>
@@ -289,7 +289,7 @@ export default function AdminClientsPage() {
                         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#555', textTransform: 'capitalize' }}>
                           {cr.credit_type.replace(/_/g, ' ')}
                         </p>
-                        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: '#1a1a1a' }}>
+                        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: 'var(--color-text)' }}>
                           {cr.total_credits - cr.used_credits} / {cr.total_credits}
                           {cr.expires_at && <span style={{ fontSize: '0.65rem', color: '#aaa', marginLeft: '0.4rem' }}>exp {formatDate(cr.expires_at)}</span>}
                         </p>
@@ -363,7 +363,7 @@ export default function AdminClientsPage() {
                       return (
                         <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '0.5rem', borderBottom: '1px solid #f8f8f8', gap: '0.5rem' }}>
                           <div style={{ minWidth: 0 }}>
-                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: '#1a1a1a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {b.scheduled_sessions?.name ?? 'Session'}
                             </p>
                             {b.scheduled_sessions?.starts_at && (
@@ -394,7 +394,7 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.1rem' }}>{label}</p>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: '#1a1a1a', textTransform: 'capitalize' }}>{value}</p>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.78rem', color: 'var(--color-text)', textTransform: 'capitalize' }}>{value}</p>
     </div>
   )
 }

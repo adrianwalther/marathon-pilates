@@ -167,7 +167,7 @@ function BookingsPageInner() {
     padding: '0.6rem 1.25rem',
     borderRadius: '2px',
     border: 'none',
-    background: active ? '#1a1a1a' : 'white',
+    background: active ? 'var(--color-text)' : 'white',
     color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
     transition: 'all 0.15s',
@@ -177,17 +177,17 @@ function BookingsPageInner() {
     <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
       {/* Toast */}
       {toast && (
-        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? '#1a1a1a' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
+        <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>
+        <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)' }}>
           My Bookings
         </h1>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link href="/dashboard/book-private" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#1a1a1a', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
+          <Link href="/dashboard/book-private" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--color-text)', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
             + Request Private
           </Link>
           <Link href="/dashboard/schedule" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--color-cta)', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
@@ -229,7 +229,7 @@ function BookingsPageInner() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
+                          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)' }}>
                             {SESSION_TYPE_LABELS[r.session_type] ?? r.session_type}
                           </p>
                           <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: statusStyle.bg, color: statusStyle.color }}>
@@ -247,7 +247,7 @@ function BookingsPageInner() {
                             <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#3b5bdb', marginBottom: '0.25rem' }}>
                               Time Proposed
                             </p>
-                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: '#1a1a1a' }}>
+                            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.82rem', color: 'var(--color-text)' }}>
                               {new Date(r.proposed_time).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} at {new Date(r.proposed_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
                             </p>
                             {r.admin_notes && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#555', marginTop: '0.25rem' }}>{r.admin_notes}</p>}
@@ -294,7 +294,7 @@ function BookingsPageInner() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.3rem', flexWrap: 'wrap' }}>
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#1a1a1a' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)' }}>
                         {session.name}
                       </p>
                       <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.6rem', borderRadius: '2px', background: statusStyle.bg, color: statusStyle.color }}>

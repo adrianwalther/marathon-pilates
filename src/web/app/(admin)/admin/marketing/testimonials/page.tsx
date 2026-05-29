@@ -110,7 +110,7 @@ export default function TestimonialsPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: '#1a1a1a', margin: '0.25rem 0 0' }}>Testimonials</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 300, color: 'var(--color-text)', margin: '0.25rem 0 0' }}>Testimonials</h1>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -130,7 +130,7 @@ export default function TestimonialsPage() {
         ].map(s => (
           <div key={s.label} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
             <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: '#9ca3af', textTransform: 'uppercase', margin: '0 0 0.5rem' }}>{s.label}</p>
-            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: '#1a1a1a', margin: 0 }}>{s.value}</p>
+            <p style={{ fontSize: '1.75rem', fontWeight: 300, color: 'var(--color-text)', margin: 0 }}>{s.value}</p>
           </div>
         ))}
       </div>
@@ -176,7 +176,7 @@ export default function TestimonialsPage() {
             <div key={t.id} style={{ background: '#fff', borderRadius: 2, padding: '1.25rem', boxShadow: '0 1px 3px rgba(0,0,0,0.06)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1a1a1a', margin: 0 }}>{t.client_name}</p>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text)', margin: 0 }}>{t.client_name}</p>
                   <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.25rem' }}>
                     {Array.from({ length: 5 }).map((_, i) => (
                       <span key={i} style={{ color: i < t.rating ? '#f59e0b' : '#e5e7eb', fontSize: '0.75rem' }}>★</span>
@@ -227,7 +227,7 @@ export default function TestimonialsPage() {
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: '#1a1a1a', margin: '0 0 1.5rem' }}>Add Testimonial</h2>
+            <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Testimonial</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
                 <label style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#6b7280', display: 'block', marginBottom: 4 }}>Client Name</label>
