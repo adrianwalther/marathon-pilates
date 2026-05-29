@@ -153,10 +153,16 @@ Verified 2026-05-28 by querying the live database directly:
 - Some functions were edited directly in the Supabase SQL editor and never committed back to the repo (e.g. `book_session` had drifted). **Always verify a function/policy against the live DB before assuming the repo `.sql` is accurate.**
 
 ### Booking flow architecture
-- All bookings are created by **server API routes using the service-role key** (which bypasses RLS): `app/api/bookings/route.ts` (client self-book, credit/comp), `app/api/admin/bookings/route.ts` (staff books a client), `app/api/webhooks/stripe/route.ts` (paid booking after checkout).
-- `book_session(p_session_id, p_client_id, p_amount_paid, p_payment_status, p_stripe_payment_intent_id)` RPC: `SECURITY DEFINER`, params have defaults, **no `auth.uid()` guard** (a previous drifted version had one that broke every server booking — fixed 2026-05-28 via `migrations/fix_book_session_service_role.sql`). EXECUTE is locked to `service_role` only. Inside the function, `status` and `payment_status` must be cast to their enum types (`::booking_status`, `::payment_status`).
+- All bookings are created by **server API routes using the service-role key** (which bypasses RLS): `app/api/bookings/route.ts` (client self-book, credit/comp), `app/api/admin/bookings/route.ts` (staff books a client), `app/api/webhooks/stripe/route.ts` (paid booking after checkout). Cancellation goes through `app/api/bookings/cancel/route.ts`.
+- `book_session(p_session_id, p_client_id, p_amount_paid, p_payment_status, p_stripe_payment_intent_id, p_credit_id)` RPC: `SECURITY DEFINER`, params have defaults, **no `auth.uid()` guard** (a previous drifted version had one that broke every server booking — fixed 2026-05-28 via `migrations/fix_book_session_service_role.sql`). EXECUTE is locked to `service_role` only. Inside the function, `status` and `payment_status` must be cast to their enum types (`::booking_status`, `::payment_status`).
+  - **Credit deduction is atomic inside the RPC** (added 2026-05-28, `migrations/add_credit_deduction_to_book_session.sql`): pass `p_credit_id` and the RPC locks the credit row `FOR UPDATE`, validates ownership + balance, inserts the booking, records `bookings.credit_used = p_credit_id`, and decrements `credits.used_credits` — all in ONE transaction, so a credit can never be double-spent or left un-deducted. Both `api/bookings` and `api/admin/bookings` call the RPC (admin no longer inlines its own insert). The old 5-arg overload was DROPped. Expiry is intentionally NOT enforced inside the RPC (parity with the client-side credit lookup).
+- `cancel_booking(p_session_id, p_client_id)` RPC (added 2026-05-28, `migrations/add_cancel_booking_refund.sql`): `SECURITY DEFINER`, `service_role` only. In one transaction it locks the booking, decides late-cancel, flips status to `cancelled`, conditionally refunds the credit, and promotes the earliest waitlisted booking. See **Cancellation policy** below.
 - `payment_status` enum includes `credit` (booked via credit/membership) and `included` (complimentary) — added via `migrations/add_payment_status_values.sql`.
 - `scheduled_sessions` write policy ("Staff manage sessions", owner+admin) added 2026-05-28 via `migrations/add_scheduled_sessions_write_policy.sql` — without it, staff couldn't add/cancel classes from the UI.
+- **Rebook after cancel works** (fixed 2026-05-28, `migrations/fix_rebook_after_cancel.sql`): the table-level `UNIQUE(client_id, session_id)` was swapped for a PARTIAL unique index `bookings_active_client_session_uidx` covering only `status IN ('confirmed','waitlisted')`. Cancelled rows are kept for history and never block a rebook; both API dup-checks filter to active statuses.
+
+### Cancellation policy (📌 PINNED — placeholder, REVISIT with Ruby)
+Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 24h+ before start REFUNDS the credit. Cancelling inside 24h on a CONFIRMED booking = LATE cancel → credit is FORFEITED** (the lost credit is the penalty; any $15 cash fee is handled separately). Waitlisted bookings always refund (they never held a confirmed spot). Two knobs, both marked with `>>> POLICY KNOB <<<` comments in the migration: (1) the window — `interval '24 hours'`; (2) forfeit-vs-refund — the `AND NOT v_is_late` guard. Treat as a placeholder we can redo. **Caveat:** bookings created *before* this migration have `credit_used = NULL`, so cancelling them can't auto-refund (we don't know which credit). Verified end-to-end 2026-05-28: both the late-cancel forfeit path and the >24h refund path (`used_credits` round-trips).
 
 ### RESOLVED — owners added to the 25 RLS policies (2026-05-28)
 25 live RLS policies gated on role but omitted `'owner'` (tables incl. `bookings`, `payroll_periods`, `payroll_line_items`, `instructor_profiles`, `private_session_requests`, `time_entries`, `waitlist_entries`). Fixed via `migrations/add_owner_to_rls_policies.sql` (23 array-form policies patched by a regex `ALTER POLICY` loop + 2 single-value payroll policies rewritten by hand), verified `still_missing_owner = 0`. **Note:** `profiles.role` is the `user_role` ENUM — when editing role lists use a bare `'owner'` literal (Postgres coerces it) or `'owner'::user_role`, NEVER `::text` (mixing text into a `user_role[]` array errors).
@@ -169,7 +175,7 @@ Verified 2026-05-28 by querying the live database directly:
 |-------|---------|
 | `profiles` | All users + roles |
 | `scheduled_sessions` | Calendar classes (both locations) |
-| `bookings` | Client bookings — foreign key is `client_id` (not `user_id`) |
+| `bookings` | Client bookings — FK is `client_id` (not `user_id`). `credit_used` links the credit spent (for refund on cancel); `late_cancel`/`cancelled_at` track cancellation. Cancelled rows are KEPT for history. |
 | `memberships` | Active/past membership records — foreign key is `client_id` |
 | `credits` | Group + amenity credit balances |
 | `on_demand_classes` | Video library |
@@ -223,7 +229,11 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 ## Completed (for reference)
 
 - [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
-- [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) ✅ 2026-05-28
+- [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) — DELETE now guarded (future + unbooked only), safe to re-run ✅ 2026-05-28
+- [x] Owner added to the 25 RLS policies that omitted it (verified `still_missing_owner = 0`) ✅ 2026-05-28
+- [x] Credit deduction folded into `book_session` (atomic — no double-spend / un-deducted credits) ✅ 2026-05-28
+- [x] Credit refund on cancel via `cancel_booking` RPC (24h late-cancel forfeit, waitlist promotion) ✅ 2026-05-28
+- [x] Rebook-after-cancel fixed (partial unique index on active bookings) ✅ 2026-05-28
 - [x] Fixed `book_session` RPC (was broken for all server bookings incl. paid Stripe) ✅ 2026-05-28
 - [x] Added `scheduled_sessions` write policy so staff can add/cancel classes ✅ 2026-05-28
 - [x] Security + script audit completed ✅ 2026-05-28
