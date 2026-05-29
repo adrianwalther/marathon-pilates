@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { pickNudge, type Nudge } from '@/lib/nudges'
+import { logEvent } from '@/lib/events'
 
 type Profile = {
   first_name: string
@@ -44,7 +45,7 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }] = await Promise.all([
+      const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }, { data: events }] = await Promise.all([
         supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location').eq('id', user.id).single(),
         supabase.from('bookings')
           .select('id, status, scheduled_sessions(name, starts_at, ends_at, duration_minutes, location_id, locations(name))')
@@ -60,6 +61,14 @@ export default function DashboardPage() {
           .select('scheduled_sessions(session_type)')
           .eq('client_id', user.id)
           .neq('status', 'cancelled'),
+        // Behavioral signals for the nudge ranker. Degrades gracefully: if the
+        // client_events table isn't deployed yet, this errors → data is null →
+        // the nudge still works off booking history alone.
+        supabase.from('client_events')
+          .select('event_type, service_key')
+          .eq('client_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(200),
       ])
 
       if (prof) setProfile(prof)
@@ -75,7 +84,20 @@ export default function DashboardPage() {
           if (!s) return []
           return Array.isArray(s) ? s.map(x => x.session_type) : [s.session_type]
         })
-      setNudge(pickNudge(prof?.first_name, triedTypes))
+
+      // Turn the raw event log into nudge signals: count service views (intent)
+      // and collect dismissals (suppress).
+      const viewed: Record<string, number> = {}
+      const dismissed: string[] = []
+      for (const e of (events ?? []) as Array<{ event_type: string; service_key: string | null }>) {
+        if (!e.service_key) continue
+        if (e.event_type === 'service_view') {
+          viewed[e.service_key] = (viewed[e.service_key] ?? 0) + 1
+        } else if (e.event_type === 'nudge_dismissed' && !dismissed.includes(e.service_key)) {
+          dismissed.push(e.service_key)
+        }
+      }
+      setNudge(pickNudge(prof?.first_name, triedTypes, { viewed, dismissed }))
 
       setLoading(false)
     }
@@ -243,16 +265,37 @@ export default function DashboardPage() {
 
 function NudgeCard({ nudge }: { nudge: Nudge }) {
   const [hovered, setHovered] = useState(false)
+  const [dismissed, setDismissed] = useState(false)
+
+  // Log that this nudge was shown — once per service surfaced. Pairs with
+  // nudge_clicked / nudge_dismissed to measure what actually resonates.
+  useEffect(() => {
+    logEvent('nudge_shown', { serviceKey: nudge.service.key })
+  }, [nudge.service.key])
+
+  if (dismissed) return null
+
   return (
     <div style={{ marginBottom: '3rem' }}>
       <div
         style={{
+          position: 'relative',
           background: '#f5ece6',
           border: '1px solid var(--color-accent-light)',
           borderRadius: '2px',
           padding: '1.75rem',
         }}
       >
+        <button
+          onClick={() => {
+            logEvent('nudge_dismissed', { serviceKey: nudge.service.key })
+            setDismissed(true)
+          }}
+          aria-label="Dismiss"
+          style={{ position: 'absolute', top: '0.75rem', right: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, color: 'var(--color-text-muted)', padding: '0.25rem' }}
+        >
+          ×
+        </button>
         <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
           For You
         </p>
@@ -261,6 +304,7 @@ function NudgeCard({ nudge }: { nudge: Nudge }) {
         </p>
         <Link
           href={nudge.service.href}
+          onClick={() => logEvent('nudge_clicked', { serviceKey: nudge.service.key })}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{

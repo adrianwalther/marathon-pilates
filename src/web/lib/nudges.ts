@@ -101,6 +101,13 @@ const CATALOG_BY_KEY: Record<ServiceKey, ServiceMeta> = SERVICE_CATALOG.reduce(
   {} as Record<ServiceKey, ServiceMeta>,
 )
 
+// Map a schedule `type` filter value (or raw session_type) to a ServiceKey.
+// Handles the collapsed 'private' filter the schedule page uses.
+export function serviceKeyFromType(type: string): ServiceKey | null {
+  if (type === 'private') return 'private'
+  return SESSION_TYPE_TO_SERVICE[type] ?? null
+}
+
 // Given the session_types a client has engaged with (their non-cancelled
 // bookings), return the services they have NOT tried, ranked by priority.
 export function untriedServices(bookedSessionTypes: string[]): ServiceMeta[] {
@@ -116,21 +123,51 @@ export function untriedServices(bookedSessionTypes: string[]): ServiceMeta[] {
 
 export type Nudge = { service: ServiceMeta; message: string }
 
+// Behavioral signals derived from the client_events log. Optional — without
+// them pickNudge falls back to pure business-priority order (its original
+// behavior). This is what makes the dashboard "learn":
+//   * viewed: service_key -> how many times the client browsed it without
+//     booking. High count = high intent → boosted ahead of business priority.
+//   * dismissed: services the client explicitly dismissed a nudge for →
+//     suppressed so we stop nagging.
+export type NudgeSignals = {
+  viewed?: Record<string, number>
+  dismissed?: string[]
+}
+
 // Pick the single best nudge for a client, with its copy fully rendered.
 //
 // Returns null when the client has tried NOTHING — a brand-new client with zero
 // bookings shouldn't be told they "haven't tried" a recovery amenity before
 // they've taken a single class. The dashboard's existing empty state guides
 // first-timers to book; nudges kick in once they've engaged at all.
+//
+// When signals are supplied, ranking becomes: drop anything they dismissed,
+// then surface what they've shown intent toward (most-viewed first), then fall
+// back to business priority. So a client who keeps eyeing the sauna gets nudged
+// about the sauna — even though contrast therapy outranks it by default.
 export function pickNudge(
   firstName: string | null | undefined,
   bookedSessionTypes: string[],
+  signals?: NudgeSignals,
 ): Nudge | null {
   if (bookedSessionTypes.length === 0) return null
-  const untried = untriedServices(bookedSessionTypes)
-  if (untried.length === 0) return null // tried everything — nothing to nudge
 
-  const service = untried[0]
+  const dismissed = new Set(signals?.dismissed ?? [])
+  const viewed = signals?.viewed ?? {}
+
+  const candidates = untriedServices(bookedSessionTypes)
+    .filter(s => !dismissed.has(s.key))
+    .sort((a, b) => {
+      const va = viewed[a.key] ?? 0
+      const vb = viewed[b.key] ?? 0
+      if (va !== vb) return vb - va // more-viewed (more intent) first
+      return a.priority - b.priority // else business priority
+    })
+
+  if (candidates.length === 0) return null // tried/dismissed everything
+
+  const service = candidates[0]
   const first = (firstName ?? '').trim() || 'there'
   return { service, message: service.nudge.replace('{first}', first) }
 }

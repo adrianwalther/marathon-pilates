@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { logEvent } from '@/lib/events'
+import { serviceKeyFromType } from '@/lib/nudges'
 
 type Session = {
   id: string
@@ -79,6 +81,14 @@ function SchedulePageInner() {
   const [selectedDay, setSelectedDay] = useState(0)
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
+
+  // Behavioral signal: when the client browses a specific service, log it as
+  // intent. The dashboard nudge ranker boosts services a client keeps viewing
+  // but hasn't booked. Fires once per distinct service the filter resolves to.
+  useEffect(() => {
+    const key = serviceKeyFromType(typeFilter)
+    if (key) logEvent('service_view', { serviceKey: key })
+  }, [typeFilter])
 
   // Handle Stripe redirect back after payment
   useEffect(() => {
