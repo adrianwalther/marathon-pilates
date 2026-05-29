@@ -18,6 +18,8 @@ const EVENT_TYPES = new Set([
   'nudge_shown', // a "For You" nudge was rendered
   'nudge_clicked', // clicked through a nudge's CTA
   'nudge_dismissed', // dismissed a nudge
+  'rebook_offered', // post-cancel rebook modal was shown
+  'rebook_booked', // client rebooked an alternative from that modal
 ])
 
 // Mirror of ServiceKey in lib/nudges.ts. Kept as a plain set here so the route

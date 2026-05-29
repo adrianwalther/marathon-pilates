@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { logEvent } from '@/lib/events'
 import { serviceKeyFromType } from '@/lib/nudges'
+import { bookClass } from '@/lib/bookClass'
+import RebookModal, { type CancelledInfo } from '@/components/RebookModal'
 
 type Session = {
   id: string
@@ -81,6 +83,7 @@ function SchedulePageInner() {
   const [selectedDay, setSelectedDay] = useState(0)
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
+  const [rebook, setRebook] = useState<CancelledInfo | null>(null)
 
   // Behavioral signal: when the client browses a specific service, log it as
   // intent. The dashboard nudge ranker boosts services a client keeps viewing
@@ -195,69 +198,12 @@ function SchedulePageInner() {
   const handleBook = async (session: Session) => {
     setBookingId(session.id)
     setBookingLoading(true)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { showToast('Please sign in', 'error'); setBookingLoading(false); return }
-
-    // Determine credit type to check
-    const isGroup = session.session_type === 'group_reformer'
-    const isPrivate = ['private_solo', 'private_duet', 'private_trio'].includes(session.session_type)
-    const isAmenity = ['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'].includes(session.session_type)
-    const creditType = isGroup ? 'group' : isPrivate ? 'private' : isAmenity ? 'amenity' : null
-
-    // Check if user has credits
-    let hasCredit = false
-    let creditId: string | null = null
-    if (creditType) {
-      const { data: credits } = await supabase
-        .from('credits')
-        .select('id, total_credits, used_credits')
-        .eq('client_id', user.id)
-        .eq('credit_type', creditType)
-        .order('expires_at', { ascending: true, nullsFirst: false })
-
-      const usable = credits?.find(c => c.total_credits - c.used_credits > 0)
-      if (usable) {
-        hasCredit = true
-        creditId = usable.id
-      }
-    }
-
-    // If no credits and session has a drop-in price → Stripe Checkout
-    if (!hasCredit && session.drop_in_price) {
-      const { data: { session: authSession } } = await supabase.auth.getSession()
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': authSession ? `Bearer ${authSession.access_token}` : '' },
-        body: JSON.stringify({ session_id: session.id, user_id: user.id }),
-      })
-      const { url, error: checkoutError } = await res.json()
-      if (checkoutError || !url) {
-        showToast('Could not start checkout', 'error')
-        setBookingLoading(false)
-        setBookingId(null)
-        return
-      }
-      window.location.href = url
-      return
-    }
-
-    // Book via API — capacity check + insert are atomic (no race condition)
-    const { data: { session: authSession } } = await supabase.auth.getSession()
-    const res = await fetch('/api/bookings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': authSession ? `Bearer ${authSession.access_token}` : '',
-      },
-      body: JSON.stringify({ session_id: session.id, credit_id: creditId }),
-    })
-    const result = await res.json()
-
-    if (!res.ok) {
-      showToast(result.error === 'Already booked' ? 'Already booked' : result.error, 'error')
+    const r = await bookClass(session)
+    if (r.outcome === 'checkout') return // redirecting to Stripe — page is navigating away
+    if (r.outcome === 'error') {
+      showToast(r.message, 'error')
     } else {
-      showToast(result.status === 'waitlisted' ? 'Added to waitlist' : 'Booking confirmed!')
+      showToast(r.message)
       loadSessions()
     }
     setBookingLoading(false)
@@ -293,6 +239,11 @@ function SchedulePageInner() {
       showToast('Booking cancelled')
     }
     loadSessions()
+
+    // Retention: offer an alternative class right after a successful cancel.
+    if (res.ok) {
+      setRebook({ sessionId: session.id, name: session.name, sessionType: session.session_type, refunded: !!result.refunded })
+    }
   }
 
   const formatTime = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
@@ -326,6 +277,10 @@ function SchedulePageInner() {
         }}>
           {toast.msg}
         </div>
+      )}
+
+      {rebook && (
+        <RebookModal cancelled={rebook} onClose={() => setRebook(null)} onBooked={loadSessions} />
       )}
 
       <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2rem' }}>

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import RebookModal, { type CancelledInfo } from '@/components/RebookModal'
 
 type PrivateRequest = {
   id: string
@@ -78,6 +79,7 @@ function BookingsPageInner() {
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState<Tab>(initialTab)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [rebook, setRebook] = useState<CancelledInfo | null>(null)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
@@ -135,22 +137,26 @@ function BookingsPageInner() {
   const handleCancel = async (booking: Booking) => {
     setCancellingId(booking.id)
     const supabase = createClient()
-    const now = new Date()
-    const classTime = new Date(booking.scheduled_sessions.starts_at)
-    const hoursUntil = (classTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-    const lateCancel = hoursUntil < 12
+    const { data: { session: authSession } } = await supabase.auth.getSession()
 
-    const { error } = await supabase.from('bookings').update({
-      status: 'cancelled',
-      cancelled_at: now.toISOString(),
-      late_cancel: lateCancel,
-    }).eq('id', booking.id)
+    // Cancel via the server RPC so the credit is refunded (unless late), the
+    // waitlist is promoted, and the cancellation email is sent — same path as
+    // the schedule page. (This page previously did a bare status update, which
+    // skipped all three.)
+    const res = await fetch('/api/bookings/cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: authSession ? `Bearer ${authSession.access_token}` : '' },
+      body: JSON.stringify({ session_id: booking.scheduled_sessions.id }),
+    })
+    const result = await res.json().catch(() => ({}))
 
-    if (error) {
-      showToast('Could not cancel booking', 'error')
+    if (!res.ok) {
+      showToast(result.error || 'Could not cancel booking', 'error')
     } else {
-      showToast(lateCancel ? 'Cancelled (late cancel — within 12hr window)' : 'Booking cancelled')
+      showToast(result.late_cancel ? 'Cancelled — late cancel, credit not refunded' : result.refunded ? 'Cancelled — credit refunded' : 'Booking cancelled')
       loadBookings()
+      // Retention: offer an alternative class right after a successful cancel.
+      setRebook({ sessionId: booking.scheduled_sessions.id, name: booking.scheduled_sessions.name, sessionType: booking.scheduled_sessions.session_type, refunded: !!result.refunded })
     }
     setCancellingId(null)
   }
@@ -180,6 +186,10 @@ function BookingsPageInner() {
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}
         </div>
+      )}
+
+      {rebook && (
+        <RebookModal cancelled={rebook} onClose={() => setRebook(null)} onBooked={loadBookings} />
       )}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>

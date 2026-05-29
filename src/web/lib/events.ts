@@ -12,6 +12,8 @@ export type ClientEventType =
   | 'nudge_shown'
   | 'nudge_clicked'
   | 'nudge_dismissed'
+  | 'rebook_offered'
+  | 'rebook_booked'
 
 type LogOpts = {
   serviceKey?: string
