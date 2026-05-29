@@ -25,6 +25,7 @@ type RosterEntry = {
     last_name: string
     polestar_traffic_light: string
     health_conditions: string[] | null
+    health_flags: string[] | null
     total_classes_completed: number
   }
 }
@@ -33,6 +34,21 @@ const TRAFFIC_COLORS = {
   green:  { bg: '#f5ece6', color: 'var(--color-cta)', label: 'No restrictions' },
   yellow: { bg: '#fff8e6', color: '#c8860a', label: 'Modifications may apply' },
   red:    { bg: '#fef0f0', color: '#e05555', label: 'Review before class' },
+}
+
+// The flags an instructor sees per client. Prefer the AI-structured
+// health_flags; fall back to a cleaned version of the raw health_conditions
+// (strip internal tokens) for clients whose flags haven't been generated yet.
+function rosterFlags(p: RosterEntry['profiles']): string[] {
+  if (p.health_flags && p.health_flags.length > 0) return p.health_flags
+  const out: string[] = []
+  for (const c of p.health_conditions ?? []) {
+    if (c === 'injury_noted') continue
+    if (c === 'prenatal') { out.push('Prenatal'); continue }
+    if (c.startsWith('note:')) { const t = c.slice(5).trim(); if (t) out.push(t); continue }
+    out.push(c)
+  }
+  return out
 }
 
 export default function MyClassesPage() {
@@ -79,6 +95,20 @@ export default function MyClassesPage() {
         .select('id, status, attended, session_id, profiles(id, first_name, last_name, polestar_traffic_light, health_conditions, total_classes_completed)')
         .in('session_id', sessionIds)
         .in('status', ['confirmed', 'waitlisted', 'completed'])
+
+      // AI health flags fetched separately + defensively: if the health_flags
+      // column isn't deployed yet, this errors in isolation and the roster
+      // still loads (falling back to cleaned health_conditions).
+      const profileIds = [...new Set((bookings ?? []).map(b => (b.profiles as unknown as { id?: string } | null)?.id).filter(Boolean) as string[])]
+      if (profileIds.length > 0) {
+        const { data: flagRows } = await supabase.from('profiles').select('id, health_flags').in('id', profileIds)
+        const flagMap: Record<string, string[] | null> = {}
+        ;(flagRows as unknown as { id: string; health_flags: string[] | null }[] | null)?.forEach(r => { flagMap[r.id] = r.health_flags })
+        bookings?.forEach(b => {
+          const prof = b.profiles as unknown as { id: string; health_flags?: string[] | null } | null
+          if (prof) prof.health_flags = flagMap[prof.id] ?? null
+        })
+      }
 
       const bookingsBySession: Record<string, RosterEntry[]> = {}
       bookings?.forEach(b => {
@@ -210,11 +240,18 @@ export default function MyClassesPage() {
                                     {b.profiles?.polestar_traffic_light}
                                   </span>
                                 </div>
-                                {b.profiles?.health_conditions && b.profiles.health_conditions.length > 0 && (
-                                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
-                                    {b.profiles.health_conditions.join(', ')}
-                                  </p>
-                                )}
+                                {(() => {
+                                  const flags = b.profiles ? rosterFlags(b.profiles) : []
+                                  return flags.length > 0 ? (
+                                    <div style={{ display: 'flex', gap: '0.3rem', flexWrap: 'wrap', marginTop: '0.3rem' }}>
+                                      {flags.map((f, i) => (
+                                        <span key={i} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.15rem 0.45rem', borderRadius: '2px', background: '#fff0e0', color: '#c8860a' }}>
+                                          {f}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : null
+                                })()}
                               </div>
 
                               {/* Attendance buttons — only for past classes */}

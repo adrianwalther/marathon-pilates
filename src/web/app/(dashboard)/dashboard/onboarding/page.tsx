@@ -95,6 +95,19 @@ export default function OnboardingPage() {
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
 
+    // Structure the health note into clean trainer flags (best-effort — never
+    // blocks finishing intake). Skips the model when there's nothing to flag.
+    if (isPregnant || (hasInjury && healthNotes)) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        await fetch('/api/health-flags', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: session ? `Bearer ${session.access_token}` : '' },
+          body: JSON.stringify({ note: hasInjury ? healthNotes : '', prenatal: !!isPregnant }),
+        })
+      } catch { /* non-blocking */ }
+    }
+
     router.push('/dashboard')
   }
 
