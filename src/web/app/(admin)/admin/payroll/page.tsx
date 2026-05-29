@@ -358,7 +358,7 @@ export default function AdminPayrollPage() {
   }
 
   const LINE_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-    group_class:    { bg: '#f5ece6', color: '#A76E58' },
+    group_class:    { bg: '#f5ece6', color: 'var(--color-cta)' },
     private_solo:   { bg: '#f0f4ff', color: '#6b88c8' },
     private_duet:   { bg: '#f0f4ff', color: '#6b88c8' },
     private_trio:   { bg: '#f0f4ff', color: '#6b88c8' },
@@ -381,19 +381,19 @@ export default function AdminPayrollPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Payroll</h1>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '0.25rem' }}>Semi-monthly · Processed via Gusto</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>Semi-monthly · Processed via Gusto</p>
         </div>
         <button
           onClick={() => setShowNewForm(!showNewForm)}
-          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showNewForm ? '#1a1a1a' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+          style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.7rem 1.5rem', background: showNewForm ? '#1a1a1a' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
         >
           {showNewForm ? '✕ Close' : '+ New Period'}
         </button>
       </div>
 
       {/* Rate reference */}
-      <div style={{ background: '#FAF7F2', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
-        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Pay Rates</p>
+      <div style={{ background: 'var(--color-bg)', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '2rem' }}>
+        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Pay Rates</p>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.4rem 2rem' }}>
           {[
             ['Group', '0–4 clients → $30 flat'],
@@ -422,19 +422,19 @@ export default function AdminPayrollPage() {
           <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '1.25rem' }}>New Pay Period</p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: 1, minWidth: '160px' }}>
-              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.35rem' }}>Period Start</label>
+              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.35rem' }}>Period Start</label>
               <input type="date" value={periodStart} onChange={e => setPeriodStart(e.target.value)} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div style={{ flex: 1, minWidth: '160px' }}>
-              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.35rem' }}>Period End</label>
+              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.35rem' }}>Period End</label>
               <input type="date" value={periodEnd} onChange={e => setPeriodEnd(e.target.value)} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <button
               onClick={generatePeriod}
               disabled={generating}
-              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.68rem 1.5rem', background: generating ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: generating ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.68rem 1.5rem', background: generating ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: generating ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
             >
               {generating ? 'Generating...' : 'Generate'}
             </button>
@@ -481,7 +481,7 @@ export default function AdminPayrollPage() {
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', color: '#1a1a1a', lineHeight: 1 }}>${total.toFixed(2)}</p>
                       <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa' }}>total</p>
                     </div>
-                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: p.processed_at ? '#f5ece6' : '#fff8e6', color: p.processed_at ? '#A76E58' : '#c8860a' }}>
+                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: p.processed_at ? '#f5ece6' : '#fff8e6', color: p.processed_at ? 'var(--color-cta)' : '#c8860a' }}>
                       {p.processed_at ? 'Processed' : 'Pending'}
                     </span>
                     <span style={{ color: '#aaa', fontSize: '0.8rem' }}>{isSelected ? '▲' : '▼'}</span>
@@ -501,10 +501,10 @@ export default function AdminPayrollPage() {
                           <div key={emp.name} style={{ marginBottom: '1.5rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', paddingBottom: '0.4rem', borderBottom: '2px solid #f0f0f0' }}>
                               <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a' }}>{emp.name}</p>
-                              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: '#A76E58' }}>${emp.total.toFixed(2)}</p>
+                              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-cta)' }}>${emp.total.toFixed(2)}</p>
                             </div>
                             {emp.lines.map(l => {
-                              const chip = LINE_TYPE_COLORS[l.line_type] ?? { bg: '#f5f5f5', color: '#8a8d83' }
+                              const chip = LINE_TYPE_COLORS[l.line_type] ?? { bg: '#f5f5f5', color: 'var(--color-text-muted)' }
                               return (
                                 <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', borderBottom: '1px solid #f8f8f8', gap: '1rem' }}>
                                   <div style={{ flex: 1 }}>
@@ -546,11 +546,11 @@ export default function AdminPayrollPage() {
 
                     {/* Manual entry form */}
                     {!p.processed_at && isManualOpen && (
-                      <div style={{ background: '#FAF7F2', borderRadius: '2px', padding: '1.25rem', marginBottom: '1rem' }}>
-                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '1rem' }}>Add Manual Entry</p>
+                      <div style={{ background: 'var(--color-bg)', borderRadius: '2px', padding: '1.25rem', marginBottom: '1rem' }}>
+                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>Add Manual Entry</p>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
                           <div>
-                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Employee</label>
+                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Employee</label>
                             <select value={manualStaffId} onChange={e => setManualStaffId(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
                               <option value="">Select...</option>
                               {staff.map(s => (
@@ -559,7 +559,7 @@ export default function AdminPayrollPage() {
                             </select>
                           </div>
                           <div>
-                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Type</label>
+                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Type</label>
                             <select value={manualLineType} onChange={e => setManualLineType(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
                               <option value="front_desk_hours">Front Desk Hours</option>
                               <option value="social_content">Social Content Hours</option>
@@ -569,7 +569,7 @@ export default function AdminPayrollPage() {
                           </div>
                           {(manualLineType === 'front_desk_hours' || manualLineType === 'social_content') ? (
                             <div>
-                              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>
+                              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>
                                 Hours · ${manualLineType === 'front_desk_hours' ? FRONT_DESK_RATE : SOCIAL_CONTENT_RATE}/hr
                               </label>
                               <input
@@ -579,18 +579,18 @@ export default function AdminPayrollPage() {
                                 value={manualHours}
                                 onChange={e => setManualHours(e.target.value)}
                                 style={inputStyle}
-                                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                               />
                               {manualHours && !isNaN(parseFloat(manualHours)) && (
-                                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.68rem', color: '#A76E58', marginTop: '0.25rem' }}>
+                                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.68rem', color: 'var(--color-cta)', marginTop: '0.25rem' }}>
                                   = ${(parseFloat(manualHours) * (manualLineType === 'front_desk_hours' ? FRONT_DESK_RATE : SOCIAL_CONTENT_RATE)).toFixed(2)}
                                 </p>
                               )}
                             </div>
                           ) : (
                             <div>
-                              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Amount ($)</label>
+                              <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Amount ($)</label>
                               <input
                                 type="number"
                                 step="0.01"
@@ -598,29 +598,29 @@ export default function AdminPayrollPage() {
                                 value={manualAmount}
                                 onChange={e => setManualAmount(e.target.value)}
                                 style={inputStyle}
-                                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                               />
                             </div>
                           )}
                           <div>
-                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Notes (optional)</label>
+                            <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Notes (optional)</label>
                             <input
                               type="text"
                               placeholder="e.g. Mar 1–7 shifts"
                               value={manualNotes}
                               onChange={e => setManualNotes(e.target.value)}
                               style={inputStyle}
-                              onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                               onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                             />
                           </div>
                         </div>
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
-                          <button onClick={addManualEntry} disabled={addingManual} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
+                          <button onClick={addManualEntry} disabled={addingManual} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>
                             {addingManual ? 'Adding...' : 'Add Entry'}
                           </button>
-                          <button onClick={() => setShowManualForm(null)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: 'none', border: '1px solid #ddd', color: '#8a8d83', borderRadius: '2px', cursor: 'pointer' }}>
+                          <button onClick={() => setShowManualForm(null)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', background: 'none', border: '1px solid #ddd', color: 'var(--color-text-muted)', borderRadius: '2px', cursor: 'pointer' }}>
                             Cancel
                           </button>
                         </div>
@@ -629,14 +629,14 @@ export default function AdminPayrollPage() {
 
                     {/* Actions */}
                     <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                      <button onClick={() => exportCSV(p)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: '1px solid #A76E58', background: 'white', color: '#A76E58', borderRadius: '2px', cursor: 'pointer' }}>
+                      <button onClick={() => exportCSV(p)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: '1px solid var(--color-cta)', background: 'white', color: 'var(--color-cta)', borderRadius: '2px', cursor: 'pointer' }}>
                         Export CSV → Gusto
                       </button>
                       {!p.processed_at && (
                         <>
                           <button
                             onClick={() => setShowManualForm(isManualOpen ? null : p.id)}
-                            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: '1px solid #e0e0e0', background: 'white', color: '#8a8d83', borderRadius: '2px', cursor: 'pointer' }}
+                            style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.2rem', border: '1px solid #e0e0e0', background: 'white', color: 'var(--color-text-muted)', borderRadius: '2px', cursor: 'pointer' }}
                           >
                             + Manual Entry
                           </button>

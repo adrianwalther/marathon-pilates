@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#FAF7F2' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
       {/* Sidebar — desktop */}
       <aside
         className="hidden lg:flex flex-col w-64 min-h-screen"
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             Marathon
           </span>
           <br />
-          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#A76E58' }}>
+          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>
             Pilates
           </span>
         </div>
@@ -85,9 +85,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   fontSize: '0.75rem',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  color: active ? '#A76E58' : '#888',
+                  color: active ? 'var(--color-cta)' : '#888',
                   textDecoration: 'none',
-                  borderLeft: active ? '2px solid #A76E58' : '2px solid transparent',
+                  borderLeft: active ? '2px solid var(--color-cta)' : '2px solid transparent',
                   transition: 'all 0.15s',
                 }}
               >
@@ -110,7 +110,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {isAdmin && (
               <Link
                 href="/admin"
-                style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none', marginBottom: '0.5rem' }}
+                style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none', marginBottom: '0.5rem' }}
               >
                 ← Admin Portal
               </Link>
@@ -132,7 +132,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       >
         <div>
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.1rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'white' }}>Marathon </span>
-          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: '#A76E58' }}>Pilates</span>
+          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>Pilates</span>
         </div>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -154,7 +154,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: pathname === item.href ? '#A76E58' : '#888', textDecoration: 'none' }}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem 2rem', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.8rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: pathname === item.href ? 'var(--color-cta)' : '#888', textDecoration: 'none' }}
               >
                 <span>{item.icon}</span>{item.label}
               </Link>
@@ -162,7 +162,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
           <div style={{ padding: '1.5rem 2rem', borderTop: '1px solid #2a2a2a', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {isAdmin && (
-              <Link href="/admin" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
+              <Link href="/admin" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
                 ← Admin Portal
               </Link>
             )}

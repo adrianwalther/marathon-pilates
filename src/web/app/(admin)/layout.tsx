@@ -77,8 +77,8 @@ const ROLE_LABELS: Record<StaffRole, string> = {
 }
 
 const ROLE_COLORS: Record<StaffRole, string> = {
-  owner: '#4C5246',   // Moss Gray — top of hierarchy
-  admin: '#A76E58',   // Terracotta
+  owner: 'var(--color-brand)',   // Moss Gray — top of hierarchy
+  admin: 'var(--color-cta)',   // Terracotta
   manager: '#6b9fd4', // Blue
   instructor: '#c8860a', // Amber
 }
@@ -143,12 +143,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ].filter(n => n.show)
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#FAF7F2' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
       <aside className="hidden lg:flex flex-col w-64 min-h-screen" style={{ background: '#1a1a1a', position: 'fixed', top: 0, left: 0, bottom: 0 }}>
         <div style={{ padding: '2rem 1.75rem 1rem' }}>
           <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.3rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'white' }}>Marathon</span>
           <br />
-          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: '#A76E58' }}>Pilates</span>
+          <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>Pilates</span>
           <div style={{ marginTop: '0.5rem' }}>
             <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: roleColor, color: 'white' }}>
               {ROLE_LABELS[role]}
@@ -168,7 +168,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             }
             const active = pathname === item.href
             return (
-              <Link key={item.href} href={item.href!} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1.75rem', fontFamily: "'Raleway', sans-serif", fontWeight: active ? 700 : 500, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? '#A76E58' : '#888', textDecoration: 'none', borderLeft: active ? '2px solid #A76E58' : '2px solid transparent' }}>
+              <Link key={item.href} href={item.href!} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.65rem 1.75rem', fontFamily: "'Raleway', sans-serif", fontWeight: active ? 700 : 500, fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: active ? 'var(--color-cta)' : '#888', textDecoration: 'none', borderLeft: active ? '2px solid var(--color-cta)' : '2px solid transparent' }}>
                 <span style={{ fontSize: '1rem', opacity: 0.8 }}>{item.icon}</span>
                 {item.label}
               </Link>

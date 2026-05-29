@@ -43,7 +43,7 @@ type Credit = {
 }
 
 const TRAFFIC_COLORS = {
-  green:  { bg: '#f5ece6', color: '#A76E58', label: 'No restrictions' },
+  green:  { bg: '#f5ece6', color: 'var(--color-cta)', label: 'No restrictions' },
   yellow: { bg: '#fff8e6', color: '#c8860a', label: 'Modifications needed' },
   red:    { bg: '#fef0f0', color: '#e05555', label: 'Review required' },
 }
@@ -144,13 +144,13 @@ export default function AdminClientsPage() {
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
     background: active ? '#1a1a1a' : 'white',
-    color: active ? 'white' : '#8a8d83',
+    color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
 
   const BOOKING_STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-    confirmed:  { bg: '#f5ece6', color: '#A76E58' },
-    completed:  { bg: '#f0f0f0', color: '#8a8d83' },
+    confirmed:  { bg: '#f5ece6', color: 'var(--color-cta)' },
+    completed:  { bg: '#f0f0f0', color: 'var(--color-text-muted)' },
     cancelled:  { bg: '#fef0f0', color: '#e05555' },
     no_show:    { bg: '#fef0f0', color: '#e05555' },
     waitlisted: { bg: '#fff8e6', color: '#c8860a' },
@@ -178,7 +178,7 @@ export default function AdminClientsPage() {
           onChange={e => setSearch(e.target.value)}
           placeholder="Search name or email..."
           style={{ flex: 1, minWidth: '200px', maxWidth: '320px', padding: '0.65rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.85rem', outline: 'none', fontFamily: "'Poppins', sans-serif" }}
-          onFocus={e => (e.target.style.borderColor = '#A76E58')}
+          onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
           onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
         />
         <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -210,20 +210,20 @@ export default function AdminClientsPage() {
                 <div
                   key={c.id}
                   onClick={() => selectClient(c)}
-                  style={{ background: isSelected ? '#f0faf8' : 'white', border: `1px solid ${isSelected ? '#A76E58' : '#eee'}`, borderRadius: '2px', padding: '0.85rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}
+                  style={{ background: isSelected ? '#f0faf8' : 'white', border: `1px solid ${isSelected ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', padding: '0.85rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}
                 >
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.1rem' }}>
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.87rem', color: '#1a1a1a' }}>
                         {c.first_name} {c.last_name}
                       </p>
-                      {isNew && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.12rem 0.4rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>New</span>}
+                      {isNew && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.12rem 0.4rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>New</span>}
                     </div>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{c.email}</p>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
                     {mem && (
-                      <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.18rem 0.45rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>
+                      <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.18rem 0.45rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>
                         {mem.membership_type.replace(/_/g, ' ')}
                       </span>
                     )}
@@ -270,10 +270,10 @@ export default function AdminClientsPage() {
 
               {/* Membership + credits */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Membership & Credits</p>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Membership & Credits</p>
                 {activeMembership(selected) ? (
                   <div style={{ marginBottom: '0.75rem' }}>
-                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.22rem 0.55rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>
+                    <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.22rem 0.55rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>
                       {activeMembership(selected)!.membership_type.replace(/_/g, ' ')} — Active
                     </span>
                   </div>
@@ -296,8 +296,8 @@ export default function AdminClientsPage() {
                       </div>
                     ))}
                     <div style={{ borderTop: '1px solid #f0f0f0', paddingTop: '0.4rem', marginTop: '0.2rem', display: 'flex', justifyContent: 'space-between' }}>
-                      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8a8d83' }}>Total remaining</p>
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.82rem', color: '#A76E58' }}>{totalCreditsRemaining}</p>
+                      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>Total remaining</p>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.82rem', color: 'var(--color-cta)' }}>{totalCreditsRemaining}</p>
                     </div>
                   </div>
                 ) : (
@@ -308,8 +308,8 @@ export default function AdminClientsPage() {
               {/* Health status */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83' }}>Health Status</p>
-                  <button onClick={() => setEditingTrafficLight(!editingTrafficLight)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#A76E58' }}>
+                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>Health Status</p>
+                  <button onClick={() => setEditingTrafficLight(!editingTrafficLight)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-cta)' }}>
                     {editingTrafficLight ? 'Cancel' : 'Edit'}
                   </button>
                 </div>
@@ -351,7 +351,7 @@ export default function AdminClientsPage() {
 
               {/* Recent bookings */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Recent Bookings</p>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Recent Bookings</p>
                 {detailLoading ? (
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>Loading...</p>
                 ) : bookings.length === 0 ? (

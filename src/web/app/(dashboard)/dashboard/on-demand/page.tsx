@@ -32,7 +32,7 @@ type OnDemandClass = {
 }
 
 const DIFFICULTY_COLORS: Record<string, { bg: string; color: string }> = {
-  beginner:     { bg: '#f5ece6', color: '#A76E58' },
+  beginner:     { bg: '#f5ece6', color: 'var(--color-cta)' },
   intermediate: { bg: '#fff8e6', color: '#c8860a' },
   advanced:     { bg: '#fef0f0', color: '#e05555' },
 }
@@ -93,8 +93,8 @@ export default function OnDemandPage() {
     padding: '0.4rem 1rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#A76E58' : 'white',
-    color: active ? 'white' : '#8a8d83',
+    background: active ? 'var(--color-cta)' : 'white',
+    color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
 
@@ -107,7 +107,7 @@ export default function OnDemandPage() {
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.5rem' }}>
           On Demand
         </h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
           Mat Pilates classes — anytime, anywhere
         </p>
       </div>
@@ -116,16 +116,16 @@ export default function OnDemandPage() {
       {myClasses.length > 0 && (
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#8a8d83' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
               My Classes
             </p>
-            <a href="/dashboard/generate-class" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
+            <a href="/dashboard/generate-class" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
               Build a Class →
             </a>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' }}>
             {myClasses.map(c => {
-              const diff = c.difficulty ? DIFFICULTY_COLORS[c.difficulty] : { bg: '#f0f0f0', color: '#8a8d83' }
+              const diff = c.difficulty ? DIFFICULTY_COLORS[c.difficulty] : { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
               return (
                 <div key={c.id} onClick={() => setSelectedGenerated(c)}
                   style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', cursor: 'pointer', overflow: 'hidden' }}
@@ -142,7 +142,7 @@ export default function OnDemandPage() {
                         {c.duration} MIN
                       </div>
                     )}
-                    <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: '#A76E58', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
+                    <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
                       ✦ Custom
                     </div>
                   </div>
@@ -152,7 +152,7 @@ export default function OnDemandPage() {
                     </p>
                     <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                       {c.difficulty && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: diff.bg, color: diff.color }}>{c.difficulty}</span>}
-                      {c.focus_area && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: '#f5f5f5', color: '#8a8d83' }}>{c.focus_area}</span>}
+                      {c.focus_area && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: '#f5f5f5', color: 'var(--color-text-muted)' }}>{c.focus_area}</span>}
                     </div>
                   </div>
                 </div>
@@ -201,7 +201,7 @@ export default function OnDemandPage() {
 }
 
 function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }) {
-  const diff = cls.difficulty_level ? DIFFICULTY_COLORS[cls.difficulty_level] : { bg: '#f0f0f0', color: '#8a8d83' }
+  const diff = cls.difficulty_level ? DIFFICULTY_COLORS[cls.difficulty_level] : { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
 
   return (
     <div
@@ -221,12 +221,12 @@ function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }
           {cls.duration_minutes} MIN
         </div>
         {cls.is_ai_generated && (
-          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: '#A76E58', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
+          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#1a1a1a', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
             ✦ Custom
           </div>
         )}
         {cls.language === 'spanish' && (
-          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: '#A76E58', color: 'white', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
+          <div style={{ position: 'absolute', top: '0.5rem', left: '0.5rem', background: 'var(--color-cta)', color: 'white', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px' }}>
             Español
           </div>
         )}
@@ -249,7 +249,7 @@ function ClassCard({ cls, onClick }: { cls: OnDemandClass; onClick: () => void }
             </span>
           )}
           {cls.focus_area?.slice(0, 2).map(f => (
-            <span key={f} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: '#f5f5f5', color: '#8a8d83' }}>
+            <span key={f} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: '#f5f5f5', color: 'var(--color-text-muted)' }}>
               {f}
             </span>
           ))}
@@ -273,7 +273,7 @@ function bunnyEmbedUrl(videoUrl: string): string | null {
 const ON_DEMAND_MEMBERSHIPS = new Set(['unlimited', 'on_demand', 'founding'])
 
 function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }) {
-  const diff = cls.difficulty_level ? DIFFICULTY_COLORS[cls.difficulty_level] : { bg: '#f0f0f0', color: '#8a8d83' }
+  const diff = cls.difficulty_level ? DIFFICULTY_COLORS[cls.difficulty_level] : { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
   const [canWatch, setCanWatch] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -298,7 +298,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
-      <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
+      <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
         ← Back
       </button>
 
@@ -327,7 +327,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
             </p>
             <a
               href="/dashboard/membership"
-              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.75rem 1.5rem', background: '#A76E58', color: 'white', borderRadius: '2px', textDecoration: 'none' }}
+              style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.14em', textTransform: 'uppercase', padding: '0.75rem 1.5rem', background: 'var(--color-cta)', color: 'white', borderRadius: '2px', textDecoration: 'none' }}
             >
               View Plans
             </a>
@@ -342,20 +342,20 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
             {cls.title}
           </h1>
           {cls.is_ai_generated && (
-            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: '#A76E58' }}>
+            <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: 'var(--color-cta)' }}>
               ✦ Custom
             </span>
           )}
         </div>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>{cls.duration_minutes} min</span>
+          <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{cls.duration_minutes} min</span>
           {cls.difficulty_level && (
             <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: diff.bg, color: diff.color }}>
               {cls.difficulty_level}
             </span>
           )}
           {(cls.profiles || cls.instructor_name) && (
-            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
               with {cls.profiles ? `${cls.profiles.first_name} ${cls.profiles.last_name}` : cls.instructor_name}
             </span>
           )}
@@ -371,7 +371,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
       {/* Focus areas */}
       {cls.focus_area && cls.focus_area.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.6rem' }}>Focus Areas</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.6rem' }}>Focus Areas</p>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {cls.focus_area.map(f => (
               <span key={f} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.35rem 0.75rem', borderRadius: '2px', background: '#f5f5f5', color: '#555' }}>{f}</span>
@@ -382,8 +382,8 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
 
       {/* Props shop */}
       {cls.props_required && cls.props_required.length > 0 && (
-        <div style={{ background: '#FAF7F2', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>
+        <div style={{ background: 'var(--color-bg)', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
             Props for This Class
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -393,7 +393,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
                 <div key={prop} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>{prop}</span>
                   {shop && (
-                    <a href={shop.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
+                    <a href={shop.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
                       Shop →
                     </a>
                   )}
@@ -412,20 +412,20 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
 
 function renderLine(line: string, idx: number) {
   if (line.startsWith('# ')) return <h2 key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.5rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: '0 0 0.25rem' }}>{line.slice(2)}</h2>
-  if (line.startsWith('## ')) return <div key={idx} style={{ marginTop: '1.75rem', marginBottom: '0.6rem', paddingBottom: '0.4rem', borderBottom: '1px solid #e8e8e8' }}><span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#A76E58' }}>{line.slice(3)}</span></div>
+  if (line.startsWith('## ')) return <div key={idx} style={{ marginTop: '1.75rem', marginBottom: '0.6rem', paddingBottom: '0.4rem', borderBottom: '1px solid #e8e8e8' }}><span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>{line.slice(3)}</span></div>
   if (line.startsWith('### ')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginTop: '1rem', marginBottom: '0.25rem' }}>{line.slice(4)}</p>
   if (line.startsWith('**') && line.endsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.85rem', color: '#1a1a1a', margin: '0.25rem 0' }}>{line.slice(2, -2)}</p>
-  if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#A76E58', fontStyle: 'italic', margin: '0.2rem 0 0.2rem 1rem' }}>{line.slice(1, -1)}</p>
+  if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-cta)', fontStyle: 'italic', margin: '0.2rem 0 0.2rem 1rem' }}>{line.slice(1, -1)}</p>
   if (line.startsWith('- ')) return <li key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#555', marginBottom: '0.2rem' }}>{line.slice(2)}</li>
   if (line.trim() === '') return <div key={idx} style={{ height: '0.4rem' }} />
   return <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#555', lineHeight: 1.7 }}>{line}</p>
 }
 
 function GeneratedClassDetail({ cls, onBack }: { cls: GeneratedClass; onBack: () => void }) {
-  const diff = cls.difficulty ? DIFFICULTY_COLORS[cls.difficulty] : { bg: '#f0f0f0', color: '#8a8d83' }
+  const diff = cls.difficulty ? DIFFICULTY_COLORS[cls.difficulty] : { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
-      <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
+      <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
         ← Back
       </button>
 
@@ -439,13 +439,13 @@ function GeneratedClassDetail({ cls, onBack }: { cls: GeneratedClass; onBack: ()
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', margin: 0 }}>
           {cls.title ?? 'Custom Class'}
         </h1>
-        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: '#A76E58' }}>✦ Custom</span>
+        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.25rem 0.6rem', borderRadius: '2px', background: '#1a1a1a', color: 'var(--color-cta)' }}>✦ Custom</span>
       </div>
 
       <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
-        {cls.duration && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>{cls.duration} min</span>}
+        {cls.duration && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{cls.duration} min</span>}
         {cls.difficulty && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.2rem 0.5rem', borderRadius: '2px', background: diff.bg, color: diff.color }}>{cls.difficulty}</span>}
-        {cls.focus_area && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>{cls.focus_area}</span>}
+        {cls.focus_area && <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>{cls.focus_area}</span>}
       </div>
 
       <div style={{ lineHeight: 1.8 }}>

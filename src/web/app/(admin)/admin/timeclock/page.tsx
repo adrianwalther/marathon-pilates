@@ -201,17 +201,17 @@ export default function TimeClockPage() {
 
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Time Clock</h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '0.25rem' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
           $18/hr · OT ${OT_RATE}/hr after {OT_THRESHOLD}h/week · Rounds to nearest 15 min
         </p>
       </div>
 
       {/* Clock in/out panel — front desk + any staff */}
       {!isAdmin && (
-        <div style={{ background: 'white', border: `2px solid ${activeEntry ? '#A76E58' : '#eee'}`, borderRadius: '2px', padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
+        <div style={{ background: 'white', border: `2px solid ${activeEntry ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', padding: '2rem', marginBottom: '2rem', textAlign: 'center' }}>
           {activeEntry ? (
             <>
-              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.5rem' }}>Currently Clocked In</p>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.5rem' }}>Currently Clocked In</p>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.8rem', color: '#1a1a1a', lineHeight: 1, marginBottom: '0.25rem' }}>
                 {formatDuration(activeElapsed)}
               </p>
@@ -221,7 +221,7 @@ export default function TimeClockPage() {
               <button
                 onClick={clockOut}
                 disabled={clockingOut}
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingOut ? '#c4a094' : '#1a1a1a', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingOut ? 'not-allowed' : 'pointer' }}
+                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingOut ? 'var(--color-cta-disabled)' : '#1a1a1a', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingOut ? 'not-allowed' : 'pointer' }}
               >
                 {clockingOut ? 'Clocking Out...' : 'Clock Out'}
               </button>
@@ -242,7 +242,7 @@ export default function TimeClockPage() {
               <button
                 onClick={clockIn}
                 disabled={clockingIn}
-                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingIn ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingIn ? 'not-allowed' : 'pointer' }}
+                style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.15em', textTransform: 'uppercase', padding: '0.9rem 2.5rem', background: clockingIn ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: clockingIn ? 'not-allowed' : 'pointer' }}
               >
                 {clockingIn ? 'Clocking In...' : 'Clock In'}
               </button>
@@ -254,13 +254,13 @@ export default function TimeClockPage() {
       {/* Admin: weekly summary */}
       {isAdmin && Object.keys(totalsByPerson).length > 0 && (
         <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.5rem', marginBottom: '2rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '1rem' }}>Weekly Totals</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>Weekly Totals</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {Object.values(totalsByPerson).map(p => (
               <div key={p.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0', borderBottom: '1px solid #f8f8f8' }}>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>{p.name}</p>
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: p.hours > OT_THRESHOLD ? '#e05555' : '#8a8d83' }}>
+                  <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: p.hours > OT_THRESHOLD ? '#e05555' : 'var(--color-text-muted)' }}>
                     {formatDuration(p.hours)}
                     {p.hours > OT_THRESHOLD && ' ⚠ OT'}
                   </p>
@@ -274,12 +274,12 @@ export default function TimeClockPage() {
 
       {/* Week nav */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
-        <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>←</button>
+        <button onClick={() => setWeekOffset(w => w - 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>←</button>
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#1a1a1a' }}>
           {startDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} – {weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
         </p>
-        <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: '#8a8d83' }}>→</button>
-        {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: '#A76E58' }}>This week</button>}
+        <button onClick={() => setWeekOffset(w => w + 1)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', background: 'white', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.4rem 0.8rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>→</button>
+        {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-cta)' }}>This week</button>}
       </div>
 
       {/* Entries list */}
@@ -291,7 +291,7 @@ export default function TimeClockPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.5rem' }}>Shifts This Week</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>Shifts This Week</p>
           {entries.map(e => {
             const isEditing = editingId === e.id
             const hrs = e.hours ?? (e.clock_out ? computeHours(e.clock_in, e.clock_out) : null)
@@ -299,34 +299,34 @@ export default function TimeClockPage() {
             const isOpen = !e.clock_out
 
             return (
-              <div key={e.id} style={{ background: 'white', border: `1px solid ${isOpen ? '#A76E58' : '#eee'}`, borderRadius: '2px', padding: '1rem 1.5rem' }}>
+              <div key={e.id} style={{ background: 'white', border: `1px solid ${isOpen ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', padding: '1rem 1.5rem' }}>
                 {isEditing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Clock Out</label>
+                        <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Clock Out</label>
                         <input type="datetime-local" defaultValue={e.clock_out ? new Date(e.clock_out).toISOString().slice(0,16) : ''} onChange={ev => setEditClockOut(ev.target.value ? new Date(ev.target.value).toISOString() : '')} style={inputStyle} />
                       </div>
                       <div style={{ flex: 1 }}>
-                        <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8a8d83', display: 'block', marginBottom: '0.3rem' }}>Notes</label>
+                        <label style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', display: 'block', marginBottom: '0.3rem' }}>Notes</label>
                         <input type="text" defaultValue={e.notes ?? ''} onChange={ev => setEditNotes(ev.target.value)} placeholder="Optional" style={inputStyle} />
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button onClick={() => saveEdit(e.id)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 1rem', background: '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>Save</button>
-                      <button onClick={() => setEditingId(null)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', background: 'none', border: '1px solid #ddd', color: '#8a8d83', borderRadius: '2px', cursor: 'pointer' }}>Cancel</button>
+                      <button onClick={() => saveEdit(e.id)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 1rem', background: 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}>Save</button>
+                      <button onClick={() => setEditingId(null)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.4rem 0.8rem', background: 'none', border: '1px solid #ddd', color: 'var(--color-text-muted)', borderRadius: '2px', cursor: 'pointer' }}>Cancel</button>
                     </div>
                   </div>
                 ) : (
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
                     <div>
                       {isAdmin && e.profiles && (
-                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.15rem' }}>
+                        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.15rem' }}>
                           {e.profiles.first_name} {e.profiles.last_name}
                         </p>
                       )}
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#1a1a1a' }}>
-                        {formatDate(e.clock_in)} · {formatTime(e.clock_in)} – {e.clock_out ? formatTime(e.clock_out) : <span style={{ color: '#A76E58' }}>Active</span>}
+                        {formatDate(e.clock_in)} · {formatTime(e.clock_in)} – {e.clock_out ? formatTime(e.clock_out) : <span style={{ color: 'var(--color-cta)' }}>Active</span>}
                       </p>
                       {e.notes && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginTop: '0.15rem' }}>{e.notes}</p>}
                     </div>
@@ -338,10 +338,10 @@ export default function TimeClockPage() {
                         </div>
                       )}
                       {isOpen && !isAdmin && (
-                        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.55rem', borderRadius: '2px', background: '#f5ece6', color: '#A76E58' }}>Active</span>
+                        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.2rem 0.55rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>Active</span>
                       )}
                       {isAdmin && (
-                        <button onClick={() => { setEditingId(e.id); setEditNotes(e.notes ?? ''); setEditClockOut(e.clock_out ?? '') }} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.3rem 0.7rem', border: '1px solid #e0e0e0', background: 'white', color: '#8a8d83', borderRadius: '2px', cursor: 'pointer' }}>
+                        <button onClick={() => { setEditingId(e.id); setEditNotes(e.notes ?? ''); setEditClockOut(e.clock_out ?? '') }} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.3rem 0.7rem', border: '1px solid #e0e0e0', background: 'white', color: 'var(--color-text-muted)', borderRadius: '2px', cursor: 'pointer' }}>
                           Edit
                         </button>
                       )}

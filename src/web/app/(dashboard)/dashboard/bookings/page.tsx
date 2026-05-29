@@ -55,15 +55,15 @@ const LOCATION_LABELS: Record<string, string> = {
 const REQUEST_STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   pending:   { bg: '#fff8e6', color: '#c8860a' },
   proposed:  { bg: '#e8f0fe', color: '#3b5bdb' },
-  confirmed: { bg: '#f5ece6', color: '#A76E58' },
+  confirmed: { bg: '#f5ece6', color: 'var(--color-cta)' },
   declined:  { bg: '#fef0f0', color: '#e05555' },
-  cancelled: { bg: '#f0f0f0', color: '#8a8d83' },
+  cancelled: { bg: '#f0f0f0', color: 'var(--color-text-muted)' },
 }
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  confirmed:  { bg: '#f5ece6', color: '#A76E58' },
+  confirmed:  { bg: '#f5ece6', color: 'var(--color-cta)' },
   waitlisted: { bg: '#fff8e6', color: '#c8860a' },
-  completed:  { bg: '#f0f0f0', color: '#8a8d83' },
+  completed:  { bg: '#f0f0f0', color: 'var(--color-text-muted)' },
   cancelled:  { bg: '#fef0f0', color: '#e05555' },
   no_show:    { bg: '#fef0f0', color: '#e05555' },
 }
@@ -168,7 +168,7 @@ function BookingsPageInner() {
     borderRadius: '2px',
     border: 'none',
     background: active ? '#1a1a1a' : 'white',
-    color: active ? 'white' : '#8a8d83',
+    color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
     transition: 'all 0.15s',
   })
@@ -190,7 +190,7 @@ function BookingsPageInner() {
           <Link href="/dashboard/book-private" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#1a1a1a', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
             + Request Private
           </Link>
-          <Link href="/dashboard/schedule" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: '#A76E58', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
+          <Link href="/dashboard/schedule" style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'var(--color-cta)', color: 'white', padding: '0.6rem 1.2rem', borderRadius: '2px', textDecoration: 'none' }}>
             + Book a Class
           </Link>
         </div>
@@ -216,14 +216,14 @@ function BookingsPageInner() {
           {requests.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '4rem 0' }}>
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ccc' }}>No requests yet</p>
-              <Link href="/dashboard/book-private" style={{ display: 'inline-block', marginTop: '1.5rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
+              <Link href="/dashboard/book-private" style={{ display: 'inline-block', marginTop: '1.5rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
                 Request a Private →
               </Link>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {requests.map(r => {
-                const statusStyle = REQUEST_STATUS_COLORS[r.status] ?? { bg: '#f0f0f0', color: '#8a8d83' }
+                const statusStyle = REQUEST_STATUS_COLORS[r.status] ?? { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
                 return (
                   <div key={r.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
@@ -236,7 +236,7 @@ function BookingsPageInner() {
                             {r.status}
                           </span>
                         </div>
-                        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83', marginBottom: '0.25rem' }}>
+                        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>
                           {LOCATION_LABELS[r.location]} {r.focus_area ? `· ${r.focus_area}` : ''}
                         </p>
                         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>
@@ -274,7 +274,7 @@ function BookingsPageInner() {
             {tab === 'upcoming' ? 'No upcoming classes' : tab === 'past' ? 'No past classes yet' : 'No cancelled bookings'}
           </p>
           {tab === 'upcoming' && (
-            <Link href="/dashboard/schedule" style={{ display: 'inline-block', marginTop: '1.5rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', textDecoration: 'none' }}>
+            <Link href="/dashboard/schedule" style={{ display: 'inline-block', marginTop: '1.5rem', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none' }}>
               Browse Schedule →
             </Link>
           )}
@@ -287,7 +287,7 @@ function BookingsPageInner() {
             const canCancel = b.status === 'confirmed' && !isPast
             const hoursUntil = (new Date(session.starts_at).getTime() - Date.now()) / (1000 * 60 * 60)
             const lateWindow = hoursUntil < 12 && hoursUntil > 0
-            const statusStyle = STATUS_COLORS[b.status] ?? { bg: '#f0f0f0', color: '#8a8d83' }
+            const statusStyle = STATUS_COLORS[b.status] ?? { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
 
             return (
               <div key={b.id} style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
@@ -307,7 +307,7 @@ function BookingsPageInner() {
                       )}
                     </div>
 
-                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83' }}>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                       {formatDate(session.starts_at)} · {formatTime(session.starts_at)} – {formatTime(session.ends_at)}
                     </p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa', marginTop: '0.15rem' }}>
@@ -325,7 +325,7 @@ function BookingsPageInner() {
                     <button
                       onClick={() => handleCancel(b)}
                       disabled={cancellingId === b.id}
-                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: cancellingId === b.id ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
+                      style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: 'var(--color-text-muted)', cursor: cancellingId === b.id ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' }}
                     >
                       {cancellingId === b.id ? '...' : 'Cancel'}
                     </button>

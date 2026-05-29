@@ -31,7 +31,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#FAF7F2' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
       {/* Left panel — looping hero video */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-16">
         {/*
@@ -139,7 +139,7 @@ export default function LoginPage() {
               fontFamily: "'Poppins', sans-serif",
               fontWeight: 300,
               fontSize: '0.85rem',
-              color: '#8a8d83',
+              color: 'var(--color-text-muted)',
               marginBottom: '2.5rem',
               letterSpacing: '0.02em',
             }}
@@ -156,7 +156,7 @@ export default function LoginPage() {
                   fontSize: '0.7rem',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: '#8a8d83',
+                  color: 'var(--color-text-muted)',
                   display: 'block',
                   marginBottom: '0.4rem',
                 }}
@@ -179,7 +179,7 @@ export default function LoginPage() {
                   background: 'white',
                   transition: 'border-color 0.2s',
                 }}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
               />
             </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
                   fontSize: '0.7rem',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: '#8a8d83',
+                  color: 'var(--color-text-muted)',
                   display: 'block',
                   marginBottom: '0.4rem',
                 }}
@@ -215,7 +215,7 @@ export default function LoginPage() {
                   background: 'white',
                   transition: 'border-color 0.2s',
                 }}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
               />
             </div>
@@ -228,7 +228,7 @@ export default function LoginPage() {
                   fontWeight: 600,
                   fontSize: '0.7rem',
                   letterSpacing: '0.08em',
-                  color: '#A76E58',
+                  color: 'var(--color-cta)',
                   textDecoration: 'none',
                 }}
               >
@@ -253,7 +253,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               style={{
-                background: loading ? '#c4a094' : '#A76E58',
+                background: loading ? 'var(--color-cta-disabled)' : 'var(--color-cta)',
                 color: 'white',
                 fontFamily: "'Raleway', sans-serif",
                 fontWeight: 700,
@@ -277,7 +277,7 @@ export default function LoginPage() {
               fontFamily: "'Poppins', sans-serif",
               fontWeight: 300,
               fontSize: '0.82rem',
-              color: '#8a8d83',
+              color: 'var(--color-text-muted)',
               marginTop: '2rem',
               textAlign: 'center',
             }}
@@ -286,7 +286,7 @@ export default function LoginPage() {
             <Link
               href="/signup"
               style={{
-                color: '#A76E58',
+                color: 'var(--color-cta)',
                 fontWeight: 500,
                 textDecoration: 'none',
               }}

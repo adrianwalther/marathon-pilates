@@ -231,7 +231,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Data migration from Arketa (Susan LeGrand)
 - [ ] Rotate all API keys + enable 2FA on launch day
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
-- [ ] Complete brand color migration to new earth palette (in progress)
+- [ ] Finish brand color migration — exact-match brand hexes (176 across 37 files) migrated to `var(--color-*)` tokens 2026-05-28 (pixel-identical, zero visual change). REMAINING (~784): non-brand grays, Tailwind defaults, status-badge tints, and off-black `#1A1A1A` (190×) — these need design decisions (new tokens or intentional color changes, e.g. `#1A1A1A`→deep-earth), NOT a mechanical swap. Note: email templates in `lib/emails/` intentionally keep literal hex (email clients can't read CSS vars).
 - [ ] Jazz to sign up at marathon-pilates.vercel.app + set role to admin
 
 ## Completed (for reference)

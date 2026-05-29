@@ -38,9 +38,9 @@ const EXPERIENCE_LEVELS = [
 ]
 
 const EXPERIENCE_COLORS: Record<string, { bg: string; color: string }> = {
-  standard:       { bg: '#f5f5f5', color: '#8a8d83' },
+  standard:       { bg: '#f5f5f5', color: 'var(--color-text-muted)' },
   senior:         { bg: '#fff8e6', color: '#c8860a' },
-  master_trainer: { bg: '#f5ece6', color: '#A76E58' },
+  master_trainer: { bg: '#f5ece6', color: 'var(--color-cta)' },
 }
 
 // Pay rate lookup matching payroll engine
@@ -152,7 +152,7 @@ export default function AdminInstructorsPage() {
   const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
   const inputStyle = { width: '100%', padding: '0.6rem 0.85rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.82rem', outline: 'none', background: 'white', fontFamily: "'Poppins', sans-serif" }
-  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: '#8a8d83', display: 'block' as const, marginBottom: '0.3rem' }
+  const labelStyle = { fontFamily: "'Raleway', sans-serif", fontWeight: 600 as const, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--color-text-muted)', display: 'block' as const, marginBottom: '0.3rem' }
 
   return (
     <div style={{ padding: '3rem 2.5rem', maxWidth: '1100px' }}>
@@ -164,7 +164,7 @@ export default function AdminInstructorsPage() {
 
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a' }}>Instructors</h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '0.25rem' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
           {loading ? '—' : instructors.length} team member{instructors.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -185,7 +185,7 @@ export default function AdminInstructorsPage() {
                 <div
                   key={inst.id}
                   onClick={() => selectInstructor(inst)}
-                  style={{ background: isSelected ? '#f0faf8' : 'white', border: `1px solid ${isSelected ? '#A76E58' : '#eee'}`, borderRadius: '2px', padding: '1rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}
+                  style={{ background: isSelected ? '#f0faf8' : 'white', border: `1px solid ${isSelected ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', padding: '1rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}
                 >
                   <div>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: '#1a1a1a', marginBottom: '0.15rem' }}>
@@ -193,7 +193,7 @@ export default function AdminInstructorsPage() {
                     </p>
                     <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{inst.email}</p>
                     {ip?.bio && (
-                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#8a8d83', marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: 'var(--color-text-muted)', marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '400px' }}>
                         {ip.bio}
                       </p>
                     )}
@@ -203,7 +203,7 @@ export default function AdminInstructorsPage() {
                       {EXPERIENCE_LEVELS.find(e => e.value === level)?.label ?? level}
                     </span>
                     <div style={{ display: 'flex', gap: '0.3rem' }}>
-                      {ip?.can_teach_group && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.48rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: '#f5f5f5', color: '#8a8d83' }}>Group</span>}
+                      {ip?.can_teach_group && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.48rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: '#f5f5f5', color: 'var(--color-text-muted)' }}>Group</span>}
                       {ip?.can_teach_private && <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.48rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.15rem 0.4rem', borderRadius: '2px', background: '#f0f4ff', color: '#6b88c8' }}>Private</span>}
                     </div>
                   </div>
@@ -227,7 +227,7 @@ export default function AdminInstructorsPage() {
                     {selected.phone && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>{selected.phone}</p>}
                   </div>
                   {!editing && (
-                    <button onClick={() => startEdit(selected)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.3rem 0.7rem', cursor: 'pointer', color: '#8a8d83' }}>
+                    <button onClick={() => startEdit(selected)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '0.3rem 0.7rem', cursor: 'pointer', color: 'var(--color-text-muted)' }}>
                       Edit
                     </button>
                   )}
@@ -237,7 +237,7 @@ export default function AdminInstructorsPage() {
 
               {/* Teaching stats */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Teaching Stats</p>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Teaching Stats</p>
                 {statsLoading ? (
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>Loading...</p>
                 ) : stats ? (
@@ -252,7 +252,7 @@ export default function AdminInstructorsPage() {
 
               {/* Pay rates */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Pay Rates</p>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Pay Rates</p>
                 {(() => {
                   const ip = selected.instructor_profiles
                   const level = ip?.experience_level ?? 'standard'
@@ -274,7 +274,7 @@ export default function AdminInstructorsPage() {
 
               {/* Profile — view or edit */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Profile</p>
+                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Profile</p>
 
                 {editing ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -288,18 +288,18 @@ export default function AdminInstructorsPage() {
                       <div>
                         <label style={labelStyle}>Custom Private Session Rate ($)</label>
                         <input type="number" step="1" placeholder="e.g. 62" value={editRate} onChange={e => setEditRate(e.target.value)} style={inputStyle}
-                          onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                          onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
                       </div>
                     )}
                     <div>
                       <label style={labelStyle}>Bio</label>
                       <textarea value={editBio} onChange={e => setEditBio(e.target.value)} rows={3} placeholder="Short bio shown to clients..." style={{ ...inputStyle, resize: 'vertical' as const }}
-                        onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                        onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
                     </div>
                     <div>
                       <label style={labelStyle}>Certifications (comma-separated)</label>
                       <input type="text" value={editCerts} onChange={e => setEditCerts(e.target.value)} placeholder="e.g. BASI, Polestar, CPR" style={inputStyle}
-                        onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                        onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
                     </div>
                     <div style={{ display: 'flex', gap: '1rem' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#555' }}>
@@ -310,10 +310,10 @@ export default function AdminInstructorsPage() {
                       </label>
                     </div>
                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
-                      <button onClick={saveProfile} disabled={saving} style={{ flex: 1, fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+                      <button onClick={saveProfile} disabled={saving} style={{ flex: 1, fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
                         {saving ? 'Saving...' : 'Save'}
                       </button>
-                      <button onClick={() => setEditing(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1rem', background: 'none', border: '1px solid #ddd', color: '#8a8d83', borderRadius: '2px', cursor: 'pointer' }}>
+                      <button onClick={() => setEditing(false)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1rem', background: 'none', border: '1px solid #ddd', color: 'var(--color-text-muted)', borderRadius: '2px', cursor: 'pointer' }}>
                         Cancel
                       </button>
                     </div>
@@ -330,7 +330,7 @@ export default function AdminInstructorsPage() {
                         <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.35rem' }}>Certifications</p>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
                           {selected.instructor_profiles.certifications.map(cert => (
-                            <span key={cert} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.18rem 0.45rem', borderRadius: '2px', background: '#f5f5f5', color: '#8a8d83' }}>{cert}</span>
+                            <span key={cert} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.52rem', letterSpacing: '0.06em', textTransform: 'uppercase', padding: '0.18rem 0.45rem', borderRadius: '2px', background: '#f5f5f5', color: 'var(--color-text-muted)' }}>{cert}</span>
                           ))}
                         </div>
                       </div>
@@ -369,8 +369,8 @@ function StatItem({ label, value }: { label: string; value: string }) {
 function PayRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.3rem', borderBottom: '1px solid #f8f8f8' }}>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#8a8d83' }}>{label}</p>
-      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: highlight ? 500 : 300, fontSize: '0.72rem', color: highlight ? '#A76E58' : '#555' }}>{value}</p>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>{label}</p>
+      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: highlight ? 500 : 300, fontSize: '0.72rem', color: highlight ? 'var(--color-cta)' : '#555' }}>{value}</p>
     </div>
   )
 }

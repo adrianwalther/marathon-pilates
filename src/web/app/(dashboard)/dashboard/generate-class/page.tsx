@@ -25,7 +25,7 @@ const PROPS = [
 ]
 
 const DIFFICULTY_COLORS: Record<string, { border: string; bg: string; text: string }> = {
-  beginner:     { border: '#A76E58', bg: '#f5ece6', text: '#A76E58' },
+  beginner:     { border: 'var(--color-cta)', bg: '#f5ece6', text: 'var(--color-cta)' },
   intermediate: { border: '#c8860a', bg: '#fff8e6', text: '#c8860a' },
   advanced:     { border: '#e05555', bg: '#fef0f0', text: '#e05555' },
 }
@@ -43,7 +43,7 @@ function renderLine(line: string, idx: number) {
   if (line.startsWith('## ')) {
     return (
       <div key={idx} style={{ marginTop: '2rem', marginBottom: '0.75rem', paddingBottom: '0.4rem', borderBottom: '1px solid #e8e8e8' }}>
-        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: '#A76E58' }}>
+        <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-cta)' }}>
           {line.slice(3)}
         </span>
       </div>
@@ -52,7 +52,7 @@ function renderLine(line: string, idx: number) {
   // Bold meta line (duration · difficulty · focus)
   if (line.startsWith('**') && line.endsWith('**')) {
     return (
-      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#8a8d83', marginBottom: '1rem' }}>
+      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
         {line.slice(2, -2)}
       </p>
     )
@@ -73,7 +73,7 @@ function renderLine(line: string, idx: number) {
   // Italic cue lines
   if (line.startsWith('*') && line.endsWith('*') && !line.startsWith('**')) {
     return (
-      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontStyle: 'italic', fontSize: '0.82rem', color: '#A76E58', margin: '0.1rem 0 0.1rem 1rem' }}>
+      <p key={idx} style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontStyle: 'italic', fontSize: '0.82rem', color: 'var(--color-cta)', margin: '0.1rem 0 0.1rem 1rem' }}>
         {line.slice(1, -1)}
       </p>
     )
@@ -328,8 +328,8 @@ export default function GenerateClassPage() {
     padding: '0.4rem 1rem',
     borderRadius: '2px',
     border: active ? 'none' : '1px solid #e0e0e0',
-    background: active ? '#A76E58' : 'white',
-    color: active ? 'white' : '#8a8d83',
+    background: active ? 'var(--color-cta)' : 'white',
+    color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
 
@@ -339,7 +339,7 @@ export default function GenerateClassPage() {
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.4rem' }}>
           AI Class Generator
         </h1>
-        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83' }}>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
           BASI Block System · Polestar Methodology · Infinite unique classes
         </p>
       </div>
@@ -349,7 +349,7 @@ export default function GenerateClassPage() {
 
         {/* Duration */}
         <div>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Duration</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Duration</p>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {DURATIONS.map(d => (
               <button key={d} onClick={() => setDuration(d)} style={pillStyle(duration === d)}>
@@ -361,7 +361,7 @@ export default function GenerateClassPage() {
 
         {/* Difficulty */}
         <div>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Difficulty</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Difficulty</p>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {DIFFICULTIES.map(d => {
               const c = DIFFICULTY_COLORS[d]
@@ -371,7 +371,7 @@ export default function GenerateClassPage() {
                   fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.4rem 1rem', borderRadius: '2px', cursor: 'pointer',
                   border: `1px solid ${active ? c.border : '#e0e0e0'}`,
                   background: active ? c.bg : 'white',
-                  color: active ? c.text : '#8a8d83',
+                  color: active ? c.text : 'var(--color-text-muted)',
                 }}>
                   {d}
                 </button>
@@ -382,7 +382,7 @@ export default function GenerateClassPage() {
 
         {/* Focus area */}
         <div>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Focus Area</p>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Focus Area</p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {FOCUS_AREAS.map(f => (
               <button key={f} onClick={() => setFocusArea(f)} style={pillStyle(focusArea === f)}>{f}</button>
@@ -392,7 +392,7 @@ export default function GenerateClassPage() {
 
         {/* Props */}
         <div>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
             Props Available <span style={{ fontWeight: 400, letterSpacing: '0.05em', textTransform: 'none', color: '#aaa' }}>— optional</span>
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -410,7 +410,7 @@ export default function GenerateClassPage() {
             alignSelf: 'flex-start',
             fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.14em', textTransform: 'uppercase',
             padding: '0.85rem 2.5rem', borderRadius: '2px', border: 'none',
-            background: generating ? '#c4a094' : '#A76E58', color: 'white',
+            background: generating ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white',
             cursor: generating ? 'not-allowed' : 'pointer',
           }}
         >
@@ -423,7 +423,7 @@ export default function GenerateClassPage() {
         <div style={{ background: '#fef0f0', border: '1px solid #e05555', borderRadius: '2px', padding: '1rem 1.5rem', marginBottom: '1.5rem' }}>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, fontSize: '0.85rem', color: '#e05555' }}>{error}</p>
           {error.includes('API key') && (
-            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#8a8d83', marginTop: '0.5rem' }}>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
               Add <code style={{ background: '#f5f5f5', padding: '0.1rem 0.4rem', borderRadius: '2px', fontSize: '0.82rem' }}>ANTHROPIC_API_KEY=sk-ant-...</code> to <code style={{ background: '#f5f5f5', padding: '0.1rem 0.4rem', borderRadius: '2px', fontSize: '0.82rem' }}>.env.local</code>
             </p>
           )}
@@ -456,7 +456,7 @@ export default function GenerateClassPage() {
           {/* Streaming placeholder */}
           {generating && !output && (
             <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#A76E58', animation: 'pulse 1s infinite' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-cta)', animation: 'pulse 1s infinite' }} />
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#aaa' }}>Designing your class...</p>
             </div>
           )}
@@ -465,7 +465,7 @@ export default function GenerateClassPage() {
           <div style={{ lineHeight: 1.7 }}>
             {lines.map((line, i) => renderLine(line, i))}
             {generating && output && (
-              <span style={{ display: 'inline-block', width: '2px', height: '1em', background: '#A76E58', verticalAlign: 'text-bottom', animation: 'blink 0.8s infinite' }} />
+              <span style={{ display: 'inline-block', width: '2px', height: '1em', background: 'var(--color-cta)', verticalAlign: 'text-bottom', animation: 'blink 0.8s infinite' }} />
             )}
           </div>
 
@@ -476,7 +476,7 @@ export default function GenerateClassPage() {
               {(audioLoading || audioUrl) && (
                 <div style={{ marginBottom: '1.25rem' }}>
                   {audioLoading && (
-                    <div style={{ background: '#FAF7F2', borderRadius: '2px', padding: '1rem 1.25rem' }}>
+                    <div style={{ background: 'var(--color-bg)', borderRadius: '2px', padding: '1rem 1.25rem' }}>
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#aaa', margin: 0 }}>
                         Preparing voice cues...
                       </p>
@@ -485,13 +485,13 @@ export default function GenerateClassPage() {
                   {audioUrl && (
                     <div>
                       {/* Label */}
-                      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#A76E58', marginBottom: '0.75rem' }}>
+                      <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-cta)', marginBottom: '0.75rem' }}>
                         Voice Cues — Press play, put your phone down, and move
                       </p>
 
                       {/* Synced cue display */}
                       {cueTimings.length > 0 && (
-                        <div style={{ background: '#FAF7F2', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '0.75rem', minHeight: '80px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                        <div style={{ background: 'var(--color-bg)', borderRadius: '2px', padding: '1.25rem 1.5rem', marginBottom: '0.75rem', minHeight: '80px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                           {currentCueIndex < 0 ? (
                             <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#bbb', margin: 0, fontStyle: 'italic' }}>
                               Press play to begin your class
@@ -501,7 +501,7 @@ export default function GenerateClassPage() {
                               {/* Block + exercise */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                                 {cueTimings[currentCueIndex].block && (
-                                  <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'white', background: '#A76E58', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>
+                                  <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'white', background: 'var(--color-cta)', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>
                                     {cueTimings[currentCueIndex].block}
                                   </span>
                                 )}
@@ -518,7 +518,7 @@ export default function GenerateClassPage() {
                               {/* Progress dots */}
                               <div style={{ display: 'flex', gap: '4px', marginTop: '0.75rem', flexWrap: 'wrap' }}>
                                 {cueTimings.map((_, i) => (
-                                  <div key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: i <= currentCueIndex ? '#A76E58' : '#e0e0e0', transition: 'background 0.3s' }} />
+                                  <div key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: i <= currentCueIndex ? 'var(--color-cta)' : '#e0e0e0', transition: 'background 0.3s' }} />
                                 ))}
                               </div>
                             </>
@@ -547,7 +547,7 @@ export default function GenerateClassPage() {
                         onClick={handlePlayPause}
                         style={{
                           width: '100%', padding: '0.75rem',
-                          background: isPlaying ? '#1a1a1a' : '#A76E58',
+                          background: isPlaying ? '#1a1a1a' : 'var(--color-cta)',
                           border: 'none', borderRadius: '2px', cursor: 'pointer',
                           fontFamily: "'Raleway', sans-serif", fontWeight: 700,
                           fontSize: '0.65rem', letterSpacing: '0.14em',
@@ -564,13 +564,13 @@ export default function GenerateClassPage() {
               <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                 <button
                   onClick={generateClass}
-                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: '#A76E58', color: 'white', cursor: 'pointer' }}>
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: 'var(--color-cta)', color: 'white', cursor: 'pointer' }}>
                   Regenerate
                 </button>
                 <button
                   onClick={saveClass}
                   disabled={saving || saved}
-                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: saved ? '#f5ece6' : '#1a1a1a', color: saved ? '#A76E58' : 'white', cursor: saved ? 'default' : 'pointer' }}>
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: 'none', borderRadius: '2px', background: saved ? '#f5ece6' : '#1a1a1a', color: saved ? 'var(--color-cta)' : 'white', cursor: saved ? 'default' : 'pointer' }}>
                   {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save Class'}
                 </button>
                 <button
@@ -581,7 +581,7 @@ export default function GenerateClassPage() {
                     a.href = url; a.download = `pilates-class-${duration}min-${difficulty}.txt`; a.click()
                     URL.revokeObjectURL(url)
                   }}
-                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: '#8a8d83', cursor: 'pointer' }}>
+                  style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.6rem 1.25rem', border: '1px solid #e0e0e0', borderRadius: '2px', background: 'white', color: 'var(--color-text-muted)', cursor: 'pointer' }}>
                   Download
                 </button>
               </div>
@@ -593,7 +593,7 @@ export default function GenerateClassPage() {
       {/* Saved classes */}
       {savedClasses.length > 0 && (
         <div style={{ marginTop: '3rem' }}>
-          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '1rem' }}>
+          <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
             Your Saved Classes
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-const TEAL = '#A76E58'
+const TEAL = 'var(--color-cta)'
 
 type Broadcast = {
   id: string
@@ -96,7 +96,7 @@ export default function BroadcastsPage() {
   const avgOpen = sent.length > 0 ? Math.round(sent.reduce((s, b) => s + (b.recipient_count > 0 ? (b.open_count / b.recipient_count) * 100 : 0), 0) / sent.length) : 0
 
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#FAF7F2', minHeight: '100vh' }}>
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
@@ -137,7 +137,7 @@ export default function BroadcastsPage() {
         ) : (
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: '#FAF7F2' }}>
+              <tr style={{ background: 'var(--color-bg)' }}>
                 {['Title', 'Audience', 'Channels', 'Status', 'Date', 'Metrics'].map(h => (
                   <th key={h} style={{ padding: '0.65rem 1rem', fontFamily: 'Raleway, sans-serif', fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', textAlign: 'left', fontWeight: 600 }}>{h}</th>
                 ))}

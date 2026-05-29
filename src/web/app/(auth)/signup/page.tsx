@@ -71,23 +71,23 @@ export default function SignupPage() {
     fontSize: '0.7rem',
     letterSpacing: '0.12em',
     textTransform: 'uppercase' as const,
-    color: '#8a8d83',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginBottom: '0.4rem',
   }
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FAF7F2' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--color-bg)' }}>
         <div className="text-center max-w-sm px-8">
           <Logo className="mx-auto mb-8" />
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '1rem' }}>
             Check Your Email
           </h1>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', lineHeight: 1.7 }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', lineHeight: 1.7 }}>
             We sent a confirmation link to <strong style={{ color: '#1a1a1a' }}>{email}</strong>. Click it to activate your account.
           </p>
-          <Link href="/login" style={{ display: 'inline-block', marginTop: '2rem', color: '#A76E58', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
+          <Link href="/login" style={{ display: 'inline-block', marginTop: '2rem', color: 'var(--color-cta)', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none' }}>
             Back to Sign In
           </Link>
         </div>
@@ -96,7 +96,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#FAF7F2' }}>
+    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-16" style={{ background: '#1a1a1a' }}>
         <Logo />
@@ -104,7 +104,7 @@ export default function SignupPage() {
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.8rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'white', lineHeight: 1.2 }}>
             Your journey<br />starts here
           </p>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginTop: '1rem', letterSpacing: '0.04em' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '1rem', letterSpacing: '0.04em' }}>
             HSA & FSA accepted
           </p>
         </div>
@@ -123,7 +123,7 @@ export default function SignupPage() {
           <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#1a1a1a', marginBottom: '0.5rem' }}>
             Create Account
           </h1>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#8a8d83', marginBottom: '2.5rem', letterSpacing: '0.02em' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem', letterSpacing: '0.02em' }}>
             Join Marathon Pilates
           </p>
 
@@ -138,7 +138,7 @@ export default function SignupPage() {
                   required
                   placeholder="Ruby"
                   style={inputStyle}
-                  onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                   onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                 />
               </div>
@@ -151,7 +151,7 @@ export default function SignupPage() {
                   required
                   placeholder="Ramdhan"
                   style={inputStyle}
-                  onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                   onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
                 />
               </div>
@@ -166,7 +166,7 @@ export default function SignupPage() {
                 required
                 placeholder="you@example.com"
                 style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
               />
             </div>
@@ -181,7 +181,7 @@ export default function SignupPage() {
                 minLength={8}
                 placeholder="Min. 8 characters"
                 style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
               />
             </div>
@@ -196,7 +196,7 @@ export default function SignupPage() {
               type="submit"
               disabled={loading}
               style={{
-                background: loading ? '#c4a094' : '#A76E58',
+                background: loading ? 'var(--color-cta-disabled)' : 'var(--color-cta)',
                 color: 'white',
                 fontFamily: "'Raleway', sans-serif",
                 fontWeight: 700,
@@ -217,14 +217,14 @@ export default function SignupPage() {
 
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#aaa', marginTop: '1.5rem', lineHeight: 1.6 }}>
             By creating an account you agree to our{' '}
-            <Link href="/terms" style={{ color: '#A76E58', textDecoration: 'none' }}>Terms</Link>{' '}
+            <Link href="/terms" style={{ color: 'var(--color-cta)', textDecoration: 'none' }}>Terms</Link>{' '}
             and{' '}
-            <Link href="/privacy" style={{ color: '#A76E58', textDecoration: 'none' }}>Privacy Policy</Link>.
+            <Link href="/privacy" style={{ color: 'var(--color-cta)', textDecoration: 'none' }}>Privacy Policy</Link>.
           </p>
 
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginTop: '2rem', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginTop: '2rem', textAlign: 'center' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ color: '#A76E58', fontWeight: 500, textDecoration: 'none' }}>
+            <Link href="/login" style={{ color: 'var(--color-cta)', fontWeight: 500, textDecoration: 'none' }}>
               Sign in
             </Link>
           </p>

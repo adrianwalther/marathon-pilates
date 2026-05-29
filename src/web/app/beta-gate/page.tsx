@@ -49,7 +49,7 @@ function BetaGateForm() {
           width: 56,
           height: 56,
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #A76E58 0%, #8e5a47 100%)',
+          background: 'linear-gradient(135deg, var(--color-cta) 0%, var(--color-cta-hover) 100%)',
           margin: '0 auto 16px',
           display: 'flex',
           alignItems: 'center',
@@ -60,7 +60,7 @@ function BetaGateForm() {
             <path d="M8 12c0-2.21 1.79-4 4-4s4 1.79 4 4-1.79 4-4 4"/>
           </svg>
         </div>
-        <p style={{ color: '#A76E58', fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', margin: 0 }}>
+        <p style={{ color: 'var(--color-cta)', fontSize: 11, letterSpacing: '0.25em', textTransform: 'uppercase', margin: 0 }}>
           Marathon Pilates
         </p>
         <p style={{ color: '#555', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', margin: '6px 0 0' }}>
@@ -121,7 +121,7 @@ function BetaGateForm() {
             style={{
               width: '100%',
               padding: '13px',
-              background: password && !loading ? '#A76E58' : '#333',
+              background: password && !loading ? 'var(--color-cta)' : '#333',
               color: password && !loading ? '#0a0a0a' : '#666',
               border: 'none',
               borderRadius: 8,

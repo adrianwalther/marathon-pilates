@@ -19,7 +19,7 @@ export default function GlobalError({
         <h2 style={{ fontSize: '1.25rem', fontWeight: 400, color: '#333', marginBottom: '1rem' }}>Something went wrong</h2>
         <button
           onClick={reset}
-          style={{ background: '#A76E58', color: '#fff', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
+          style={{ background: 'var(--color-cta)', color: '#fff', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
         >
           Try again
         </button>

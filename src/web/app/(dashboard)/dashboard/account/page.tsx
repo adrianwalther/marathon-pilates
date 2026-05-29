@@ -42,7 +42,7 @@ function getTrafficLight(conditions: string[]): string {
 }
 
 const TRAFFIC_COLORS = {
-  green:  { bg: '#f5ece6', color: '#A76E58', label: 'No restrictions noted' },
+  green:  { bg: '#f5ece6', color: 'var(--color-cta)', label: 'No restrictions noted' },
   yellow: { bg: '#fff8e6', color: '#c8860a', label: 'Modifications may apply' },
   red:    { bg: '#fef0f0', color: '#e05555', label: 'Instructor review recommended' },
 }
@@ -184,7 +184,7 @@ export default function AccountPage() {
     fontSize: '0.65rem',
     letterSpacing: '0.12em',
     textTransform: 'uppercase' as const,
-    color: '#8a8d83',
+    color: 'var(--color-text-muted)',
     display: 'block',
     marginBottom: '0.4rem',
   }
@@ -199,7 +199,7 @@ export default function AccountPage() {
     borderRadius: '2px',
     border: 'none',
     background: active ? '#1a1a1a' : 'white',
-    color: active ? 'white' : '#8a8d83',
+    color: active ? 'white' : 'var(--color-text-muted)',
     cursor: 'pointer',
   })
 
@@ -238,12 +238,12 @@ export default function AccountPage() {
             <div>
               <label style={labelStyle}>First Name</label>
               <input value={firstName} onChange={e => setFirstName(e.target.value)} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
             <div>
               <label style={labelStyle}>Last Name</label>
               <input value={lastName} onChange={e => setLastName(e.target.value)} style={inputStyle}
-                onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
           </div>
 
@@ -256,13 +256,13 @@ export default function AccountPage() {
           <div>
             <label style={labelStyle}>Phone</label>
             <input value={phone} onChange={e => setPhone(e.target.value)} placeholder="(615) 555-0123" style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
           </div>
 
           <div>
             <label style={labelStyle}>Date of Birth</label>
             <input type="date" value={dob} onChange={e => setDob(e.target.value)} style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
           </div>
 
           <div>
@@ -276,24 +276,24 @@ export default function AccountPage() {
           </div>
 
           <div style={{ borderTop: '1px solid #eee', paddingTop: '1.25rem' }}>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '1rem' }}>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
               Emergency Contact
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
                 <label style={labelStyle}>Name</label>
                 <input value={emergencyName} onChange={e => setEmergencyName(e.target.value)} placeholder="Full name" style={inputStyle}
-                  onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
               </div>
               <div>
                 <label style={labelStyle}>Phone</label>
                 <input value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} placeholder="(615) 555-0123" style={inputStyle}
-                  onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
               </div>
             </div>
           </div>
 
-          <button onClick={saveProfile} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+          <button onClick={saveProfile} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
@@ -308,25 +308,25 @@ export default function AccountPage() {
               <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: trafficLight.color }}>
                 Health Status
               </p>
-              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#8a8d83', marginTop: '0.2rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: 'var(--color-text-muted)', marginTop: '0.2rem' }}>
                 {trafficLight.label}
               </p>
             </div>
             <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: trafficLight.color, display: 'block' }} />
           </div>
 
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#8a8d83', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
             Select any conditions that apply. This helps your instructor provide safe, appropriate modifications.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2rem' }}>
             {HEALTH_CONDITIONS.map(c => (
-              <label key={c.key} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: selectedConditions.includes(c.key) ? '#f5ece6' : 'white', border: `1px solid ${selectedConditions.includes(c.key) ? '#A76E58' : '#eee'}`, borderRadius: '2px', cursor: 'pointer' }}>
+              <label key={c.key} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: selectedConditions.includes(c.key) ? '#f5ece6' : 'white', border: `1px solid ${selectedConditions.includes(c.key) ? 'var(--color-cta)' : '#eee'}`, borderRadius: '2px', cursor: 'pointer' }}>
                 <input
                   type="checkbox"
                   checked={selectedConditions.includes(c.key)}
                   onChange={() => toggleCondition(c.key)}
-                  style={{ accentColor: '#A76E58', width: '16px', height: '16px' }}
+                  style={{ accentColor: 'var(--color-cta)', width: '16px', height: '16px' }}
                 />
                 <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: '#1a1a1a' }}>
                   {c.label}
@@ -335,7 +335,7 @@ export default function AccountPage() {
             ))}
           </div>
 
-          <button onClick={saveHealth} disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+          <button onClick={saveHealth} disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
             {saving ? 'Saving...' : 'Save Health Info'}
           </button>
 
@@ -349,10 +349,10 @@ export default function AccountPage() {
       {activeSection === 'preferences' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           <div>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Pilates Experience</p>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Pilates Experience</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {[{ value: 'new_to_pilates', label: 'Brand new' }, { value: 'less_than_1yr', label: '< 1 year' }, { value: '1_to_3_yrs', label: '1–3 years' }, { value: '3_plus_yrs', label: '3+ years' }].map(opt => (
-                <button key={opt.value} onClick={() => setExperienceLevel(opt.value)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: experienceLevel === opt.value ? 'none' : '1px solid #e0e0e0', background: experienceLevel === opt.value ? '#A76E58' : 'white', color: experienceLevel === opt.value ? 'white' : '#8a8d83', cursor: 'pointer' }}>
+                <button key={opt.value} onClick={() => setExperienceLevel(opt.value)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: experienceLevel === opt.value ? 'none' : '1px solid #e0e0e0', background: experienceLevel === opt.value ? 'var(--color-cta)' : 'white', color: experienceLevel === opt.value ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
                   {opt.label}
                 </button>
               ))}
@@ -360,17 +360,17 @@ export default function AccountPage() {
           </div>
 
           <div>
-            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#8a8d83', marginBottom: '0.75rem' }}>Your Goals</p>
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Your Goals</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {['Build strength', 'Improve flexibility', 'Recovery & rehab', 'Stress relief', 'Posture & alignment', 'Weight management', 'Athletic performance'].map(g => (
-                <button key={g} onClick={() => toggleGoal(g)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: selectedGoals.includes(g) ? 'none' : '1px solid #e0e0e0', background: selectedGoals.includes(g) ? '#A76E58' : 'white', color: selectedGoals.includes(g) ? 'white' : '#8a8d83', cursor: 'pointer' }}>
+                <button key={g} onClick={() => toggleGoal(g)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.1rem', borderRadius: '2px', border: selectedGoals.includes(g) ? 'none' : '1px solid #e0e0e0', background: selectedGoals.includes(g) ? 'var(--color-cta)' : 'white', color: selectedGoals.includes(g) ? 'white' : 'var(--color-text-muted)', cursor: 'pointer' }}>
                   {g}
                 </button>
               ))}
             </div>
           </div>
 
-          <button onClick={savePreferences} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+          <button onClick={savePreferences} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
             {saving ? 'Saving...' : 'Save Preferences'}
           </button>
         </div>
@@ -382,14 +382,14 @@ export default function AccountPage() {
           <div>
             <label style={labelStyle}>New Password</label>
             <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Min. 8 characters" style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
           </div>
           <div>
             <label style={labelStyle}>Confirm Password</label>
             <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} placeholder="Repeat password" style={inputStyle}
-              onFocus={e => (e.target.style.borderColor = '#A76E58')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
+              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
           </div>
-          <button onClick={changePassword} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? '#c4a094' : '#A76E58', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+          <button onClick={changePassword} disabled={saving} style={{ alignSelf: 'flex-start', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>
             {saving ? 'Updating...' : 'Update Password'}
           </button>
         </div>

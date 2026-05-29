@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-const TEAL = '#A76E58'
+const TEAL = 'var(--color-cta)'
 
 type Testimonial = {
   id: string
@@ -106,7 +106,7 @@ export default function TestimonialsPage() {
   const filtered = filter === 'all' ? testimonials : testimonials.filter(t => t.status === filter)
 
   return (
-    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: '#FAF7F2', minHeight: '100vh' }}>
+    <div style={{ fontFamily: 'Poppins, sans-serif', padding: '2rem', background: 'var(--color-bg)', minHeight: '100vh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
         <div>
           <p style={{ fontFamily: 'Raleway, sans-serif', fontSize: '0.7rem', letterSpacing: '0.12em', color: '#9ca3af', textTransform: 'uppercase', margin: 0 }}>MARKETING</p>
