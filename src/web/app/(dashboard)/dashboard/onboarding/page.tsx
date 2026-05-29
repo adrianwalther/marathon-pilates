@@ -59,6 +59,8 @@ export default function OnboardingPage() {
   const [healthNotes, setHealthNotes] = useState('')
   const [isPregnant, setIsPregnant] = useState<boolean | null>(null)
   const [hasInjury, setHasInjury] = useState<boolean | null>(null)
+  const [emergencyName, setEmergencyName] = useState('')
+  const [emergencyPhone, setEmergencyPhone] = useState('')
 
   // Step 3
   const [location, setLocation] = useState('')
@@ -92,6 +94,8 @@ export default function OnboardingPage() {
       polestar_traffic_light: trafficLight,
       preferred_location: location || null,
       hear_about_us: hearAbout || null,
+      emergency_contact_name: emergencyName.trim() || null,
+      emergency_contact_phone: emergencyPhone.trim() || null,
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
 
@@ -268,16 +272,47 @@ export default function OnboardingPage() {
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button onClick={() => setStep(1)} style={backBtn}>Back</button>
-              <button
-                onClick={() => setStep(3)}
-                disabled={isPregnant === null || hasInjury === null}
-                style={{ ...primaryBtn, opacity: (isPregnant === null || hasInjury === null) ? 0.5 : 1, cursor: (isPregnant === null || hasInjury === null) ? 'not-allowed' : 'pointer' }}
-              >
-                Continue
-              </button>
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={labelStyle}>Emergency contact</label>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '-0.25rem', marginBottom: '0.75rem' }}>
+                Someone we can reach if anything comes up during your visit.
+              </p>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <input
+                  value={emergencyName}
+                  onChange={e => setEmergencyName(e.target.value)}
+                  placeholder="Name"
+                  style={{ ...inputStyle, flex: '1 1 45%', minWidth: '140px' }}
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                  onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+                />
+                <input
+                  value={emergencyPhone}
+                  onChange={e => setEmergencyPhone(e.target.value)}
+                  placeholder="Phone"
+                  type="tel"
+                  style={{ ...inputStyle, flex: '1 1 45%', minWidth: '140px' }}
+                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                  onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+                />
+              </div>
             </div>
+
+            {(() => {
+              const step2Incomplete = isPregnant === null || hasInjury === null || !emergencyName.trim() || !emergencyPhone.trim()
+              return (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button onClick={() => setStep(1)} style={backBtn}>Back</button>
+                  <button
+                    onClick={() => setStep(3)}
+                    disabled={step2Incomplete}
+                    style={{ ...primaryBtn, opacity: step2Incomplete ? 0.5 : 1, cursor: step2Incomplete ? 'not-allowed' : 'pointer' }}
+                  >
+                    Continue
+                  </button>
+                </div>
+              )
+            })()}
           </div>
         )}
 
