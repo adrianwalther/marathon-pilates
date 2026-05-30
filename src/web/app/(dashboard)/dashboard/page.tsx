@@ -48,11 +48,14 @@ export default function DashboardPage() {
       const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }, { data: events }] = await Promise.all([
         supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location').eq('id', user.id).single(),
         supabase.from('bookings')
-          .select('id, status, scheduled_sessions(name, starts_at, ends_at, duration_minutes, location_id, locations(name))')
+          // !inner so the starts_at filter/sort on the joined session actually
+          // applies to the booking rows (and the order parses — ordering by an
+          // embedded column needs referencedTable, not a dotted string).
+          .select('id, status, scheduled_sessions!inner(name, starts_at, ends_at, duration_minutes, location_id, locations(name))')
           .eq('client_id', user.id)
           .in('status', ['confirmed', 'waitlisted'])
           .gte('scheduled_sessions.starts_at', new Date().toISOString())
-          .order('scheduled_sessions.starts_at', { ascending: true })
+          .order('starts_at', { referencedTable: 'scheduled_sessions', ascending: true })
           .limit(3),
         supabase.from('credits').select('credit_type, total_credits, used_credits').eq('client_id', user.id),
         // Every service this client has ever engaged with (any non-cancelled

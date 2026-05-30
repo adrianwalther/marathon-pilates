@@ -102,9 +102,12 @@ function BookingsPageInner() {
 
     let query = supabase
       .from('bookings')
-      .select('id, status, attended, amount_paid, created_at, cancelled_at, late_cancel, scheduled_sessions(id, name, session_type, starts_at, ends_at, duration_minutes, locations(name))')
+      // !inner so the starts_at filter/sort on the joined session applies to
+      // the booking rows; order by an embedded column needs referencedTable
+      // (a dotted string like 'scheduled_sessions.starts_at' fails to parse).
+      .select('id, status, attended, amount_paid, created_at, cancelled_at, late_cancel, scheduled_sessions!inner(id, name, session_type, starts_at, ends_at, duration_minutes, locations(name))')
       .eq('client_id', user.id)
-      .order('scheduled_sessions.starts_at', { ascending: tab === 'upcoming' })
+      .order('starts_at', { referencedTable: 'scheduled_sessions', ascending: tab === 'upcoming' })
 
     if (tab === 'upcoming') {
       query = query.in('status', ['confirmed', 'waitlisted']).gte('scheduled_sessions.starts_at', now)
