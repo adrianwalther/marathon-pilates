@@ -141,6 +141,14 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 
 ## ⚠️ Critical Gotchas (learned the hard way)
 
+### Ordering/filtering bookings by the session date — use `!inner` + `referencedTable`
+When a query embeds `scheduled_sessions` and needs to **order or filter by `starts_at`** (e.g. upcoming/past bookings):
+- ❌ `.order('scheduled_sessions.starts_at', ...)` — the dotted embedded-column string makes PostgREST throw **"failed to parse order"**, the whole query errors, `data` is null, and the UI silently shows nothing.
+- ❌ a plain (non-inner) embed — a `.gte('scheduled_sessions.starts_at', …)` filter then doesn't actually constrain the parent rows.
+- ✅ Embed as `scheduled_sessions!inner(...)` AND order with `.order('starts_at', { referencedTable: 'scheduled_sessions', ascending })`.
+
+This bug hid every client's upcoming/past bookings until caught in live verification (commit c11a727). Type-checks and unit tests can't catch it — it's a query-builder/PostgREST runtime issue; verify booking-list screens live.
+
 ### Supabase API keys — NEW format only (legacy JWT keys are DISABLED)
 This project has **disabled legacy JWT API keys** (the long `eyJ...` format). You must use the new key format:
 - **Publishable** (browser/anon): `sb_publishable_...` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -249,6 +257,9 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 
 ## Completed (for reference)
 
+- [x] **Live verification pass (production)** — confirmed the whole retention suite end-to-end on the deployed site: dashboard AI nudge card, rebook modal, cancel→refund→rebook→late-forfeit (all per policy), engagement analytics (incl. rebook telemetry), win-back, and trainer health-flag chips ✅ 2026-05-30
+- [x] **Fixed: upcoming/past bookings never displayed** — the dashboard "Upcoming" list + all My Bookings tabs returned nothing because the query used `.order('scheduled_sessions.starts_at')` (PostgREST rejects the dotted embedded-column string → "failed to parse order" → query errored → empty UI). Fix: `scheduled_sessions!inner(...)` embed + `.order('starts_at', { referencedTable: 'scheduled_sessions' })`. Caught during live verification (commit c11a727) ✅ 2026-05-30
+- [x] **App-wide modal accessibility** — `lib/useModalDismiss(isOpen, onClose)` (Escape-to-close + background scroll-lock) applied to every modal + `role=dialog`/`aria-modal`/`aria-label`: rebook modal + admin gift-cards/broadcasts/testimonials/referrals/leads/schedule-roster (commits 9db70fb, b6d0c0b) ✅ 2026-05-30
 - [x] Password reset completed end-to-end — built the missing `/reset-password` page (forgot-password link was a 404) ✅ 2026-05-29
 - [x] "Ever-learning" dashboard nudge engine — surfaces a service the client hasn't tried yet (recovery amenities prioritized), in Ruby's brand voice. `lib/nudges.ts` (pure ranker), warm "For You" card on /dashboard ✅ 2026-05-29
 - [x] Behavioral learning layer — `client_events` log + `/api/events` route + `lib/events.ts`; nudge ranker boosts services a client keeps viewing (intent) and suppresses dismissed ones ✅ 2026-05-29
