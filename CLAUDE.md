@@ -210,6 +210,7 @@ Shipped behavior, all in the `cancel_booking` RPC: **24-hour window. Cancelling 
 | Beta gate | /beta-gate |
 | Forgot / reset password | /forgot-password · /reset-password |
 | Engagement analytics (staff) | /admin/marketing/engagement |
+| Win-Back worklist (staff) | /admin/marketing/win-back |
 
 ---
 
@@ -249,6 +250,8 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [x] Post-cancel rebook modal (retention) — when a client cancels, `components/RebookModal.tsx` offers other upcoming same-type sessions for one-tap rebooking. Books via shared `lib/bookClass.ts`. Logs `rebook_offered`/`rebook_booked` ✅ 2026-05-29
 - [x] Fixed "My Bookings" cancel — was a bare status update (no credit refund, no waitlist promotion, no email, wrong 12h window); now uses the `/api/bookings/cancel` RPC like the schedule page (refund + promote + email + 24h) ✅ 2026-05-29
 - [x] AI health flags — `/api/health-flags` structures a client's free-text intake note into clean trainer-facing flags (`profiles.health_flags`); My Classes roster shows them as chips. Guardrailed to restate, never advise ✅ 2026-05-29
+- [x] Emergency contact added to intake (required name + phone, Step 2) ✅ 2026-05-29
+- [x] Lapsed-client win-back worklist — `/admin/marketing/win-back` + `/api/admin/win-back` (staff-auth → service-role aggregate of bookings; lapsed = past visit, none upcoming, quiet N days; enriched w/ membership + unused credits) ✅ 2026-05-30
 - [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
 - [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) — DELETE now guarded (future + unbooked only), safe to re-run ✅ 2026-05-28
 - [x] Owner added to the 25 RLS policies that omitted it (verified `still_missing_owner = 0`) ✅ 2026-05-28
