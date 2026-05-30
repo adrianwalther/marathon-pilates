@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase'
 import { bookClass } from '@/lib/bookClass'
 import { logEvent } from '@/lib/events'
 import { serviceKeyFromType, CATALOG_BY_KEY, type ServiceKey } from '@/lib/nudges'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 // Retention modal shown right after a client cancels a class. It recommends
 // other upcoming sessions of the same kind and lets them rebook in one tap —
@@ -102,18 +103,8 @@ export default function RebookModal({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Modal a11y/UX: close on Escape, and lock background scroll while open so the
-  // page behind doesn't move under the overlay.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', onKey)
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
-    }
-  }, [onClose])
+  // Escape-to-close + background scroll-lock (this modal is mounted only while open).
+  useModalDismiss(true, onClose)
 
   const handleBook = async (a: Alt) => {
     setBookingId(a.id)

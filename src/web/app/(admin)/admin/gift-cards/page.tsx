@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 type GiftCard = {
   id: string
@@ -29,6 +30,7 @@ export default function AdminGiftCardsPage() {
   const [filter, setFilter] = useState<'all' | 'active' | 'redeemed' | 'physical'>('all')
   const [search, setSearch] = useState('')
   const [creating, setCreating] = useState(false)
+  useModalDismiss(creating, () => setCreating(false))
   const [newCode, setNewCode] = useState('')
   const [newAmount, setNewAmount] = useState('50')
   const [newRecipient, setNewRecipient] = useState('')
@@ -183,7 +185,7 @@ export default function AdminGiftCardsPage() {
       {/* Create modal */}
       {creating && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, padding: '1rem' }}>
-          <div style={{ background: 'white', borderRadius: '2px', padding: '2.5rem', width: '100%', maxWidth: '480px' }}>
+          <div role="dialog" aria-modal="true" aria-label="Issue Gift Card" style={{ background: 'white', borderRadius: '2px', padding: '2.5rem', width: '100%', maxWidth: '480px' }}>
             <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2rem' }}>Issue Gift Card</h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '2rem' }}>

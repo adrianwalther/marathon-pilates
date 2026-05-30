@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 const TEAL = 'var(--color-cta)'
 
@@ -49,6 +50,7 @@ export default function TestimonialsPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<Filter>('all')
   const [showModal, setShowModal] = useState(false)
+  useModalDismiss(showModal, () => setShowModal(false))
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
     client_name: '',
@@ -226,7 +228,7 @@ export default function TestimonialsPage() {
       {/* Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div role="dialog" aria-modal="true" aria-label="Add Testimonial" style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 480, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
             <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Testimonial</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>

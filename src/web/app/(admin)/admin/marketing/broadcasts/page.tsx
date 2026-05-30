@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 const TEAL = 'var(--color-cta)'
 
@@ -42,6 +43,7 @@ export default function BroadcastsPage() {
   const [broadcasts, setBroadcasts] = useState<Broadcast[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  useModalDismiss(showModal, () => setShowModal(false))
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({
     title: '',
@@ -198,7 +200,7 @@ export default function BroadcastsPage() {
       {/* Compose modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '1rem' }}>
-          <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: '100%', maxWidth: 560, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div role="dialog" aria-modal="true" aria-label="Compose Broadcast" style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: '100%', maxWidth: 560, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', maxHeight: '90vh', overflowY: 'auto' }}>
             <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Compose Broadcast</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>

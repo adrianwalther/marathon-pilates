@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 type Session = {
   id: string
@@ -243,6 +244,8 @@ export default function AdminSchedulePage() {
     setClientQuery('')
     setClientResults([])
   }
+  // Roster popup: Escape-to-close + background scroll-lock.
+  useModalDismiss(!!rosterSession, closeRoster)
 
   const searchClients = (q: string) => {
     setClientQuery(q)
@@ -373,7 +376,7 @@ export default function AdminSchedulePage() {
       {rosterSession && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}
           onClick={e => { if (e.target === e.currentTarget) closeRoster() }}>
-          <div style={{ background: 'white', borderRadius: '2px', width: '100%', maxWidth: '560px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+          <div role="dialog" aria-modal="true" aria-label="Class roster" style={{ background: 'white', borderRadius: '2px', width: '100%', maxWidth: '560px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: '1.5rem 2rem', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.95rem', color: 'var(--color-text)', marginBottom: '0.2rem' }}>{rosterSession.name}</p>

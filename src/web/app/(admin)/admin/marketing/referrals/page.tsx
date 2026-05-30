@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
+import { useModalDismiss } from '@/lib/useModalDismiss'
 
 const TEAL = 'var(--color-cta)'
 
@@ -45,6 +46,7 @@ export default function ReferralsPage() {
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
+  useModalDismiss(showModal, () => setShowModal(false))
   const [form, setForm] = useState({ referrer_id: '', referred_email: '', referral_code: genCode() })
   const [saving, setSaving] = useState(false)
 
@@ -209,7 +211,7 @@ export default function ReferralsPage() {
       {/* Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
-          <div style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div role="dialog" aria-modal="true" aria-label="Add Referral" style={{ background: '#fff', borderRadius: 2, padding: '2rem', width: 440, boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
             <h2 style={{ fontSize: '1rem', fontWeight: 400, color: 'var(--color-text)', margin: '0 0 1.5rem' }}>Add Referral</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
