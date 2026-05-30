@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { WAIVER_TEXT, WAIVER_TITLE, WAIVER_VERSION } from '@/lib/waiver'
 
 const GOALS = [
   'Build strength',
@@ -65,6 +66,8 @@ export default function OnboardingPage() {
   // Step 3
   const [location, setLocation] = useState('')
   const [hearAbout, setHearAbout] = useState('')
+  const [waiverAgreed, setWaiverAgreed] = useState(false)
+  const [waiverSignature, setWaiverSignature] = useState('')
 
   const toggleGoal = (g: string) => {
     setGoals(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g])
@@ -96,8 +99,20 @@ export default function OnboardingPage() {
       hear_about_us: hearAbout || null,
       emergency_contact_name: emergencyName.trim() || null,
       emergency_contact_phone: emergencyPhone.trim() || null,
+      liability_waiver_signed: true,
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
+
+    // Waiver consent detail (version/timestamp/signature) in a separate,
+    // best-effort write — these columns ship with add_waiver_consent.sql, so if
+    // it hasn't run yet this can't break intake completion above.
+    try {
+      await supabase.from('profiles').update({
+        waiver_signed_at: new Date().toISOString(),
+        waiver_version: WAIVER_VERSION,
+        waiver_signature: waiverSignature.trim(),
+      }).eq('id', user.id)
+    } catch { /* columns not deployed yet — liability_waiver_signed already set */ }
 
     // Structure the health note into clean trainer flags (best-effort — never
     // blocks finishing intake). Skips the model when there's nothing to flag.
@@ -360,16 +375,52 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button onClick={() => setStep(2)} style={backBtn}>Back</button>
-              <button
-                onClick={handleFinish}
-                disabled={saving}
-                style={{ ...primaryBtn, opacity: saving ? 0.7 : 1 }}
-              >
-                {saving ? 'Saving...' : "Let's go →"}
-              </button>
+            {/* Liability waiver — required acknowledgment */}
+            <div style={{ marginBottom: '2.5rem' }}>
+              <label style={labelStyle}>{WAIVER_TITLE}</label>
+              <div style={{ maxHeight: '220px', overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: '2px', padding: '1rem 1.25rem', background: 'white', marginBottom: '1rem' }}>
+                <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', lineHeight: 1.65, color: 'var(--color-text)', whiteSpace: 'pre-wrap', margin: 0 }}>
+                  {WAIVER_TEXT}
+                </p>
+              </div>
+
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.6rem', cursor: 'pointer', marginBottom: '1rem' }}>
+                <input
+                  type="checkbox"
+                  checked={waiverAgreed}
+                  onChange={e => setWaiverAgreed(e.target.checked)}
+                  style={{ marginTop: '0.2rem', width: '16px', height: '16px', accentColor: 'var(--color-cta)', flexShrink: 0 }}
+                />
+                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: 'var(--color-text)', lineHeight: 1.5 }}>
+                  I have read, understand, and agree to the Liability Waiver Release above.
+                </span>
+              </label>
+
+              <input
+                value={waiverSignature}
+                onChange={e => setWaiverSignature(e.target.value)}
+                placeholder="Type your full name to sign"
+                style={inputStyle}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+              />
             </div>
+
+            {(() => {
+              const cannotFinish = saving || !waiverAgreed || !waiverSignature.trim()
+              return (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button onClick={() => setStep(2)} style={backBtn}>Back</button>
+                  <button
+                    onClick={handleFinish}
+                    disabled={cannotFinish}
+                    style={{ ...primaryBtn, opacity: cannotFinish ? 0.5 : 1, cursor: cannotFinish ? 'not-allowed' : 'pointer' }}
+                  >
+                    {saving ? 'Saving...' : "Let's go →"}
+                  </button>
+                </div>
+              )
+            })()}
           </div>
         )}
 
