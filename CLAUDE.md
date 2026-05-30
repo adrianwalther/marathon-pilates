@@ -251,6 +251,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [x] Fixed "My Bookings" cancel — was a bare status update (no credit refund, no waitlist promotion, no email, wrong 12h window); now uses the `/api/bookings/cancel` RPC like the schedule page (refund + promote + email + 24h) ✅ 2026-05-29
 - [x] AI health flags — `/api/health-flags` structures a client's free-text intake note into clean trainer-facing flags (`profiles.health_flags`); My Classes roster shows them as chips. Guardrailed to restate, never advise ✅ 2026-05-29
 - [x] Emergency contact added to intake (required name + phone, Step 2) ✅ 2026-05-29
+- [x] Liability waiver acknowledgment at intake — full waiver in `lib/waiver.ts` (versioned); Step 3 checkbox + typed signature; records `liability_waiver_signed` + `waiver_signed_at`/`waiver_version`/`waiver_signature` ✅ 2026-05-30
 - [x] Lapsed-client win-back worklist — `/admin/marketing/win-back` + `/api/admin/win-back` (staff-auth → service-role aggregate of bookings; lapsed = past visit, none upcoming, quiet N days; enriched w/ membership + unused credits) ✅ 2026-05-30
 - [x] Admin-initiated booking (staff books a client into a session) ✅ 2026-05-28
 - [x] Recurring weekly schedule generator (`scripts/seed-schedule-recurring.sql`) — DELETE now guarded (future + unbooked only), safe to re-run ✅ 2026-05-28
