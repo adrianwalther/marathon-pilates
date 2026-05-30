@@ -1,4 +1,5 @@
 import { createClient } from './supabase'
+import { creditTypeFor } from './credits'
 
 // Shared client-side booking action used by the schedule page and the rebook
 // modal, so both behave identically: pick a usable credit for the session's
@@ -15,13 +16,6 @@ export type BookOutcome =
   | { outcome: 'confirmed' | 'waitlisted'; message: string }
   | { outcome: 'checkout' } // redirected to Stripe — caller should stop
   | { outcome: 'error'; message: string }
-
-function creditTypeFor(sessionType: string): 'group' | 'private' | 'amenity' | null {
-  if (sessionType === 'group_reformer') return 'group'
-  if (['private_solo', 'private_duet', 'private_trio'].includes(sessionType)) return 'private'
-  if (['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'].includes(sessionType)) return 'amenity'
-  return null
-}
 
 export async function bookClass(session: BookableSession): Promise<BookOutcome> {
   const supabase = createClient()

@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
 import { notifyBookingConfirmed } from '@/lib/emails/notify'
 import { isUuid } from '@/lib/validation'
+import { creditTypeFor } from '@/lib/credits'
 
 // Admin-initiated booking: a staff member (owner/admin/manager) books a client
 // into a scheduled session. Reuses the same atomic book_session RPC as the
@@ -9,13 +10,6 @@ import { isUuid } from '@/lib/validation'
 // a matching credit when one is available (otherwise booked complimentary).
 
 const STAFF_ROLES = ['owner', 'admin', 'manager']
-
-function creditTypeFor(sessionType: string): 'group' | 'private' | 'amenity' | null {
-  if (sessionType === 'group_reformer') return 'group'
-  if (['private_solo', 'private_duet', 'private_trio'].includes(sessionType)) return 'private'
-  if (['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'].includes(sessionType)) return 'amenity'
-  return null
-}
 
 export async function POST(req: Request) {
   try {
