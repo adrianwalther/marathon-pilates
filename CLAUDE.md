@@ -38,7 +38,7 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 
 All AI service API keys (Anthropic, OpenAI, ElevenLabs) are configured in Vercel env vars and "Build a Class" is fully functional.
 
-**Tests:** pure logic is unit-tested with Vitest (`cd src/web && npm test`) — `lib/nudges` (ranker), `lib/validation` (isUuid), `lib/healthFlags` (the safety guardrail), `lib/winback` (lapsed-detection). 40 tests. When extracting logic from a route, prefer a pure `lib/*.ts` helper so it's testable.
+**Tests:** pure logic is unit-tested with Vitest (`cd src/web && npm test`) — `lib/nudges` (ranker), `lib/validation` (isUuid), `lib/healthFlags` (the safety guardrail), `lib/winback` (lapsed-detection), `lib/credits` (credit-type). 45 tests. **CI** (`.github/workflows/ci.yml`) runs `tsc --noEmit` + the suite on every push/PR to `main`. When extracting logic from a route, prefer a pure `lib/*.ts` helper so it's testable.
 
 ---
 
