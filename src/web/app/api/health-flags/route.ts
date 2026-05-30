@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
+import { getAiRatelimit } from '@/lib/ratelimit'
 
 // Turns a client's free-text health note into short, neutral flags a Pilates
 // instructor can scan on the roster (e.g. "Lower back", "Right knee"). Stored on
@@ -36,6 +37,11 @@ export async function POST(req: Request) {
     )
     const { data: { user } } = await authSupabase.auth.getUser()
     if (!user) return Response.json({ flags: null }, { status: 401 })
+
+    // Rate-limit the model call (uncached → real cost). Graceful: on limit we
+    // return null and the caller keeps whatever flags already exist.
+    const { success } = await getAiRatelimit().limit(`health:${user.id}`)
+    if (!success) return Response.json({ flags: null })
 
     // Build flags. Prenatal is set directly (no model needed); the note is
     // structured by the model when present.

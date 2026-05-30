@@ -36,3 +36,9 @@ export function getCheckoutRatelimit() {
 export function getBookingRatelimit() {
   return makeRatelimit('rl:booking', Ratelimit.slidingWindow(60, '1 h'))
 }
+
+// Behavioral telemetry — generous (a normal session emits a few dozen events);
+// this only catches pathological spam, and a dropped event is harmless.
+export function getEventsRatelimit() {
+  return makeRatelimit('rl:events', Ratelimit.slidingWindow(200, '1 h'))
+}

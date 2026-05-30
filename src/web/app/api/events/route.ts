@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { getEventsRatelimit } from '@/lib/ratelimit'
 
 // Behavioral event ingest for the "ever-learning" dashboard. Clients POST
 // in-app signals here (what they viewed/filtered, which nudges they clicked or
@@ -59,6 +60,11 @@ export async function POST(req: Request) {
     )
     const { data: { user } } = await authSupabase.auth.getUser()
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+    // Generous per-user cap — only catches pathological spam (a dropped
+    // telemetry event is harmless).
+    const { success } = await getEventsRatelimit().limit(user.id)
+    if (!success) return Response.json({ ok: false }, { status: 429 })
 
     // Service-role insert — client_id is forced to the authed user.
     const supabase = createClient(

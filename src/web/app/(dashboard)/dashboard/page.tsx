@@ -287,9 +287,15 @@ function NudgeCard({ nudge }: { nudge: Nudge }) {
   const [hovered, setHovered] = useState(false)
   const [dismissed, setDismissed] = useState(false)
 
-  // Log that this nudge was shown — once per service surfaced. Pairs with
-  // nudge_clicked / nudge_dismissed to measure what actually resonates.
+  // Log that this nudge was shown — once per service per browser session, so
+  // re-renders, remounts, and repeat dashboard loads in one sitting don't
+  // inflate the impression count (which would skew click-through rate).
   useEffect(() => {
+    const key = `nudge_shown:${nudge.service.key}`
+    try {
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+    } catch { /* sessionStorage unavailable — fall through and log once */ }
     logEvent('nudge_shown', { serviceKey: nudge.service.key })
   }, [nudge.service.key])
 

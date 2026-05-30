@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { CATALOG_BY_KEY, type ServiceKey } from '@/lib/nudges'
+import { getAiRatelimit } from '@/lib/ratelimit'
 
 // AI-generated nudge copy in Ruby's brand voice. Strictly additive: the client
 // already has a safe static template, so any failure here (no API key, model
@@ -72,6 +73,11 @@ export async function POST(req: Request) {
     if (!process.env.ANTHROPIC_API_KEY) {
       return Response.json({ message: null })
     }
+
+    // Rate-limit only the uncached model path (cache hits above are free).
+    // On limit, return null → the UI keeps its static template.
+    const { success } = await getAiRatelimit().limit(`nudgecopy:${user.id}`)
+    if (!success) return Response.json({ message: null })
 
     // Pull the client's first name server-side (don't trust the client to send it).
     const { data: profile } = await supabase
