@@ -24,7 +24,8 @@ RULES (strict):
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => null)
-    const note = typeof body?.note === 'string' ? body.note.trim() : ''
+    // Cap the client-supplied note before it reaches the model (cost/abuse guard).
+    const note = typeof body?.note === 'string' ? body.note.trim().slice(0, 2000) : ''
     const prenatal = body?.prenatal === true
 
     // Authenticate the caller; flags are written to THEIR profile only.
