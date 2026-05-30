@@ -149,6 +149,9 @@ When a query embeds `scheduled_sessions` and needs to **order or filter by `star
 
 This bug hid every client's upcoming/past bookings until caught in live verification (commit c11a727). Type-checks and unit tests can't catch it — it's a query-builder/PostgREST runtime issue; verify booking-list screens live.
 
+### `.single()` vs `.maybeSingle()` — use maybeSingle when 0 rows is normal
+`.single()` returns an **error** (PGRST116) when the query matches 0 (or >1) rows. Use it only when the row is guaranteed to exist (e.g. a profile/role lookup by the authed user's id). For anything where "no row" is a normal outcome — looking up a user-entered code, an optional membership, or an idempotency "does this already exist?" check — use **`.maybeSingle()`** (returns `data: null, error: null`). Audited 2026-05-30: the gift-card redeem, membership lookup, and the membership-confirm / gift-card-create / stripe-webhook idempotency checks were converted (commit 21fe0e7). They worked before (they only read `data`), but `.single()` there would silently break the happy path if error-handling were ever added.
+
 ### Supabase API keys — NEW format only (legacy JWT keys are DISABLED)
 This project has **disabled legacy JWT API keys** (the long `eyJ...` format). You must use the new key format:
 - **Publishable** (browser/anon): `sb_publishable_...` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
