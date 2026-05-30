@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       .select('id')
       .eq('stripe_session_id', stripe_session_id)
       .eq('client_id', user_id)
-      .single()
+      .maybeSingle() // first-time confirm = 0 rows (the expected path), not an error
 
     if (existing) {
       return Response.json({ success: true, already_processed: true })

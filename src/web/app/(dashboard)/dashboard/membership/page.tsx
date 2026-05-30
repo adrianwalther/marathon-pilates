@@ -172,7 +172,7 @@ function MembershipPage() {
       }
 
       const [{ data: mem }, { data: creds }] = await Promise.all([
-        supabase.from('memberships').select('*').eq('client_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).single(),
+        supabase.from('memberships').select('*').eq('client_id', user.id).eq('status', 'active').order('created_at', { ascending: false }).limit(1).maybeSingle(), // no active membership is normal → null, not an error
         supabase.from('credits').select('*').eq('client_id', user.id).order('created_at', { ascending: false }),
       ])
 

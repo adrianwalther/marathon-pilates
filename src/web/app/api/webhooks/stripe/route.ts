@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       .select('id, status')
       .eq('client_id', user_id)
       .eq('session_id', session_id)
-      .single()
+      .maybeSingle() // no pre-existing booking is the normal path, not an error
 
     if (existing) {
       // Update existing booking to confirmed + paid

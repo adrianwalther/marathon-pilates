@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       .from('gift_cards')
       .select('code, initial_balance')
       .eq('stripe_payment_intent_id', session.payment_intent as string)
-      .single()
+      .maybeSingle() // first-time creation = 0 rows (the expected path), not an error
 
     if (existing) {
       return Response.json({ code: existing.code, amount: existing.initial_balance })

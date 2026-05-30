@@ -55,7 +55,7 @@ function GiftCardsPageInner() { // eslint-disable-line
       .from('gift_cards')
       .select('id, code, current_balance, redeemed_at')
       .eq('code', redeemCode.trim().toUpperCase())
-      .single()
+      .maybeSingle() // a wrong/unknown code is normal input — null, not an error
 
     if (!data) {
       setRedeemResult({ status: 'notfound' })
