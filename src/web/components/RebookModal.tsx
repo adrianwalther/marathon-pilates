@@ -102,6 +102,19 @@ export default function RebookModal({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Modal a11y/UX: close on Escape, and lock background scroll while open so the
+  // page behind doesn't move under the overlay.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [onClose])
+
   const handleBook = async (a: Alt) => {
     setBookingId(a.id)
     setError('')
@@ -130,6 +143,9 @@ export default function RebookModal({
       style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(48,45,39,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Find another ${label} class`}
         onClick={e => e.stopPropagation()}
         style={{ background: 'var(--color-bg)', borderRadius: '4px', maxWidth: '440px', width: '100%', maxHeight: '85vh', overflowY: 'auto', padding: '2rem', boxShadow: '0 12px 40px rgba(0,0,0,0.25)' }}
       >
