@@ -1,14 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
+import { aggregateActivity, lapsedClientIds } from '@/lib/winback'
 
 // Staff-only "win-back" worklist: clients who were active but have gone quiet —
 // at least one past visit, nothing upcoming, and no class in the last N days.
 // Aggregated server-side with the service-role key (after authenticating the
 // caller as staff) so it doesn't depend on broad client-side RLS over bookings.
+// The lapsed-detection rules live in lib/winback.ts (unit-tested).
 
 const STAFF_ROLES = ['owner', 'admin', 'manager']
 const DAY_MS = 86_400_000
-
-type Agg = { lastVisit: number; visits: number; upcoming: number }
 
 function relName(rel: { starts_at?: string } | { starts_at?: string }[] | null): string | null {
   const o = Array.isArray(rel) ? rel[0] : rel
@@ -46,26 +46,18 @@ export async function GET(req: Request) {
       .limit(20000)
 
     const now = Date.now()
-    const agg: Record<string, Agg> = {}
-    for (const b of bookings ?? []) {
-      const cid = (b as { client_id: string }).client_id
-      const startsStr = relName((b as { scheduled_sessions: { starts_at?: string } | { starts_at?: string }[] | null }).scheduled_sessions)
-      if (!cid || !startsStr) continue
-      const t = new Date(startsStr).getTime()
-      const a = (agg[cid] ??= { lastVisit: 0, visits: 0, upcoming: 0 })
-      const status = (b as { status: string }).status
-      if (t >= now) {
-        if (status === 'confirmed' || status === 'waitlisted') a.upcoming++
-      } else if (status !== 'cancelled' && status !== 'no_show') {
-        a.visits++
-        if (t > a.lastVisit) a.lastVisit = t
-      }
-    }
-
-    // Lapsed = had a visit, nothing upcoming, last visit older than the cutoff.
-    const lapsedIds = Object.entries(agg)
-      .filter(([, a]) => a.visits > 0 && a.upcoming === 0 && a.lastVisit > 0 && a.lastVisit < cutoff)
-      .map(([id]) => id)
+    const agg = aggregateActivity(
+      (bookings ?? []).map(b => {
+        const startsStr = relName((b as { scheduled_sessions: { starts_at?: string } | { starts_at?: string }[] | null }).scheduled_sessions)
+        return {
+          clientId: (b as { client_id: string }).client_id,
+          status: (b as { status: string }).status,
+          startsAtMs: startsStr ? new Date(startsStr).getTime() : null,
+        }
+      }),
+      now,
+    )
+    const lapsedIds = lapsedClientIds(agg, cutoff)
 
     if (lapsedIds.length === 0) return Response.json({ days, count: 0, clients: [] })
 

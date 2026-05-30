@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { getAiRatelimit } from '@/lib/ratelimit'
+import { composeHealthFlags } from '@/lib/healthFlags'
 
 // Turns a client's free-text health note into short, neutral flags a Pilates
 // instructor can scan on the roster (e.g. "Lower back", "Right knee"). Stored on
@@ -43,11 +44,9 @@ export async function POST(req: Request) {
     const { success } = await getAiRatelimit().limit(`health:${user.id}`)
     if (!success) return Response.json({ flags: null })
 
-    // Build flags. Prenatal is set directly (no model needed); the note is
-    // structured by the model when present.
-    const flags: string[] = []
-    if (prenatal) flags.push('Prenatal')
-
+    // Prenatal is set directly; the note is structured by the model. The
+    // model's raw output is sanitized by composeHealthFlags (the guardrail).
+    let parsed: unknown = []
     if (note && process.env.ANTHROPIC_API_KEY) {
       try {
         const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -59,23 +58,15 @@ export async function POST(req: Request) {
         })
         const raw = resp.content.find(b => b.type === 'text')
         const text = raw && raw.type === 'text' ? raw.text.trim() : '[]'
-        const parsed = JSON.parse(text)
-        if (Array.isArray(parsed)) {
-          for (const f of parsed) {
-            // Guardrail: short neutral phrases only; drop anything advice-like.
-            if (typeof f !== 'string') continue
-            const flag = f.trim()
-            if (!flag || flag.length > 40) continue
-            if (/\b(avoid|no |don't|do not|limit|restrict|caution|careful|should)\b/i.test(flag)) continue
-            if (!flags.includes(flag)) flags.push(flag)
-          }
-        }
+        parsed = JSON.parse(text)
       } catch {
-        // Model/parse failure → fall back to a single generic flag so the
-        // trainer still knows there's a note to review.
-        if (!flags.includes('Health note — review')) flags.push('Health note — review')
+        // Model/parse failure → a single generic flag so the trainer still
+        // knows there's a note to review.
+        parsed = ['Health note — review']
       }
     }
+
+    const flags = composeHealthFlags(prenatal, parsed)
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -83,10 +74,10 @@ export async function POST(req: Request) {
     )
     await supabase
       .from('profiles')
-      .update({ health_flags: flags.slice(0, 6), health_flags_at: new Date().toISOString() })
+      .update({ health_flags: flags, health_flags_at: new Date().toISOString() })
       .eq('id', user.id)
 
-    return Response.json({ flags: flags.slice(0, 6) })
+    return Response.json({ flags })
   } catch (err) {
     console.error('Health-flags error:', err)
     return Response.json({ flags: null })
