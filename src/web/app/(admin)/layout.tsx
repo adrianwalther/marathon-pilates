@@ -134,6 +134,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/gift-cards', label: 'Gift Cards', icon: '◇', show: perms.clients },
     { href: null, label: 'MARKETING', icon: '', show: perms.overview, divider: true },
     { href: '/admin/marketing/engagement', label: 'Engagement', icon: '◔', show: perms.clients },
+    { href: '/admin/marketing/win-back', label: 'Win-Back', icon: '◠', show: perms.clients },
     { href: '/admin/marketing/leads', label: 'Leads', icon: '◉', show: perms.clients },
     { href: '/admin/marketing/automations', label: 'Automations', icon: '⟳', show: perms.clients },
     { href: '/admin/marketing/broadcasts', label: 'Broadcasts', icon: '◎', show: perms.clients },
