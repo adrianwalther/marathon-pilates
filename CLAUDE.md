@@ -34,8 +34,11 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 | AI text | Anthropic Claude API |
 | AI images | OpenAI DALL-E 3 |
 | Payroll | Gusto (not yet activated) |
+| Tests | Vitest — `npm test` (run) / `npm run test:watch`. Unit tests colocated as `lib/*.test.ts` |
 
 All AI service API keys (Anthropic, OpenAI, ElevenLabs) are configured in Vercel env vars and "Build a Class" is fully functional.
+
+**Tests:** pure logic is unit-tested with Vitest (`cd src/web && npm test`) — `lib/nudges` (ranker), `lib/validation` (isUuid), `lib/healthFlags` (the safety guardrail), `lib/winback` (lapsed-detection). 40 tests. When extracting logic from a route, prefer a pure `lib/*.ts` helper so it's testable.
 
 ---
 
