@@ -234,7 +234,8 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Reactivate Bunny.net + re-upload 23 videos + re-seed `video_url` in DB
 - [ ] Activate Gusto for payroll
 - [ ] Confirm amenity pricing with Ruby (sauna, cold plunge, contrast)
-- [ ] Connect the email provider — system is BUILT & wired (dry-run); just needs Ruby's provider call (Google Workspace or Resend) + `RESEND_API_KEY`/`EMAIL_FROM` env vars. See "Transactional email" under Gotchas.
+- [ ] **Email — Phase 1 (transactional):** connect **Resend** + set `RESEND_API_KEY`/`EMAIL_FROM` to flip the built (dry-run) booking emails live. Provider decision is now **Resend** (does transactional + marketing in one) — see `specs/19-email-marketing.md`. Needs DNS (DKIM/SPF/DMARC, likely a `send.` subdomain) + Ruby's cost sign-off.
+- [ ] 📌 **Email — Phase 2 (marketing engine), REVISIT CLOSER TO LAUNCH:** build newsletter (Broadcasts) + lifecycle automations sending to replace the paid **Arketa marketing package** (mailboxes stay on Google Workspace). Scaffolding exists (broadcasts/automations pages + tables) but doesn't send yet; needs dispatch + audience selection + **unsubscribe/suppression** (legal) + templates. Full plan + cost framework in `specs/19-email-marketing.md`. Get from Ruby: Arketa marketing cost (baseline), subscriber count, DNS access, cancellation timing.
 - [ ] Point app.marathonpilates.com → Vercel
 - [ ] Hero video footage from Ruby (login page left panel)
 - [ ] Data migration from Arketa (Susan LeGrand)
