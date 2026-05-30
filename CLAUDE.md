@@ -239,6 +239,9 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
 - [ ] Finish brand color migration — DONE so far (2026-05-28): (a) exact-match brand hexes (176 across 37 files) → `var(--color-*)` tokens, pixel-identical; (b) off-black `#1A1A1A` (188 across 33 files) → `var(--color-text)` (Deep Earth `#302D27`) — this is a deliberate VISIBLE change (harsh pure-black → warm brand dark). REMAINING (~594): non-brand grays (`#E0E0E0`), Tailwind defaults (`#6B7280` etc.), status-badge tints (red/green/amber), and a few stray darks (`#2A2A2A`, `#333`) — these need design decisions, not a mechanical swap. Note: email templates in `lib/emails/` intentionally keep literal hex (email clients can't read CSS vars).
 - [ ] Jazz to sign up at marathon-pilates.vercel.app + set role to admin
+- [ ] **Run `add_waiver_consent.sql`** in Supabase (adds waiver_signed_at / waiver_version / waiver_signature). Until then clients still sign (liability_waiver_signed records) but the version/timestamp/signature detail no-ops.
+- [ ] 📌 **WAIVER — proofread verbatim (with Ruby) before launch.** The waiver in `lib/waiver.ts` was transcribed from screenshots of the Arketa copy — needs human confirmation it's word-for-word. Specific item: §1 bullet 3 reads "Company' sole discretion" (apostrophe kept exactly as original) — confirm leave verbatim vs. clean to "Company's".
+- [ ] 📌 **WAIVER — COVID-19 language refresh (with Ruby).** §1 references COVID-19 / facemasks (the studio's current Arketa wording, kept verbatim). Ruby may want to update/remove it. When the text changes, bump `WAIVER_VERSION` in `lib/waiver.ts` so consent records stay unambiguous.
 
 ## Completed (for reference)
 
