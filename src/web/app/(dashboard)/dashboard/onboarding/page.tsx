@@ -51,6 +51,7 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   // Step 1
   const [experience, setExperience] = useState('')
@@ -90,7 +91,7 @@ export default function OnboardingPage() {
     // Include health notes in conditions array if provided
     if (hasInjury && healthNotes) healthConditions.push(`note: ${healthNotes}`)
 
-    await supabase.from('profiles').update({
+    const { error: saveErr } = await supabase.from('profiles').update({
       experience_level: experience,
       goals,
       health_conditions: healthConditions,
@@ -102,6 +103,14 @@ export default function OnboardingPage() {
       liability_waiver_signed: true,
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
+
+    // If the core intake save failed, stop here — don't send them to the
+    // dashboard with their info silently lost. Let them retry.
+    if (saveErr) {
+      setSaveError('Something went wrong saving your info. Please try again.')
+      setSaving(false)
+      return
+    }
 
     // Waiver consent detail (version/timestamp/signature) in a separate,
     // best-effort write — these columns ship with add_waiver_consent.sql, so if
@@ -405,6 +414,10 @@ export default function OnboardingPage() {
                 onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
               />
             </div>
+
+            {saveError && (
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: '0.8rem', color: '#e05555', marginBottom: '0.75rem' }}>{saveError}</p>
+            )}
 
             {(() => {
               const cannotFinish = saving || !waiverAgreed || !waiverSignature.trim()

@@ -107,7 +107,7 @@ function SchedulePageInner() {
           .select('id')
           .eq('client_id', user.id)
           .eq('session_id', paidSessionId)
-          .single()
+          .maybeSingle() // no prior booking is the normal post-payment case, not an error
         if (!existing) {
           await supabase.from('bookings').insert({
             client_id: user.id,
