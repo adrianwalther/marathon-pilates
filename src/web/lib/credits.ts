@@ -11,3 +11,13 @@ export function creditTypeFor(sessionType: string): CreditType | null {
   if (['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin'].includes(sessionType)) return 'amenity'
   return null
 }
+
+export type CreditRow = { id: string; total_credits: number; used_credits: number }
+
+// From an already type-filtered, expiry-ordered list, pick the first credit
+// that still has a balance (so a booking spends the soonest-expiring usable
+// credit). Returns null if none are usable. Used by the client + admin booking
+// flows — getting this wrong spends/leaks the wrong credit.
+export function pickUsableCredit<T extends CreditRow>(credits: T[] | null | undefined): T | null {
+  return credits?.find(c => c.total_credits - c.used_credits > 0) ?? null
+}

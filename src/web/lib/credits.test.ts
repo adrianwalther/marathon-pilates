@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { creditTypeFor } from './credits'
+import { creditTypeFor, pickUsableCredit } from './credits'
 
 describe('creditTypeFor', () => {
   it('maps group reformer to the group bucket', () => {
@@ -35,5 +35,35 @@ describe('creditTypeFor', () => {
     for (const t of ALL) {
       expect(creditTypeFor(t), `${t} should map to a credit bucket`).not.toBeNull()
     }
+  })
+})
+
+describe('pickUsableCredit', () => {
+  const c = (id: string, total: number, used: number) => ({ id, total_credits: total, used_credits: used })
+
+  it('returns the first credit with a remaining balance (spend soonest-expiring first)', () => {
+    // caller pre-orders by expiry, so "first usable" = soonest-expiring usable
+    const out = pickUsableCredit([c('a', 5, 5), c('b', 10, 3), c('c', 2, 0)])
+    expect(out?.id).toBe('b')
+  })
+
+  it('skips fully-used and over-used credits', () => {
+    const out = pickUsableCredit([c('a', 5, 5), c('b', 3, 4)]) // both have <=0 remaining
+    expect(out).toBeNull()
+  })
+
+  it('returns null for empty / null / undefined', () => {
+    expect(pickUsableCredit([])).toBeNull()
+    expect(pickUsableCredit(null)).toBeNull()
+    expect(pickUsableCredit(undefined)).toBeNull()
+  })
+
+  it('returns the single usable credit', () => {
+    expect(pickUsableCredit([c('only', 1, 0)])?.id).toBe('only')
+  })
+
+  it('preserves the full row (callers need .id)', () => {
+    const out = pickUsableCredit([c('x', 4, 1)])
+    expect(out).toEqual({ id: 'x', total_credits: 4, used_credits: 1 })
   })
 })

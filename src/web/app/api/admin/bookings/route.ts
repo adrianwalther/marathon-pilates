@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { getBookingRatelimit } from '@/lib/ratelimit'
 import { notifyBookingConfirmed } from '@/lib/emails/notify'
 import { isUuid } from '@/lib/validation'
-import { creditTypeFor } from '@/lib/credits'
+import { creditTypeFor, pickUsableCredit } from '@/lib/credits'
 
 // Admin-initiated booking: a staff member (owner/admin/manager) books a client
 // into a scheduled session. Reuses the same atomic book_session RPC as the
@@ -99,7 +99,7 @@ export async function POST(req: Request) {
         .or('expires_at.is.null,expires_at.gt.now()')
         .order('expires_at', { ascending: true, nullsFirst: false })
 
-      const usable = credits?.find(c => c.total_credits - c.used_credits > 0)
+      const usable = pickUsableCredit(credits)
       if (usable) creditId = usable.id
     }
 

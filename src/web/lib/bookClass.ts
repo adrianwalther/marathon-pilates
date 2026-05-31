@@ -1,5 +1,5 @@
 import { createClient } from './supabase'
-import { creditTypeFor } from './credits'
+import { creditTypeFor, pickUsableCredit } from './credits'
 
 // Shared client-side booking action used by the schedule page and the rebook
 // modal, so both behave identically: pick a usable credit for the session's
@@ -32,7 +32,7 @@ export async function bookClass(session: BookableSession): Promise<BookOutcome> 
       .eq('client_id', user.id)
       .eq('credit_type', creditType)
       .order('expires_at', { ascending: true, nullsFirst: false })
-    const usable = credits?.find(c => c.total_credits - c.used_credits > 0)
+    const usable = pickUsableCredit(credits)
     if (usable) creditId = usable.id
   }
 
