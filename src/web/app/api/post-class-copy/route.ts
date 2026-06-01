@@ -2,6 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createClient } from '@supabase/supabase-js'
 import { getAiRatelimit } from '@/lib/ratelimit'
 import { isUuid } from '@/lib/validation'
+import { classMilestones } from '@/lib/postClass'
 
 // AI-generated post-class celebration line in Ruby's voice, keyed to the class
 // the client just finished. Strictly additive: any failure returns
@@ -19,6 +20,7 @@ RULES (strict):
 - Reference what the class worked on, inferred from its name (e.g. core, arms, glutes, upper body, full body, recovery/restorative).
 - Be encouraging about how they might FEEL afterward (stronger, energized, restored, accomplished) — aspirational and kind.
 - NEVER promise results or improvements, cite numbers/stats/calories, make any medical or health claim, diagnose, or mention prices. No hype, no emojis.
+- If the message includes a "Context:" note (e.g. their first class ever, or first time trying this type), warmly weave that special moment in.
 - Warm, grounded, conversational. Plain text, one paragraph.`
 
 export async function POST(req: Request) {
@@ -54,14 +56,15 @@ export async function POST(req: Request) {
     // class — only celebrate something they did.
     const { data: booking } = await supabase
       .from('bookings')
-      .select('id, scheduled_sessions!inner(name, session_type)')
+      .select('id, scheduled_sessions!inner(name, session_type, starts_at)')
       .eq('client_id', user.id)
       .eq('session_id', sessionId)
       .in('status', ['confirmed', 'completed'])
       .maybeSingle()
     if (!booking) return Response.json({ message: null })
 
-    const rel = (booking as { scheduled_sessions: { name?: string; session_type?: string } | { name?: string; session_type?: string }[] }).scheduled_sessions
+    type SessRel = { name?: string; session_type?: string; starts_at?: string }
+    const rel = (booking as { scheduled_sessions: SessRel | SessRel[] }).scheduled_sessions
     const sess = Array.isArray(rel) ? rel[0] : rel
     const className = sess?.name ?? 'your class'
     const sessionType = sess?.session_type ?? ''
@@ -70,6 +73,25 @@ export async function POST(req: Request) {
 
     const { success } = await getAiRatelimit().limit(`postclass:${user.id}`)
     if (!success) return Response.json({ message: null })
+
+    // Milestone context (accurate from booking history): is this their first
+    // class ever, or first time trying this type? Lets the message welcome a
+    // newcomer / acknowledge them branching out.
+    let milestoneContext = ''
+    if (sess?.starts_at) {
+      const { data: history } = await supabase
+        .from('bookings')
+        .select('scheduled_sessions!inner(session_type, starts_at)')
+        .eq('client_id', user.id)
+        .neq('status', 'cancelled')
+      const lite = ((history ?? []) as Array<{ scheduled_sessions: SessRel | SessRel[] }>).flatMap(b => {
+        const s = Array.isArray(b.scheduled_sessions) ? b.scheduled_sessions[0] : b.scheduled_sessions
+        return s?.starts_at ? [{ sessionType: s.session_type ?? '', startsAtMs: new Date(s.starts_at).getTime() }] : []
+      })
+      const { isFirstEver, isFirstOfService } = classMilestones(lite, { sessionType, startsAtMs: new Date(sess.starts_at).getTime() })
+      if (isFirstEver) milestoneContext = ' Context: this is their VERY FIRST class at the studio — warmly welcome them to the community.'
+      else if (isFirstOfService) milestoneContext = ' Context: this is their FIRST time doing this type of class — acknowledge them trying something new.'
+    }
 
     const { data: profile } = await supabase
       .from('profiles').select('first_name').eq('id', user.id).single()
@@ -80,7 +102,7 @@ export async function POST(req: Request) {
       model: 'claude-sonnet-4-6',
       max_tokens: 200,
       system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: `Write the celebration line for ${firstName}, who just finished the class "${className}" (type: ${sessionType}). Reference what that class works on.` }],
+      messages: [{ role: 'user', content: `Write the celebration line for ${firstName}, who just finished the class "${className}" (type: ${sessionType}). Reference what that class works on.${milestoneContext}` }],
     })
     const raw = resp.content.find(b => b.type === 'text')
     let message = raw && raw.type === 'text' ? raw.text.trim() : ''

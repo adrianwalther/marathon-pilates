@@ -25,3 +25,23 @@ export function fallbackCelebration(firstName: string | null | undefined, classN
   const first = (firstName ?? '').trim() || 'there'
   return `Nice work today, ${first} — hope you're feeling great after ${className}.`
 }
+
+// Milestone signals for a celebrated class, computed from booking history so
+// they're accurate at celebration time (unlike the lagging class-count). Only
+// counts classes that had happened by the celebrated class's time, so future
+// bookings don't affect "first" detection.
+export type BookingLite = { sessionType: string; startsAtMs: number }
+export type Milestones = { isFirstEver: boolean; isFirstOfService: boolean }
+
+export function classMilestones(
+  allNonCancelled: BookingLite[],
+  celebrated: { sessionType: string; startsAtMs: number },
+): Milestones {
+  const byThen = allNonCancelled.filter(b => b.startsAtMs <= celebrated.startsAtMs)
+  const ofService = byThen.filter(b => b.sessionType === celebrated.sessionType)
+  // The celebrated class itself is in the list, so "1" means it's the only one.
+  return {
+    isFirstEver: byThen.length <= 1,
+    isFirstOfService: ofService.length <= 1,
+  }
+}
