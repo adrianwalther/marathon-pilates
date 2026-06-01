@@ -38,7 +38,7 @@ A custom booking, membership, and content platform for Marathon Pilates — buil
 
 All AI service API keys (Anthropic, OpenAI, ElevenLabs) are configured in Vercel env vars and "Build a Class" is fully functional.
 
-**Tests:** pure logic is unit-tested with Vitest (`cd src/web && npm test`) — `lib/nudges` (ranker), `lib/validation` (isUuid), `lib/healthFlags` (the safety guardrail), `lib/winback` (lapsed-detection), `lib/credits` (credit-type + usable-credit picking), `lib/emails/templates` (transactional copy/wording branches). 60 tests. **CI** (`.github/workflows/ci.yml`) runs `tsc --noEmit` + the suite on every push/PR to `main`. When extracting logic from a route, prefer a pure `lib/*.ts` helper so it's testable.
+**Tests:** pure logic is unit-tested with Vitest (`cd src/web && npm test`) — `lib/nudges` (ranker), `lib/validation` (isUuid), `lib/healthFlags` (the safety guardrail), `lib/winback` (lapsed-detection), `lib/credits` (credit-type + usable-credit picking), `lib/emails/templates` (transactional copy/wording branches), `lib/postClass` (celebration eligibility + fallback). 67 tests. **CI** (`.github/workflows/ci.yml`) runs `tsc --noEmit` + the suite on every push/PR to `main`. When extracting logic from a route, prefer a pure `lib/*.ts` helper so it's testable.
 
 ---
 
@@ -260,6 +260,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 
 ## Completed (for reference)
 
+- [x] **Post-class celebration card (Ruby's request)** — after a client finishes a class, the dashboard shows a warm, class-aware AI message in Ruby's voice ("Nice work on your core today…"). `lib/postClass.ts` + `/api/post-class-copy` (guardrailed: warm/aspirational only, no medical/results claims) + `post_class_copy` cache table. In-app MVP; 30-min-after push is the eventual mobile-app delivery ✅ 2026-05-30
 - [x] **Live verification pass (production)** — confirmed the whole retention suite end-to-end on the deployed site: dashboard AI nudge card, rebook modal, cancel→refund→rebook→late-forfeit (all per policy), engagement analytics (incl. rebook telemetry), win-back, and trainer health-flag chips ✅ 2026-05-30
 - [x] **Fixed: upcoming/past bookings never displayed** — the dashboard "Upcoming" list + all My Bookings tabs returned nothing because the query used `.order('scheduled_sessions.starts_at')` (PostgREST rejects the dotted embedded-column string → "failed to parse order" → query errored → empty UI). Fix: `scheduled_sessions!inner(...)` embed + `.order('starts_at', { referencedTable: 'scheduled_sessions' })`. Caught during live verification (commit c11a727) ✅ 2026-05-30
 - [x] **App-wide modal accessibility** — `lib/useModalDismiss(isOpen, onClose)` (Escape-to-close + background scroll-lock) applied to every modal + `role=dialog`/`aria-modal`/`aria-label`: rebook modal + admin gift-cards/broadcasts/testimonials/referrals/leads/schedule-roster (commits 9db70fb, b6d0c0b) ✅ 2026-05-30
