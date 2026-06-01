@@ -28,6 +28,8 @@ const ACTION_VERB: Record<string, string> = {
   nudge_dismissed: 'dismissed',
   rebook_offered: 'was offered a rebook for',
   rebook_booked: 'rebooked',
+  post_class_shown: 'was celebrated for finishing',
+  post_class_dismissed: 'dismissed a celebration for',
 }
 
 function firstName(p: Ev['profiles']): string {

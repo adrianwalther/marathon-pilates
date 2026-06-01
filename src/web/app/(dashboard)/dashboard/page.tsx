@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { pickNudge, type Nudge } from '@/lib/nudges'
 import { logEvent } from '@/lib/events'
+import { isCelebratable, fallbackCelebration } from '@/lib/postClass'
 
 type Profile = {
   first_name: string
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([])
   const [credits, setCredits] = useState<Credit[]>([])
   const [nudge, setNudge] = useState<Nudge | null>(null)
+  const [celebration, setCelebration] = useState<{ sessionId: string; name: string; message: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export default function DashboardPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
-      const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }, { data: events }] = await Promise.all([
+      const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }, { data: events }, { data: recentClass }] = await Promise.all([
         supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location').eq('id', user.id).single(),
         supabase.from('bookings')
           // !inner so the starts_at filter/sort on the joined session actually
@@ -68,10 +70,18 @@ export default function DashboardPage() {
         // client_events table isn't deployed yet, this errors → data is null →
         // the nudge still works off booking history alone.
         supabase.from('client_events')
-          .select('event_type, service_key')
+          .select('event_type, service_key, metadata')
           .eq('client_id', user.id)
           .order('created_at', { ascending: false })
           .limit(200),
+        // Most-recent finished class — feeds the post-class celebration card.
+        supabase.from('bookings')
+          .select('scheduled_sessions!inner(id, name, session_type, starts_at)')
+          .eq('client_id', user.id)
+          .in('status', ['confirmed', 'completed'])
+          .lt('scheduled_sessions.starts_at', new Date().toISOString())
+          .order('starts_at', { referencedTable: 'scheduled_sessions', ascending: false })
+          .limit(1),
       ])
 
       if (prof) setProfile(prof)
@@ -103,25 +113,49 @@ export default function DashboardPage() {
       const picked = pickNudge(prof?.first_name, triedTypes, { viewed, dismissed })
       setNudge(picked)
 
+      // Post-class celebration: the most-recent finished class, if it's recent
+      // enough and the client hasn't already dismissed its card.
+      const dismissedClasses = new Set(
+        ((events ?? []) as Array<{ event_type: string; metadata: { session_id?: string } | null }>)
+          .filter(e => e.event_type === 'post_class_dismissed')
+          .map(e => e.metadata?.session_id)
+          .filter((id): id is string => !!id)
+      )
+      type RecentRow = { scheduled_sessions: { id: string; name: string; starts_at: string } | { id: string; name: string; starts_at: string }[] }
+      const rc = ((recentClass ?? []) as RecentRow[])[0]
+      const rcSess = rc ? (Array.isArray(rc.scheduled_sessions) ? rc.scheduled_sessions[0] : rc.scheduled_sessions) : null
+      let celeb: { sessionId: string; name: string; message: string } | null = null
+      if (rcSess && isCelebratable(new Date(rcSess.starts_at).getTime(), Date.now()) && !dismissedClasses.has(rcSess.id)) {
+        celeb = { sessionId: rcSess.id, name: rcSess.name, message: fallbackCelebration(prof?.first_name, rcSess.name) }
+        setCelebration(celeb)
+      }
+
       setLoading(false)
 
-      // Progressive enhancement: render the template immediately (above), then
-      // quietly upgrade to an AI-written line in Ruby's voice when it arrives.
-      // Fire-and-forget — any failure leaves the safe template in place.
-      if (picked) {
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          fetch('/api/nudge-copy', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
-            body: JSON.stringify({ service_key: picked.service.key }),
-          })
-            .then(r => (r.ok ? r.json() : null))
-            .then(d => {
-              if (d?.message) setNudge(n => (n && n.service.key === picked.service.key ? { ...n, message: d.message } : n))
-            })
-            .catch(() => {})
-        }
+      // Progressive enhancement: the safe fallback/template shows immediately
+      // (above); quietly upgrade each to an AI line in Ruby's voice. Fire-and-
+      // forget — any failure leaves the fallback in place.
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session && picked) {
+        fetch('/api/nudge-copy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ service_key: picked.service.key }),
+        })
+          .then(r => (r.ok ? r.json() : null))
+          .then(d => { if (d?.message) setNudge(n => (n && n.service.key === picked.service.key ? { ...n, message: d.message } : n)) })
+          .catch(() => {})
+      }
+      if (session && celeb) {
+        const cid = celeb.sessionId
+        fetch('/api/post-class-copy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+          body: JSON.stringify({ session_id: cid }),
+        })
+          .then(r => (r.ok ? r.json() : null))
+          .then(d => { if (d?.message) setCelebration(c => (c && c.sessionId === cid ? { ...c, message: d.message } : c)) })
+          .catch(() => {})
       }
     }
     load()
@@ -170,6 +204,9 @@ export default function DashboardPage() {
             : 'Ready to move + restore?'}
         </p>
       </div>
+
+      {/* Post-class celebration — warm AI message about the class they just finished */}
+      {celebration && <CelebrationCard celebration={celebration} />}
 
       {/* Personalized nudge — surfaces a service the client hasn't tried yet */}
       {nudge && <NudgeCard nudge={nudge} />}
@@ -281,6 +318,45 @@ export default function DashboardPage() {
           <LocationCard name="Charlotte Park" address="4701 Charlotte Ave" />
           <LocationCard name="Green Hills" address="2222 Bandywood Dr" />
         </div>
+      </div>
+    </div>
+  )
+}
+
+function CelebrationCard({ celebration }: { celebration: { sessionId: string; name: string; message: string } }) {
+  const [dismissed, setDismissed] = useState(false)
+
+  // Log once per class per browser session (so re-opens don't inflate counts).
+  useEffect(() => {
+    const key = `post_class_shown:${celebration.sessionId}`
+    try {
+      if (sessionStorage.getItem(key)) return
+      sessionStorage.setItem(key, '1')
+    } catch { /* sessionStorage unavailable — log once */ }
+    logEvent('post_class_shown', { metadata: { session_id: celebration.sessionId } })
+  }, [celebration.sessionId])
+
+  if (dismissed) return null
+
+  return (
+    <div style={{ marginBottom: '3rem' }}>
+      <div style={{ position: 'relative', background: '#edf0ea', border: '1px solid #d7ddcd', borderRadius: '2px', padding: '1.75rem' }}>
+        <button
+          onClick={() => {
+            logEvent('post_class_dismissed', { metadata: { session_id: celebration.sessionId } })
+            setDismissed(true)
+          }}
+          aria-label="Dismiss"
+          style={{ position: 'absolute', top: '0.75rem', right: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', lineHeight: 1, color: 'var(--color-text-muted)', padding: '0.25rem' }}
+        >
+          ×
+        </button>
+        <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--color-brand)', marginBottom: '0.75rem' }}>
+          Nice work
+        </p>
+        <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.95rem', color: 'var(--color-text)', lineHeight: 1.6, margin: 0 }}>
+          {celebration.message}
+        </p>
       </div>
     </div>
   )
