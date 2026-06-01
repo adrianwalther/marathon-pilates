@@ -152,6 +152,9 @@ This bug hid every client's upcoming/past bookings until caught in live verifica
 ### `.single()` vs `.maybeSingle()` — use maybeSingle when 0 rows is normal
 `.single()` returns an **error** (PGRST116) when the query matches 0 (or >1) rows. Use it only when the row is guaranteed to exist (e.g. a profile/role lookup by the authed user's id). For anything where "no row" is a normal outcome — looking up a user-entered code, an optional membership, or an idempotency "does this already exist?" check — use **`.maybeSingle()`** (returns `data: null, error: null`). Audited 2026-05-30: the gift-card redeem, membership lookup, and the membership-confirm / gift-card-create / stripe-webhook idempotency checks were converted (commit 21fe0e7). They worked before (they only read `data`), but `.single()` there would silently break the happy path if error-handling were ever added.
 
+### `total_classes_completed` is trigger-maintained — never hand-write it
+`profiles.total_classes_completed` (feeds "Classes Done", the milestone progress bar, and the "new client" badge at `< 3`) is kept in sync by the DB trigger **`trg_sync_classes_completed`** (migration `sync_classes_completed.sql`, applied 2026-06-01). It **recomputes** `count(bookings where status='completed')` for the affected client on every `bookings` insert/delete/status-change, so it can't drift. Attendance marking (instructor roster + schedule page) sets `status='completed'`, which fires it. Don't write the counter from app code, and don't assume a past `confirmed` booking counts — only `completed` (i.e. attendance actually marked) does. Before this trigger the counter was dead (frozen at signup).
+
 ### Supabase API keys — NEW format only (legacy JWT keys are DISABLED)
 This project has **disabled legacy JWT API keys** (the long `eyJ...` format). You must use the new key format:
 - **Publishable** (browser/anon): `sb_publishable_...` → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
