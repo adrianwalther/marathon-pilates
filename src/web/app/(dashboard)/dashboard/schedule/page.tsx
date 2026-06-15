@@ -93,36 +93,19 @@ function SchedulePageInner() {
     if (key) logEvent('service_view', { serviceKey: key })
   }, [typeFilter])
 
-  // Handle Stripe redirect back after payment
+  // Handle Stripe redirect back after payment.
+  // The booking is created by the SIGNED Stripe webhook (the trusted server-side
+  // source of truth) — never client-side. A previous version inserted the booking
+  // straight from the browser, which let anyone mint a free 'confirmed' booking for
+  // any class (bypassing payment, capacity, and the credit RPC). We now only give
+  // feedback and refresh so the new booking appears once the webhook lands.
   useEffect(() => {
     const payment = searchParams.get('payment')
-    const paidSessionId = searchParams.get('session_id')
-    if (payment === 'success' && paidSessionId) {
-      const confirmBooking = async () => {
-        const supabase = createClient()
-        const { data: { user } } = await supabase.auth.getUser()
-        if (!user) return
-        const { data: existing } = await supabase
-          .from('bookings')
-          .select('id')
-          .eq('client_id', user.id)
-          .eq('session_id', paidSessionId)
-          .maybeSingle() // no prior booking is the normal post-payment case, not an error
-        if (!existing) {
-          await supabase.from('bookings').insert({
-            client_id: user.id,
-            session_id: paidSessionId,
-            status: 'confirmed',
-            amount_paid: 0,
-            payment_status: 'paid',
-          })
-        } else {
-          await supabase.from('bookings').update({ status: 'confirmed', payment_status: 'paid' }).eq('id', existing.id)
-        }
-        showToast('Payment confirmed — booking complete!')
-        loadSessions()
-      }
-      confirmBooking()
+    if (payment === 'success') {
+      showToast('Payment received — confirming your booking…')
+      loadSessions()
+      const t = setTimeout(loadSessions, 2500) // webhook normally lands within a second or two
+      return () => clearTimeout(t)
     } else if (payment === 'cancelled') {
       showToast('Payment cancelled', 'error')
     }
