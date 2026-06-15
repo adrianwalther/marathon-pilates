@@ -245,6 +245,8 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 
 ## Pending Before Launch
 
+- [ ] 🔴 **Run `dedup_profiles_full.sql`** (owner-run) — removes 8,848 inert Arketa double-import duplicates + adds `UNIQUE(lower(email))`. See Security Audit 2026-06-02.
+- [ ] 🔒 **Set `UPSTASH_REDIS_REST_URL`/`TOKEN` in Vercel** (else AI features fail closed in prod) + **enable Auth "leaked password protection"** (Supabase dashboard).
 - [ ] Reactivate Bunny.net + re-upload 23 videos + re-seed `video_url` in DB
 - [ ] Activate Gusto for payroll
 - [ ] Confirm amenity pricing with Ruby (sauna, cold plunge, contrast)
@@ -257,9 +259,36 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
 - [ ] Finish brand color migration — DONE so far (2026-05-28): (a) exact-match brand hexes (176 across 37 files) → `var(--color-*)` tokens, pixel-identical; (b) off-black `#1A1A1A` (188 across 33 files) → `var(--color-text)` (Deep Earth `#302D27`) — this is a deliberate VISIBLE change (harsh pure-black → warm brand dark). REMAINING (~594): non-brand grays (`#E0E0E0`), Tailwind defaults (`#6B7280` etc.), status-badge tints (red/green/amber), and a few stray darks (`#2A2A2A`, `#333`) — these need design decisions, not a mechanical swap. Note: email templates in `lib/emails/` intentionally keep literal hex (email clients can't read CSS vars).
 - [ ] Jazz to sign up at marathon-pilates.vercel.app + set role to admin
-- [ ] **Run `add_waiver_consent.sql`** in Supabase (adds waiver_signed_at / waiver_version / waiver_signature). Until then clients still sign (liability_waiver_signed records) but the version/timestamp/signature detail no-ops.
+- [x] **`add_waiver_consent.sql` applied** — verified live 2026-06-02 (waiver_signed_at / waiver_version / waiver_signature columns present; consent detail saves).
 - [ ] 📌 **WAIVER — proofread verbatim (with Ruby) before launch.** The waiver in `lib/waiver.ts` was transcribed from screenshots of the Arketa copy — needs human confirmation it's word-for-word. Specific item: §1 bullet 3 reads "Company' sole discretion" (apostrophe kept exactly as original) — confirm leave verbatim vs. clean to "Company's".
 - [ ] 📌 **WAIVER — COVID-19 language refresh (with Ruby).** §1 references COVID-19 / facemasks (the studio's current Arketa wording, kept verbatim). Ruby may want to update/remove it. When the text changes, bump `WAIVER_VERSION` in `lib/waiver.ts` so consent records stay unambiguous.
+
+## 🔒 Security Audit — 2026-06-02 (pre-beta)
+
+Full 5-dimension audit (auth, payments, booking/credits, data/RLS, reliability). Found and **fixed + verified live** four CRITICALs and several HIGHs. The fixes encode invariants — **do not regress them**.
+
+### Fixed (live + committed)
+- **CRITICAL · PII/health exposure.** `profiles` "Admins can view all profiles" SELECT policy was `USING(true)` — every authenticated user could read all ~18.7k clients' health/DOB/emergency/PII. Now gated via `is_staff()` (SECURITY DEFINER, search_path pinned) + own-row read. (`security_fix_profiles_rls.sql`)
+- **CRITICAL · privilege escalation.** authenticated/anon had UPDATE on `profiles.role`; a client could self-promote to owner. `trg_guard_profile_role` BEFORE-UPDATE trigger preserves role for client-facing roles. **Role changes only via service_role.**
+- **CRITICAL · free bookings / RPC bypass.** Clients had direct INSERT/UPDATE on `bookings`, and `dashboard/schedule` inserted a confirmed booking client-side on Stripe return → anyone could mint a free booking for any class. Dropped client write policies; removed the client insert. (`security_fix_bookings_rls.sql`) **Bonus: this repaired attendance marking**, which had been silently RLS-denied (0 bookings ever reached `completed`) — staff now have a dedicated UPDATE policy.
+- **CRITICAL · pay-and-get-nothing.** The signed Stripe webhook only fulfilled CLASS bookings; memberships/packs/gift-cards relied on the client hitting a success-URL endpoint (close the tab = paid, got nothing, no record). **Webhook is now the single source of truth** for all fulfillment via `lib/fulfillment.ts`; idempotent (`stripe_events` ledger + unique indexes on `memberships`/`credits.stripe_session_id`, `gift_cards.stripe_payment_intent_id`); returns 500 on failure so Stripe retries.
+- **HIGH** · `membership/confirm` was UNAUTHENTICATED → added auth + `user.id===metadata.user_id`. `gift-card/create` → added ownership check. Both now best-effort wrappers over the shared idempotent fulfillment.
+- **HIGH** · instructor pay was publicly readable (`scheduled_sessions.instructor_pay_amount/tier` under the public read policy) → column SELECT revoked from anon/authenticated.
+- **HIGH** · AI rate limiter failed OPEN if Upstash env unset → `getAiRatelimit()` now **fails closed in prod**; `generate-class`/`generate-image` inputs are now length-capped.
+- Locked down `sync_classes_completed()` (was RPC-callable); added `bookings.credit_used → credits(id)` FK.
+
+### Security invariants (keep these true)
+- **`bookings`: clients have NO direct write.** All writes go through the service-role RPCs (`book_session`/`cancel_booking`) or the staff UPDATE policy (attendance). Never re-add a client INSERT/UPDATE policy.
+- **`profiles` reads** are own-row OR `is_staff()`. Never use `USING(true)` on a table with PII. Test RLS by impersonating: `set local role authenticated; select set_config('request.jwt.claims','{"sub":"<uuid>","role":"authenticated"}',true);`.
+- **All paid fulfillment lives in `lib/fulfillment.ts`** and is idempotent. The webhook is the source of truth; the `confirm`/`create` endpoints are best-effort instant-UI only and must verify ownership.
+
+### Still open (post-audit)
+- 🔴 **Run `dedup_profiles_full.sql`** (owner-run, destructive) — Arketa import ran twice → 8,848 emails duplicated exactly twice (17,696 inert rows, 0 with activity). Script keeps one per email + adds `UNIQUE(lower(email))`. → ~9,900 real clients. **Until run, the email-unique guard isn't in place.**
+- 🟡 **Set `UPSTASH_REDIS_REST_URL`/`TOKEN` in Vercel** — else AI features fail closed (fall back) in prod.
+- 🟡 **Enable Auth "leaked password protection"** (Supabase dashboard, 1 click).
+- 🟡 Beta-gate hardening (H4: hardcoded pw fallback + cookie value == pw) and gift-card **redemption** (H7: cards can be bought but `current_balance` is never decremented — needs an atomic FOR UPDATE RPC) — both optional for beta.
+- 🟡 Needs Ruby: cancellation fees ($15 late / $20 no-show are NOT implemented) + amenity pricing mismatch.
+- Test gap: `book_session`/`cancel_booking` RPCs and the webhook fulfillment have no automated coverage.
 
 ## Completed (for reference)
 
@@ -330,5 +359,8 @@ HANDOFF/
 - **To disable the beta gate at launch:** remove `BETA_PASSWORD` from Vercel env vars
 - **Brand colors:** always use design tokens, never hardcode hex values
 - **DB foreign keys:** bookings and memberships use `client_id`, not `user_id`
+- **Clients never write `bookings` directly** — only the service-role RPCs (`book_session`/`cancel_booking`) or staff (attendance). Don't add a client INSERT/UPDATE policy (see Security Audit).
+- **Never put `USING(true)` on a PII table** (profiles etc.) — gate reads with `is_staff()`. `profiles.role` changes only via service_role.
+- **Paid fulfillment = `lib/fulfillment.ts` + the signed webhook** (source of truth, idempotent). `confirm`/`create` endpoints are best-effort and must check ownership.
 - **Supabase keys:** new format only (`sb_publishable_` / `sb_secret_`) — legacy `eyJ...` JWT keys are disabled (see Gotchas)
 - **Verify DB objects against the live database** before trusting `supabase/migrations/*.sql` — they have drifted (see Gotchas)
