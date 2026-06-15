@@ -19,7 +19,10 @@ export async function POST(req: NextRequest) {
     const { success } = await getAiRatelimit().limit(user.id)
     if (!success) return new Response('Too many requests', { status: 429 })
 
-    const { focusArea, difficulty } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    // Bound user-supplied inputs — they feed a paid image-generation call.
+    const focusArea = (typeof body?.focusArea === 'string' ? body.focusArea : 'full body').slice(0, 120)
+    const difficulty = (typeof body?.difficulty === 'string' ? body.difficulty : 'intermediate').slice(0, 20)
 
     if (!process.env.OPENAI_API_KEY) {
       return new Response('OPENAI_API_KEY is not set', { status: 500 })

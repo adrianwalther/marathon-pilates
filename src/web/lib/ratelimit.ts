@@ -1,10 +1,16 @@
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis'
 
-// Fallback no-op limiter used when Redis is unavailable — always allows requests
-const ALLOW: { limit: (_id: string) => Promise<{ success: boolean }> } = {
-  limit: async (_id: string) => ({ success: true }),
-}
+type Limiter = { limit: (_id: string) => Promise<{ success: boolean }> }
+
+// Used when Redis isn't configured. ALLOW = let requests through (core flows
+// shouldn't break if the limiter backend blips). DENY = block (used for the
+// expensive AI routes, so a missing/misconfigured backend can't silently open a
+// real-money cost-abuse window).
+const ALLOW: Limiter = { limit: async (_id: string) => ({ success: true }) }
+const DENY: Limiter = { limit: async (_id: string) => ({ success: false }) }
+
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 function getRedis() {
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -16,15 +22,27 @@ function getRedis() {
   })
 }
 
-function makeRatelimit(prefix: string, limiter: Ratelimit['limiter']) {
+// failClosed: in production, if Redis is unavailable, DENY instead of ALLOW.
+// Set for endpoints where unthrottled abuse costs real money (AI generation).
+function makeRatelimit(prefix: string, limiter: Ratelimit['limiter'], failClosed = false) {
   const redis = getRedis()
-  if (!redis) return ALLOW
+  if (!redis) {
+    if (IS_PROD) {
+      console.error(
+        `[ratelimit] UPSTASH_REDIS_REST_URL/TOKEN not set — '${prefix}' limiter is ` +
+        `${failClosed ? 'FAILING CLOSED (requests denied)' : 'DISABLED (requests allowed)'}. ` +
+        `Configure Upstash in production.`
+      )
+    }
+    return failClosed && IS_PROD ? DENY : ALLOW
+  }
   return new Ratelimit({ redis, limiter, prefix })
 }
 
-// AI generation — 10 requests per user per hour
+// AI generation — 10 requests per user per hour. Fails CLOSED in prod: these
+// calls cost real money (Anthropic/OpenAI/ElevenLabs), so no silent open window.
 export function getAiRatelimit() {
-  return makeRatelimit('rl:ai', Ratelimit.slidingWindow(10, '1 h'))
+  return makeRatelimit('rl:ai', Ratelimit.slidingWindow(10, '1 h'), true)
 }
 
 // Checkout — 20 requests per user per hour

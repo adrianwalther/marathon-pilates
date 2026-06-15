@@ -146,7 +146,16 @@ export async function POST(req: NextRequest) {
     const { success } = await getAiRatelimit().limit(user.id)
     if (!success) return new Response('Too many requests — please wait before generating another class.', { status: 429 })
 
-    const { duration, difficulty, focusArea, props, healthStatus } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    // Bound all user-supplied inputs — they feed a paid LLM call, so unbounded
+    // strings/arrays are a cost + prompt-injection vector.
+    const duration = Math.min(90, Math.max(15, Math.round(Number(body?.duration)) || 45))
+    const difficulty = typeof body?.difficulty === 'string' ? body.difficulty.slice(0, 20) : 'intermediate'
+    const focusArea = (typeof body?.focusArea === 'string' ? body.focusArea : 'full body').slice(0, 120)
+    const healthStatus = ['green', 'yellow', 'red'].includes(body?.healthStatus) ? body.healthStatus : undefined
+    const props: string[] = Array.isArray(body?.props)
+      ? body.props.filter((p: unknown): p is string => typeof p === 'string').slice(0, 12).map((p: string) => p.slice(0, 40))
+      : []
 
     const propsText = props && props.length > 0 ? props.join(', ') : 'mat only (no props)'
     const healthNote = healthStatus === 'red'
