@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import { isStripeConfigured, stripeNotConfiguredResponse } from '@/lib/env'
 import { createClient } from '@supabase/supabase-js'
 import { fulfillMembership } from '@/lib/fulfillment'
 
@@ -8,6 +9,10 @@ import { fulfillMembership } from '@/lib/fulfillment'
 // to race with the webhook (shared fulfillment, unique-indexed).
 
 export async function POST(req: Request) {
+  if (!isStripeConfigured()) {
+    console.error('[membership-confirm] STRIPE_SECRET_KEY is not configured')
+    return stripeNotConfiguredResponse()
+  }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   try {
     const { stripe_session_id } = await req.json()

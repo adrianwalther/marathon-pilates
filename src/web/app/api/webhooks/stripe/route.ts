@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import { isStripeConfigured } from '@/lib/env'
 import { createClient } from '@supabase/supabase-js'
 import { notifyBookingConfirmed } from '@/lib/emails/notify'
 import { fulfillClassBooking, fulfillMembership, fulfillGiftCard } from '@/lib/fulfillment'
@@ -11,6 +12,10 @@ import { fulfillClassBooking, fulfillMembership, fulfillGiftCard } from '@/lib/f
 // failure returns non-2xx so Stripe retries.
 
 export async function POST(req: Request) {
+  if (!isStripeConfigured() || !process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('[stripe-webhook] Stripe is not configured (STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET)')
+    return Response.json({ error: 'not configured' }, { status: 500 })
+  }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   const body = await req.text() // raw body required for signature verification
   const sig = req.headers.get('stripe-signature')

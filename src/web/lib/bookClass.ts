@@ -47,7 +47,7 @@ export async function bookClass(session: BookableSession): Promise<BookOutcome> 
       body: JSON.stringify({ session_id: session.id, user_id: user.id }),
     })
     const { url, error } = await res.json().catch(() => ({}))
-    if (error || !url) return { outcome: 'error', message: 'Could not start checkout' }
+    if (error || !url) return { outcome: 'error', message: error || 'Could not start checkout' }
     window.location.href = url
     return { outcome: 'checkout' }
   }

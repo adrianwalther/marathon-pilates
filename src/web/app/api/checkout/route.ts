@@ -1,8 +1,13 @@
 import Stripe from 'stripe'
+import { isStripeConfigured, stripeNotConfiguredResponse } from '@/lib/env'
 import { createClient } from '@supabase/supabase-js'
 import { getCheckoutRatelimit } from "@/lib/ratelimit"
 
 export async function POST(req: Request) {
+  if (!isStripeConfigured()) {
+    console.error('[checkout] STRIPE_SECRET_KEY is not configured')
+    return stripeNotConfiguredResponse()
+  }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
   try {
     const { session_id, user_id } = await req.json()
