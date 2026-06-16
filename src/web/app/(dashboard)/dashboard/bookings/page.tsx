@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -183,7 +184,7 @@ function BookingsPageInner() {
   })
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
+    <div style={pageStyle()}>
       {/* Toast */}
       {toast && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>

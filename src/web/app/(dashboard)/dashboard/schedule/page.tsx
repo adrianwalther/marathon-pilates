@@ -1,5 +1,7 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
+
 import { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -249,7 +251,7 @@ function SchedulePageInner() {
   })
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
+    <div style={pageStyle()}>
       {/* Toast */}
       {toast && (
         <div style={{

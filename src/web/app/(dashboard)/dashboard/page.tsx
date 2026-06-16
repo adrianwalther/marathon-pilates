@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
@@ -192,7 +193,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
+    <div style={pageStyle()}>
       {/* Greeting */}
       <div style={{ marginBottom: '3rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2.2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', lineHeight: 1.1 }}>

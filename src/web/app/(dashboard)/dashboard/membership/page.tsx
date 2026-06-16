@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -228,7 +229,7 @@ function MembershipPage() {
   )
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
+    <div style={pageStyle()}>
       <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '2.5rem' }}>
         Membership
       </h1>

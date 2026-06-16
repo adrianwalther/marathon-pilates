@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
@@ -102,7 +103,7 @@ export default function OnDemandPage() {
   if (selectedGenerated) return <GeneratedClassDetail cls={selectedGenerated} onBack={() => setSelectedGenerated(null)} />
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '900px' }}>
+    <div style={pageStyle()}>
       <div style={{ marginBottom: '2rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.5rem' }}>
           On Demand
@@ -297,7 +298,7 @@ function ClassDetail({ cls, onBack }: { cls: OnDemandClass; onBack: () => void }
   }, [])
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
+    <div style={pageStyle(800)}>
       <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
         ← Back
       </button>
@@ -424,7 +425,7 @@ function renderLine(line: string, idx: number) {
 function GeneratedClassDetail({ cls, onBack }: { cls: GeneratedClass; onBack: () => void }) {
   const diff = cls.difficulty ? DIFFICULTY_COLORS[cls.difficulty] : { bg: '#f0f0f0', color: 'var(--color-text-muted)' }
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '800px' }}>
+    <div style={pageStyle(800)}>
       <button onClick={onBack} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '2rem', padding: 0 }}>
         ← Back
       </button>

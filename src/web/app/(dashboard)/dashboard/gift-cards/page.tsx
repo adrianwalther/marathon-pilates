@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -97,7 +98,7 @@ function GiftCardsPageInner() { // eslint-disable-line
 
   if (purchaseResult) {
     return (
-      <div style={{ padding: '3rem 2.5rem', maxWidth: '560px' }}>
+      <div style={pageStyle(560)}>
         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
           <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#f5ece6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '1.5rem' }}>✓</div>
           <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.8rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.75rem' }}>Gift Card Ready</h2>
@@ -120,7 +121,7 @@ function GiftCardsPageInner() { // eslint-disable-line
   }
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '620px' }}>
+    <div style={pageStyle(620)}>
       <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.5rem' }}>Gift Cards</h1>
       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '2.5rem' }}>Give the gift of movement and restoration.</p>
 

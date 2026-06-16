@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 
@@ -334,7 +335,7 @@ export default function GenerateClassPage() {
   })
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '860px' }}>
+    <div style={pageStyle(860)}>
       <div style={{ marginBottom: '2.5rem' }}>
         <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
           AI Class Generator

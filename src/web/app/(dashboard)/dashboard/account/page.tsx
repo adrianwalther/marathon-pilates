@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
@@ -212,7 +213,7 @@ export default function AccountPage() {
   )
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '700px' }}>
+    <div style={pageStyle(700)}>
       {toast && (
         <div style={{ position: 'fixed', top: '1.5rem', right: '1.5rem', zIndex: 100, background: toast.type === 'success' ? 'var(--color-text)' : '#e05555', color: 'white', padding: '0.75rem 1.5rem', borderRadius: '2px', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.75rem', letterSpacing: '0.1em' }}>
           {toast.msg}

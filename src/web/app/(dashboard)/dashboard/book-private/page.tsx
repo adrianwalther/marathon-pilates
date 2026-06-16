@@ -1,5 +1,6 @@
 'use client'
 
+import { pageStyle } from '@/lib/pageStyle'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
@@ -96,7 +97,7 @@ export default function BookPrivatePage() {
   }
 
   return (
-    <div style={{ padding: '3rem 2.5rem', maxWidth: '720px' }}>
+    <div style={pageStyle(720)}>
       <h1 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '2rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--color-text)', marginBottom: '0.4rem' }}>
         Request a Private
       </h1>
