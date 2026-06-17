@@ -187,3 +187,6 @@ Do these in this order to minimize disruption:
 5. **Vercel transfer** — coordinate with GitHub transfer, update all env vars at same time
 6. **Stripe** — confirm with Ruby, low urgency until launch
 7. **Domain ownership** — confirm and fix with Ruby's registrar
+8. **Verify** — after every key is re-added in Vercel and redeployed, open `https://marathon-pilates.vercel.app/api/health`. Every line must read `"ok": true` (the DB check actually queries with the service-role key, so it catches a missing/wrong/legacy key). Then revoke the old keys from the personal accounts.
+
+> 📋 The full service/cost/key inventory + status checklist lives in [`SUBSCRIPTIONS.md`](SUBSCRIPTIONS.md) — keep it updated as each row migrates.
