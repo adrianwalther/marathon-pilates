@@ -12,6 +12,7 @@ type Profile = {
   date_of_birth: string | null
   emergency_contact_name: string | null
   emergency_contact_phone: string | null
+  emergency_contact_email: string | null
   preferred_location: string | null
   health_conditions: string[] | null
   polestar_traffic_light: string
@@ -62,6 +63,7 @@ export default function AccountPage() {
   const [dob, setDob] = useState('')
   const [emergencyName, setEmergencyName] = useState('')
   const [emergencyPhone, setEmergencyPhone] = useState('')
+  const [emergencyEmail, setEmergencyEmail] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [selectedConditions, setSelectedConditions] = useState<string[]>([])
   const [newPassword, setNewPassword] = useState('')
@@ -87,6 +89,7 @@ export default function AccountPage() {
         setDob(prof.date_of_birth ?? '')
         setEmergencyName(prof.emergency_contact_name ?? '')
         setEmergencyPhone(prof.emergency_contact_phone ?? '')
+        setEmergencyEmail(prof.emergency_contact_email ?? '')
         setPreferredLocation(prof.preferred_location ?? '')
         setSelectedConditions(prof.health_conditions ?? [])
         setExperienceLevel((prof as unknown as Record<string, string>).experience_level ?? '')
@@ -109,6 +112,7 @@ export default function AccountPage() {
       date_of_birth: dob || null,
       emergency_contact_name: emergencyName || null,
       emergency_contact_phone: emergencyPhone || null,
+      emergency_contact_email: emergencyEmail || null,
       preferred_location: preferredLocation || null,
     }).eq('id', user.id)
 
@@ -291,6 +295,11 @@ export default function AccountPage() {
                 <input value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} placeholder="(615) 555-0123" style={inputStyle}
                   onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
               </div>
+            </div>
+            <div style={{ marginTop: '1rem' }}>
+              <label style={labelStyle}>Email <span style={{ textTransform: 'none', letterSpacing: 0, color: '#aaa' }}>(optional)</span></label>
+              <input value={emergencyEmail} onChange={e => setEmergencyEmail(e.target.value)} placeholder="name@email.com" type="email" style={inputStyle}
+                onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')} onBlur={e => (e.target.style.borderColor = '#e0e0e0')} />
             </div>
           </div>
 

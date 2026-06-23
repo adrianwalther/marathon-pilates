@@ -63,6 +63,7 @@ export default function OnboardingPage() {
   const [hasInjury, setHasInjury] = useState<boolean | null>(null)
   const [emergencyName, setEmergencyName] = useState('')
   const [emergencyPhone, setEmergencyPhone] = useState('')
+  const [emergencyEmail, setEmergencyEmail] = useState('')
 
   // Step 3
   const [location, setLocation] = useState('')
@@ -100,6 +101,7 @@ export default function OnboardingPage() {
       hear_about_us: hearAbout || null,
       emergency_contact_name: emergencyName.trim() || null,
       emergency_contact_phone: emergencyPhone.trim() || null,
+      emergency_contact_email: emergencyEmail.trim() || null,
       liability_waiver_signed: true,
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
@@ -301,24 +303,42 @@ export default function OnboardingPage() {
               <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '-0.25rem', marginBottom: '0.75rem' }}>
                 Someone we can reach if anything comes up during your visit.
               </p>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                <input
-                  value={emergencyName}
-                  onChange={e => setEmergencyName(e.target.value)}
-                  placeholder="Name"
-                  style={{ ...inputStyle, flex: '1 1 45%', minWidth: '140px' }}
-                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
-                  onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
-                />
-                <input
-                  value={emergencyPhone}
-                  onChange={e => setEmergencyPhone(e.target.value)}
-                  placeholder="Phone"
-                  type="tel"
-                  style={{ ...inputStyle, flex: '1 1 45%', minWidth: '140px' }}
-                  onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
-                  onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
-                />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Name</label>
+                  <input
+                    value={emergencyName}
+                    onChange={e => setEmergencyName(e.target.value)}
+                    placeholder="Full name"
+                    style={{ ...inputStyle, width: '100%' }}
+                    onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                    onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Phone number</label>
+                  <input
+                    value={emergencyPhone}
+                    onChange={e => setEmergencyPhone(e.target.value)}
+                    placeholder="(615) 555-0123"
+                    type="tel"
+                    style={{ ...inputStyle, width: '100%' }}
+                    onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                    onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.62rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.3rem' }}>Email <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                  <input
+                    value={emergencyEmail}
+                    onChange={e => setEmergencyEmail(e.target.value)}
+                    placeholder="name@email.com"
+                    type="email"
+                    style={{ ...inputStyle, width: '100%' }}
+                    onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+                    onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+                  />
+                </div>
               </div>
             </div>
 

@@ -12,6 +12,7 @@ type Client = {
   date_of_birth: string | null
   emergency_contact_name: string | null
   emergency_contact_phone: string | null
+  emergency_contact_email: string | null
   total_classes_completed: number
   first_class_at: string | null
   polestar_traffic_light: string
@@ -73,7 +74,7 @@ export default function AdminClientsPage() {
   useEffect(() => {
     const supabase = createClient()
     supabase.from('profiles')
-      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, preferred_location, intake_completed_at, experience_level, goals, hear_about_us, created_at, memberships(membership_type, status, created_at)')
+      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_email, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, preferred_location, intake_completed_at, experience_level, goals, hear_about_us, created_at, memberships(membership_type, status, created_at)')
       .eq('role', 'client')
       .order('created_at', { ascending: false })
       .then(({ data }) => {
@@ -340,11 +341,12 @@ export default function AdminClientsPage() {
                   </>
                 )}
 
-                {(selected.emergency_contact_name || selected.emergency_contact_phone) && (
+                {(selected.emergency_contact_name || selected.emergency_contact_phone || selected.emergency_contact_email) && (
                   <div style={{ marginTop: '0.85rem', paddingTop: '0.85rem', borderTop: '1px solid #f0f0f0' }}>
                     <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.58rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.25rem' }}>Emergency Contact</p>
                     {selected.emergency_contact_name && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#555' }}>{selected.emergency_contact_name}</p>}
                     {selected.emergency_contact_phone && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#555' }}>{selected.emergency_contact_phone}</p>}
+                    {selected.emergency_contact_email && <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#555' }}>{selected.emergency_contact_email}</p>}
                   </div>
                 )}
               </div>
