@@ -94,6 +94,29 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 - **Beta test client account:** `adrianwalther@me.com` (role: client) — use this to QA client-side flows
 - **Strategy:** Validate booking flow on web app first. Build native mobile app as next major phase before public launch.
 - **Jazz** still needs to sign up at marathon-pilates.vercel.app
+- **Beta started 2026-06-18** (Ruby). NOTE: booking + Build-a-Class will error until the 5 Vercel env vars are set (service-role key, Stripe ×2, Upstash ×2) — see Security Audit. Login itself works without them. Verify with `GET /api/health`.
+
+---
+
+## Product Direction — Beta Feedback (2026-06-18)
+
+> From Ruby's first beta feedback. **Concept stage — mockups only (Claude design), nothing built yet; paused until more direction.**
+
+### Personalized "learns & grows with you" client home
+The dashboard home should recommend classes + content from the intake questionnaire **+** behavior (e.g., a new mom → surface a "Mommy & Me" program). **Key principle: show the WHY on each recommendation** ("Gentle for your fourth trimester") — makes the learning visible + builds trust.
+- **Foundation already exists:** intake questionnaire, `client_events` behavior log, `lib/nudges.ts` ranker, AI health-flags.
+- **To build:** (1) capture life-stage/interest tags at intake (or AI-infer from the health/goals free-text); (2) admin UI for Ruby to define programs + their target tags; (3) extend the ranker to recommend programs (not just untried services); (4) surface the "why." Scales to any life stage (prenatal, seniors, injury recovery, athletes).
+
+### Home mirrors the brand — "Move + Restore"
+A **Move** section (class recs) + a **Restore** section (guided breath-work / meditative audio tiles, tap-to-play).
+- **Restore audio = OUR OWN content** via the existing **ElevenLabs** engine (calm voiced guided breath work). Build nuance: **pacing** — timed inhale/hold/exhale pauses via SSML `<break>` or stitching is the real work; voice gen is easy. Optionally a **licensed** background bed.
+- **Spotify = a small OPTIONAL element inside the Restore box only** — a tap-to-play embed of Spotify's *own* curated meditation playlist (zero maintenance), as a "want more vibe?" extra. NOT the core, NOT autoplay (browser-blocked), NOT a standalone feature. Caveat: embed = full tracks for Premium/logged-in, ~30s previews for free → own-hosted audio is the dependable core. **Never mix Spotify audio under our voice (their terms forbid it.)**
+- **Licensing:** breath *techniques* aren't copyrightable (write our own scripts); need ElevenLabs commercial-tier rights + licensed music for any bed + a wellness/"not medical advice" disclaimer.
+
+### Warmer voice + visual direction (Ruby wants warmer/more inviting)
+- **Sentence case > ALL CAPS.** Say the **feeling**, not the category ("fourth trimester" not "postpartum"; "at your pace" not "recovery goal"). **Invite, don't instruct** ("Save my spot" not "BOOK").
+- Lead with the **warm half of the palette** (Sandstone `#BC9C8E` / Rose Clay `#DDD1BD` / Terracotta `#A76E58` over moss/charcoal); softer corners; a heart, not a gear.
+- Apply to **all copy, incl. AI-generated** (nudges, post-class celebrations). Consider a 1-page warm-voice mini-guide extending the brand guide.
 
 ---
 
