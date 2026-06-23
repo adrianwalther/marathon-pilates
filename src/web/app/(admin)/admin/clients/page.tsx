@@ -17,6 +17,7 @@ type Client = {
   first_class_at: string | null
   polestar_traffic_light: string
   health_conditions: string[] | null
+  health_notes: string | null
   preferred_location: string | null
   intake_completed_at: string | null
   experience_level: string | null
@@ -74,7 +75,7 @@ export default function AdminClientsPage() {
   useEffect(() => {
     const supabase = createClient()
     supabase.from('profiles')
-      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_email, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, preferred_location, intake_completed_at, experience_level, goals, hear_about_us, created_at, memberships(membership_type, status, created_at)')
+      .select('id, first_name, last_name, email, phone, date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_email, total_classes_completed, first_class_at, polestar_traffic_light, health_conditions, health_notes, preferred_location, intake_completed_at, experience_level, goals, hear_about_us, created_at, memberships(membership_type, status, created_at)')
       .eq('role', 'client')
       .order('created_at', { ascending: false })
       .then(({ data }) => {
@@ -336,6 +337,11 @@ export default function AdminClientsPage() {
                     {selected.health_conditions && selected.health_conditions.length > 0 && (
                       <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#555', marginTop: '0.6rem' }}>
                         {selected.health_conditions.join(', ')}
+                      </p>
+                    )}
+                    {selected.health_notes && (
+                      <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#555', marginTop: '0.5rem', fontStyle: 'italic' }}>
+                        &ldquo;{selected.health_notes}&rdquo;
                       </p>
                     )}
                   </>

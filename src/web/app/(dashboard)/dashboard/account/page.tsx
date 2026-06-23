@@ -14,6 +14,7 @@ type Profile = {
   emergency_contact_phone: string | null
   emergency_contact_email: string | null
   preferred_location: string | null
+  health_notes: string | null
   health_conditions: string[] | null
   polestar_traffic_light: string
   intake_completed_at: string | null
@@ -66,6 +67,7 @@ export default function AccountPage() {
   const [emergencyEmail, setEmergencyEmail] = useState('')
   const [preferredLocation, setPreferredLocation] = useState('')
   const [selectedConditions, setSelectedConditions] = useState<string[]>([])
+  const [healthNotes, setHealthNotes] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [experienceLevel, setExperienceLevel] = useState('')
@@ -92,6 +94,7 @@ export default function AccountPage() {
         setEmergencyEmail(prof.emergency_contact_email ?? '')
         setPreferredLocation(prof.preferred_location ?? '')
         setSelectedConditions(prof.health_conditions ?? [])
+        setHealthNotes(prof.health_notes ?? '')
         setExperienceLevel((prof as unknown as Record<string, string>).experience_level ?? '')
         setSelectedGoals((prof as unknown as Record<string, string[]>).goals ?? [])
       }
@@ -130,6 +133,7 @@ export default function AccountPage() {
     const trafficLight = getTrafficLight(selectedConditions)
     const { error } = await supabase.from('profiles').update({
       health_conditions: selectedConditions,
+      health_notes: healthNotes.trim() || null,
       polestar_traffic_light: trafficLight,
       intake_completed_at: new Date().toISOString(),
     }).eq('id', user.id)
@@ -325,9 +329,14 @@ export default function AccountPage() {
             <span style={{ width: '12px', height: '12px', borderRadius: '50%', background: trafficLight.color, display: 'block' }} />
           </div>
 
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.82rem', color: 'var(--color-text-muted)', marginBottom: '0.5rem', lineHeight: 1.7 }}>
             Select any conditions that apply. This helps your instructor provide safe, appropriate modifications.
           </p>
+          {profile?.intake_completed_at && (
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: '#aaa', marginBottom: '1.5rem' }}>
+              Last reviewed: {new Date(profile.intake_completed_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+          )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '2rem' }}>
             {HEALTH_CONDITIONS.map(c => (
@@ -343,6 +352,22 @@ export default function AccountPage() {
                 </span>
               </label>
             ))}
+          </div>
+
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{ ...labelStyle, marginBottom: '0.5rem' }}>
+              Anything else we should know?{' '}
+              <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 400, color: '#aaa' }}>(optional)</span>
+            </label>
+            <textarea
+              value={healthNotes}
+              onChange={e => setHealthNotes(e.target.value)}
+              placeholder="Recent injury, surgery, pregnancy, or anything your instructor should know about..."
+              rows={3}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+              onFocus={e => (e.target.style.borderColor = 'var(--color-cta)')}
+              onBlur={e => (e.target.style.borderColor = '#e0e0e0')}
+            />
           </div>
 
           <button onClick={saveHealth} disabled={saving} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: saving ? 'var(--color-cta-disabled)' : 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: saving ? 'not-allowed' : 'pointer' }}>

@@ -13,6 +13,7 @@ type Profile = {
   total_classes_completed: number
   polestar_traffic_light: string
   preferred_location: string | null
+  intake_completed_at: string | null
 }
 
 type Booking = {
@@ -39,6 +40,7 @@ export default function DashboardPage() {
   const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([])
   const [credits, setCredits] = useState<Credit[]>([])
   const [nudge, setNudge] = useState<Nudge | null>(null)
+  const [showHealthBanner, setShowHealthBanner] = useState(false)
   const [celebration, setCelebration] = useState<{ sessionId: string; name: string; message: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -49,7 +51,7 @@ export default function DashboardPage() {
       if (!user) return
 
       const [{ data: prof }, { data: bookings }, { data: creds }, { data: tried }, { data: events }, { data: recentClass }] = await Promise.all([
-        supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location').eq('id', user.id).single(),
+        supabase.from('profiles').select('first_name, total_classes_completed, polestar_traffic_light, preferred_location, intake_completed_at').eq('id', user.id).single(),
         supabase.from('bookings')
           // !inner so the starts_at filter/sort on the joined session actually
           // applies to the booking rows (and the order parses — ordering by an
@@ -85,7 +87,18 @@ export default function DashboardPage() {
           .limit(1),
       ])
 
-      if (prof) setProfile(prof)
+      if (prof) {
+        setProfile(prof)
+        // Show health check-in banner if last review was >6 months ago.
+        // Suppress for 30 days after the client dismisses it.
+        const dismissed = localStorage.getItem('health_checkin_dismissed')
+        const dismissedRecently = dismissed && Date.now() - Number(dismissed) < 30 * 24 * 60 * 60 * 1000
+        if (!dismissedRecently) {
+          const lastReview = prof.intake_completed_at ? new Date(prof.intake_completed_at).getTime() : 0
+          const sixMonthsAgo = Date.now() - 180 * 24 * 60 * 60 * 1000
+          if (lastReview < sixMonthsAgo) setShowHealthBanner(true)
+        }
+      }
       if (bookings) setUpcomingBookings(bookings as unknown as Booking[])
       if (creds) setCredits(creds)
 
@@ -205,6 +218,26 @@ export default function DashboardPage() {
             : 'Ready to move + restore?'}
         </p>
       </div>
+
+      {/* Health check-in nudge — surfaces after 6 months of no health info update */}
+      {showHealthBanner && (
+        <div style={{ background: '#fff8e6', border: '1px solid #f0ddb0', borderRadius: '2px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+          <div>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.82rem', color: '#7a5a00', marginBottom: '0.2rem' }}>
+              Life changes — is your health info still current?
+            </p>
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: '#9a7a20', lineHeight: 1.5 }}>
+              A quick review helps your instructor keep every class safe and right for where you are now.{' '}
+              <a href="/dashboard/account" style={{ color: '#c8860a', fontWeight: 500, textDecoration: 'none' }}>Update Health Info →</a>
+            </p>
+          </div>
+          <button
+            onClick={() => { localStorage.setItem('health_checkin_dismissed', String(Date.now())); setShowHealthBanner(false) }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c8860a', fontSize: '1.1rem', lineHeight: 1, padding: '0.25rem', flexShrink: 0 }}
+            aria-label="Dismiss"
+          >×</button>
+        </div>
+      )}
 
       {/* Post-class celebration — warm AI message about the class they just finished */}
       {celebration && <CelebrationCard celebration={celebration} />}
