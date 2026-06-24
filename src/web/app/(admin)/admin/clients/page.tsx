@@ -68,9 +68,20 @@ export default function AdminClientsPage() {
   const [credits, setCredits] = useState<Credit[]>([])
   const [detailLoading, setDetailLoading] = useState(false)
   const [editingTrafficLight, setEditingTrafficLight] = useState(false)
+  const [showGrantForm, setShowGrantForm] = useState(false)
+  const [grantType, setGrantType] = useState<'group' | 'amenity' | 'private'>('group')
+  const [grantQty, setGrantQty] = useState('5')
+  const [grantExpiry, setGrantExpiry] = useState('')
+  const [granting, setGranting] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
 
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000) }
+
+  // Load auth token once for API calls
+  useEffect(() => {
+    createClient().auth.getSession().then(({ data }) => setToken(data.session?.access_token ?? null))
+  }, [])
 
   useEffect(() => {
     const supabase = createClient()
@@ -117,6 +128,34 @@ export default function AdminClientsPage() {
     setSelected(s => s ? { ...s, polestar_traffic_light: value } : s)
     setEditingTrafficLight(false)
     showToast('Health status updated')
+  }
+
+  const grantCredit = async () => {
+    if (!selected) return
+    setGranting(true)
+    try {
+      const res = await fetch('/api/admin/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+        body: JSON.stringify({
+          client_id: selected.id,
+          credit_type: grantType,
+          total_credits: parseInt(grantQty),
+          expires_at: grantExpiry || null,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setCredits(prev => [...prev, data.credit])
+      setShowGrantForm(false)
+      setGrantQty('5')
+      setGrantExpiry('')
+      showToast(`${grantQty} ${grantType} credit${parseInt(grantQty) !== 1 ? 's' : ''} granted`)
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : 'Failed to grant credits')
+    } finally {
+      setGranting(false)
+    }
   }
 
   const formatDate = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -272,7 +311,12 @@ export default function AdminClientsPage() {
 
               {/* Membership + credits */}
               <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '1.25rem 1.5rem' }}>
-                <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>Membership & Credits</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>Membership & Credits</p>
+                  <button onClick={() => setShowGrantForm(v => !v)} style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.55rem', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-cta)' }}>
+                    {showGrantForm ? 'Cancel' : '+ Grant Credits'}
+                  </button>
+                </div>
                 {activeMembership(selected) ? (
                   <div style={{ marginBottom: '0.75rem' }}>
                     <span style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '0.22rem 0.55rem', borderRadius: '2px', background: '#f5ece6', color: 'var(--color-cta)' }}>
@@ -304,6 +348,49 @@ export default function AdminClientsPage() {
                   </div>
                 ) : (
                   <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.72rem', color: '#aaa' }}>No credits on file</p>
+                )}
+
+                {/* Grant credits form */}
+                {showGrantForm && (
+                  <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #f0f0f0' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px', gap: '0.6rem', marginBottom: '0.6rem' }}>
+                      <select
+                        value={grantType}
+                        onChange={e => setGrantType(e.target.value as typeof grantType)}
+                        style={{ padding: '0.5rem 0.6rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.8rem', fontFamily: "'Poppins', sans-serif", background: 'white' }}
+                      >
+                        <option value="group">Group Reformer</option>
+                        <option value="amenity">Amenity (Sauna / Cold Plunge / Contrast)</option>
+                        <option value="private">Private Session</option>
+                      </select>
+                      <input
+                        type="number" min={1} max={100}
+                        value={grantQty}
+                        onChange={e => setGrantQty(e.target.value)}
+                        placeholder="Qty"
+                        style={{ padding: '0.5rem 0.6rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.8rem', fontFamily: "'Poppins', sans-serif', textAlign: 'center" }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                      <input
+                        type="date"
+                        value={grantExpiry}
+                        onChange={e => setGrantExpiry(e.target.value)}
+                        style={{ flex: 1, padding: '0.5rem 0.6rem', border: '1px solid #e0e0e0', borderRadius: '2px', fontSize: '0.8rem', fontFamily: "'Poppins', sans-serif", background: 'white' }}
+                        placeholder="Expiry (optional)"
+                      />
+                      <button
+                        onClick={grantCredit}
+                        disabled={granting || !grantQty}
+                        style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '0.5rem 1.25rem', background: granting || !grantQty ? '#e0e0e0' : 'var(--color-cta)', color: granting || !grantQty ? '#aaa' : 'white', border: 'none', borderRadius: '2px', cursor: granting || !grantQty ? 'not-allowed' : 'pointer', whiteSpace: 'nowrap' as const }}
+                      >
+                        {granting ? 'Granting…' : 'Grant'}
+                      </button>
+                    </div>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.68rem', color: '#aaa', marginTop: '0.4rem' }}>
+                      Expiry date is optional — leave blank for no expiry.
+                    </p>
+                  </div>
                 )}
               </div>
 
