@@ -213,6 +213,7 @@ function SchedulePageInner() {
   const [bookingToken, setBookingToken] = useState<string | null>(null)
 
   const isAmenityView = AMENITY_TYPES.includes(typeFilter)
+  const isContactView = typeFilter === 'private' || typeFilter === 'neveskin'
 
   // Behavioral signal: when the client browses a specific service, log it as
   // intent. The dashboard nudge ranker boosts services a client keeps viewing
@@ -298,6 +299,7 @@ function SchedulePageInner() {
   }
 
   const loadSessions = useCallback(async () => {
+    if (isContactView || isAmenityView) { setLoading(false); return }
     setLoading(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -539,6 +541,19 @@ function SchedulePageInner() {
         ))}
       </div>
 
+      {/* Private sessions — contact-only */}
+      {typeFilter === 'private' && (
+        <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)', marginBottom: '0.4rem' }}>Private sessions, duets, trios, and Pilates parties are booked directly with us.</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem', lineHeight: 1.65 }}>
+            Email us and we&rsquo;ll confirm availability and get you set up. Pilates parties start at $250.
+          </p>
+          <a href="mailto:marathon@marathonpilates.com?subject=Private%20Session%20Request" style={{ display: 'inline-block', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: 'var(--color-cta)', color: 'white', borderRadius: '2px', textDecoration: 'none' }}>
+            Email Us to Book →
+          </a>
+        </div>
+      )}
+
       {/* Neveskin — contact-only */}
       {typeFilter === 'neveskin' && (
         <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', textAlign: 'center' }}>
@@ -606,15 +621,15 @@ function SchedulePageInner() {
         </>
       )}
 
-      {/* Sessions list (group + private) */}
-      {!isAmenityView && loading ? (
+      {/* Sessions list (group only) */}
+      {!isAmenityView && !isContactView && loading ? (
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>Loading...</p>
-      ) : !isAmenityView && sessions.length === 0 ? (
+      ) : !isAmenityView && !isContactView && sessions.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ccc' }}>No classes</p>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem' }}>Try a different day or filter</p>
         </div>
-      ) : !isAmenityView ? (
+      ) : !isAmenityView && !isContactView ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {sessions.map(s => {
             const spotsLeft = s.max_capacity - s.booking_count
