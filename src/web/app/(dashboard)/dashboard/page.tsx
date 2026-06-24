@@ -254,12 +254,14 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div style={{ marginBottom: '3rem' }}>
-        <p style={sectionLabel}>Book a Class</p>
+        <p style={sectionLabel}>Book</p>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <QuickBookBtn href="/dashboard/schedule?type=group_reformer" label="Group Reformer" />
-          <QuickBookBtn href="/dashboard/schedule?type=private" label="Private Session" />
-          <QuickBookBtn href="/dashboard/schedule?type=sauna" label="Sauna" ghost />
-          <QuickBookBtn href="/dashboard/schedule?type=cold_plunge" label="Cold Plunge" ghost />
+          <QuickBookBtn href="/dashboard/book-private" label="Private Session" />
+          <QuickBookBtn href="/dashboard/book-amenity?type=sauna" label="Sauna" ghost />
+          <QuickBookBtn href="/dashboard/book-amenity?type=cold_plunge" label="Cold Plunge" ghost />
+          <QuickBookBtn href="/dashboard/book-amenity?type=contrast_therapy" label="Contrast Therapy" ghost />
+          <QuickBookBtn href="/dashboard/book-neveskin" label="Neveskin" ghost />
         </div>
       </div>
 
