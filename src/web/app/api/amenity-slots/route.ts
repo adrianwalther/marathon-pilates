@@ -31,8 +31,21 @@ export async function GET(req: Request) {
     return Response.json({ error: 'Amenity type not found or inactive' }, { status: 404 })
   }
 
-  // Parse the requested date in local time
   const [year, month, day] = date.split('-').map(Number)
+
+  // The studio is in Nashville (America/Chicago). The server runs in UTC.
+  // Determine Nashville's UTC offset for this date so that "7:00 AM Nashville"
+  // becomes the correct UTC timestamp (CDT = UTC-5, CST = UTC-6).
+  function getNashvilleUtcOffsetHours(y: number, m: number, d: number): number {
+    // Use 12:00 noon UTC as a stable reference — safely mid-day for any timezone
+    const noonUtc = new Date(Date.UTC(y, m - 1, d, 12, 0, 0))
+    const nashvilleHour = parseInt(
+      new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', hour: '2-digit', hour12: false }).format(noonUtc),
+      10
+    )
+    return 12 - nashvilleHour // e.g. 12 - 7 = 5 for CDT, 12 - 6 = 6 for CST
+  }
+  const utcOffsetHours = getNashvilleUtcOffsetHours(year, month, day)
 
   // Generate all possible slots for the day
   const [openHour, openMin] = rule.open_time.split(':').map(Number)
@@ -45,7 +58,10 @@ export async function GET(req: Request) {
   const slots: { starts_at: string; ends_at: string; capacity: number; booked: number }[] = []
 
   for (let start = openMinutes; start + slotDuration <= closeMinutes; start += slotDuration) {
-    const startDate = new Date(year, month - 1, day, Math.floor(start / 60), start % 60, 0, 0)
+    const localHour = Math.floor(start / 60)
+    const localMin = start % 60
+    // Convert Nashville local time → UTC
+    const startDate = new Date(Date.UTC(year, month - 1, day, localHour + utcOffsetHours, localMin, 0, 0))
     const endDate = new Date(startDate.getTime() + rule.session_duration_minutes * 60 * 1000)
 
     slots.push({
@@ -59,8 +75,8 @@ export async function GET(req: Request) {
   if (slots.length === 0) return Response.json({ slots: [] })
 
   // Find existing bookings that overlap any of these slots
-  const dayStart = new Date(year, month - 1, day, 0, 0, 0).toISOString()
-  const dayEnd = new Date(year, month - 1, day, 23, 59, 59).toISOString()
+  const dayStart = new Date(Date.UTC(year, month - 1, day, utcOffsetHours, 0, 0)).toISOString()
+  const dayEnd = new Date(Date.UTC(year, month - 1, day, utcOffsetHours + 23, 59, 59)).toISOString()
 
   const { data: existingBookings } = await supabase
     .from('bookings')
