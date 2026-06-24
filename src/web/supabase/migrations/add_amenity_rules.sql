@@ -17,7 +17,7 @@ create table if not exists public.amenity_rules (
 -- Default amenity configs
 insert into public.amenity_rules (session_type, display_name, slot_duration_minutes, session_duration_minutes, max_capacity)
 values
-  ('sauna',            'Infrared Sauna',    60, 50, 4),
-  ('cold_plunge',      'Cold Plunge',       30, 25, 2),
-  ('contrast_therapy', 'Contrast Therapy',  60, 50, 2)
+  ('sauna',            'Infrared Sauna',    60, 45, 4),
+  ('cold_plunge',      'Cold Plunge',       30, 15, 2),
+  ('contrast_therapy', 'Contrast Therapy',  45, 30, 2)
 on conflict (session_type) do nothing;
