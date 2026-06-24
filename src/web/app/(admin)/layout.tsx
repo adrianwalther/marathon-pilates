@@ -132,6 +132,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/social-content', label: 'Social Content', icon: '◎', show: perms.payroll_view || role === 'instructor' },
     { href: '/admin/timeclock', label: 'Time Clock', icon: '◷', show: perms.payroll_view || role === 'manager' },
     { href: '/admin/gift-cards', label: 'Gift Cards', icon: '◇', show: perms.clients },
+    { href: '/admin/amenity-settings', label: 'Amenity Settings', icon: '◈', show: perms.payroll_view },
     { href: null, label: 'MARKETING', icon: '', show: perms.overview, divider: true },
     { href: '/admin/marketing/engagement', label: 'Engagement', icon: '◔', show: perms.clients },
     { href: '/admin/marketing/win-back', label: 'Win-Back', icon: '◠', show: perms.clients },
