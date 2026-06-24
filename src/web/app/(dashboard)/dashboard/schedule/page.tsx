@@ -67,6 +67,112 @@ function buildWeek() {
   return Array.from({ length: 7 }, (_, i) => getDayRange(i))
 }
 
+type ConfirmedBooking = {
+  name: string
+  starts_at: string
+  location: string
+  needsHealthCheck: boolean
+}
+
+function BookingConfirmedModal({ booking, onDone }: { booking: ConfirmedBooking; onDone: () => void }) {
+  const formatDateTime = (iso: string) =>
+    new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
+    ' · ' +
+    new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+
+  const handleAllGood = () => {
+    localStorage.setItem('health_checkin_dismissed', String(Date.now()))
+    onDone()
+  }
+
+  return (
+    <div
+      onClick={onDone}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 200,
+        background: 'rgba(48, 45, 39, 0.55)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '1.5rem',
+      }}
+    >
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: 'white', borderRadius: '4px', width: '100%', maxWidth: '420px',
+          boxShadow: '0 20px 60px rgba(48,45,39,0.18)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Confirmation header */}
+        <div style={{ padding: '2.25rem 2rem 1.75rem', textAlign: 'center' }}>
+          <div style={{
+            width: '52px', height: '52px', borderRadius: '50%',
+            background: 'var(--color-secondary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 1.25rem',
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.75rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--color-text)', margin: '0 0 0.5rem' }}>
+            You&rsquo;re all set.
+          </h2>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', margin: '0 0 0.2rem' }}>
+            {booking.name}
+          </p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)', margin: 0 }}>
+            {formatDateTime(booking.starts_at)}
+          </p>
+          {booking.location && (
+            <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#aaa', margin: '0.35rem 0 0' }}>
+              {booking.location}
+            </p>
+          )}
+        </div>
+
+        {booking.needsHealthCheck ? (
+          <>
+            <div style={{ height: '1px', background: '#f0ebe4', margin: '0 2rem' }} />
+            <div style={{ background: '#f5ece6', padding: '1.5rem 2rem 2rem' }}>
+              <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.6rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--color-cta)', margin: '0 0 0.5rem' }}>
+                Before you come in
+              </p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.88rem', color: 'var(--color-text)', margin: '0 0 0.4rem' }}>
+                Is your health info still current?
+              </p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.75rem', color: 'var(--color-text-muted)', lineHeight: 1.65, margin: '0 0 1.25rem' }}>
+                A new injury, surgery, or life change helps your instructor keep every session safe and just right for you.
+              </p>
+              <button
+                onClick={handleAllGood}
+                style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.85rem', background: 'var(--color-cta)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer', marginBottom: '0.65rem' }}
+              >
+                All good — see you there →
+              </button>
+              <a
+                href="/dashboard/account"
+                style={{ display: 'block', textAlign: 'center', fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.65rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--color-cta)', textDecoration: 'none', padding: '0.5rem' }}
+              >
+                Update Health Info
+              </a>
+            </div>
+          </>
+        ) : (
+          <div style={{ padding: '0 2rem 2rem' }}>
+            <button
+              onClick={onDone}
+              style={{ width: '100%', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.85rem', background: 'var(--color-text)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
+            >
+              Great — see you there →
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function SchedulePageInner() {
   const searchParams = useSearchParams()
   const initialType = searchParams.get('type') ?? ''
@@ -86,6 +192,8 @@ function SchedulePageInner() {
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
   const [rebook, setRebook] = useState<CancelledInfo | null>(null)
+  const [confirmedBooking, setConfirmedBooking] = useState<ConfirmedBooking | null>(null)
+  const [healthLastUpdated, setHealthLastUpdated] = useState<string | null>(null)
 
   // Behavioral signal: when the client browses a specific service, log it as
   // intent. The dashboard nudge ranker boosts services a client keeps viewing
@@ -113,6 +221,15 @@ function SchedulePageInner() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) return
+      const { data: prof } = await supabase.from('profiles').select('intake_completed_at').eq('id', data.user.id).single()
+      if (prof) setHealthLastUpdated(prof.intake_completed_at)
+    })
+  }, [])
+
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const week = buildWeek()
 
@@ -188,8 +305,20 @@ function SchedulePageInner() {
     if (r.outcome === 'error') {
       showToast(r.message, 'error')
     } else {
-      showToast(r.message)
       loadSessions()
+      // Show the branded confirmation modal.
+      // Health check: prompt if last update was >30 days ago and not recently dismissed.
+      const dismissed = localStorage.getItem('health_checkin_dismissed')
+      const dismissedRecently = dismissed && Date.now() - Number(dismissed) < 30 * 24 * 60 * 60 * 1000
+      const lastReview = healthLastUpdated ? new Date(healthLastUpdated).getTime() : 0
+      const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000
+      const needsHealthCheck = !dismissedRecently && lastReview < thirtyDaysAgo
+      setConfirmedBooking({
+        name: session.name,
+        starts_at: session.starts_at,
+        location: session.locations?.name ?? '',
+        needsHealthCheck,
+      })
     }
     setBookingLoading(false)
     setBookingId(null)
@@ -376,6 +505,13 @@ function SchedulePageInner() {
             )
           })}
         </div>
+      )}
+
+      {confirmedBooking && (
+        <BookingConfirmedModal
+          booking={confirmedBooking}
+          onDone={() => setConfirmedBooking(null)}
+        />
       )}
     </div>
   )
