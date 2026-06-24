@@ -8,7 +8,17 @@ import { createClient } from '@/lib/supabase'
 import { logEvent } from '@/lib/events'
 import { serviceKeyFromType } from '@/lib/nudges'
 import { bookClass } from '@/lib/bookClass'
+import { creditTypeFor, pickUsableCredit } from '@/lib/credits'
 import RebookModal, { type CancelledInfo } from '@/components/RebookModal'
+
+type AmenitySlot = {
+  starts_at: string
+  ends_at: string
+  capacity: number
+  booked: number
+}
+
+const AMENITY_TYPES = ['sauna', 'cold_plunge', 'contrast_therapy', 'neveskin']
 
 type Session = {
   id: string
@@ -195,6 +205,15 @@ function SchedulePageInner() {
   const [confirmedBooking, setConfirmedBooking] = useState<ConfirmedBooking | null>(null)
   const [healthLastUpdated, setHealthLastUpdated] = useState<string | null>(null)
 
+  // Amenity slot state (used when an amenity type filter is active)
+  const [amenitySlots, setAmenitySlots] = useState<AmenitySlot[]>([])
+  const [amenityLoading, setAmenityLoading] = useState(false)
+  const [amenitySessionDuration, setAmenitySessionDuration] = useState(45)
+  const [amenityCreditId, setAmenityCreditId] = useState<string | null>(null)
+  const [bookingToken, setBookingToken] = useState<string | null>(null)
+
+  const isAmenityView = AMENITY_TYPES.includes(typeFilter)
+
   // Behavioral signal: when the client browses a specific service, log it as
   // intent. The dashboard nudge ranker boosts services a client keeps viewing
   // but hasn't booked. Fires once per distinct service the filter resolves to.
@@ -229,6 +248,46 @@ function SchedulePageInner() {
       if (prof) setHealthLastUpdated(prof.intake_completed_at)
     })
   }, [])
+
+  // Load auth token + amenity credit when switching to an amenity view
+  useEffect(() => {
+    if (!isAmenityView || typeFilter === 'neveskin') return
+    const supabase = createClient()
+    supabase.auth.getSession().then(async ({ data }) => {
+      const token = data.session?.access_token ?? null
+      setBookingToken(token)
+      const user = data.session?.user
+      if (!user) return
+      const creditType = creditTypeFor(typeFilter)
+      if (!creditType) return
+      const { data: credits } = await supabase
+        .from('credits')
+        .select('id, total_credits, used_credits')
+        .eq('client_id', user.id)
+        .eq('credit_type', creditType)
+        .order('expires_at', { ascending: true, nullsFirst: false })
+      const usable = pickUsableCredit(credits)
+      setAmenityCreditId(usable?.id ?? null)
+    })
+  }, [isAmenityView, typeFilter])
+
+  // Load amenity slots when day or type changes
+  useEffect(() => {
+    if (!isAmenityView || typeFilter === 'neveskin') return
+    const d = week[selectedDay].date
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    setAmenitySlots([])
+    setAmenityLoading(true)
+    fetch(`/api/amenity-slots?type=${typeFilter}&date=${dateStr}`)
+      .then(r => r.json())
+      .then(data => {
+        setAmenitySlots(data.slots ?? [])
+        if (data.rule?.session_duration_minutes) setAmenitySessionDuration(data.rule.session_duration_minutes)
+      })
+      .catch(() => setAmenitySlots([]))
+      .finally(() => setAmenityLoading(false))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAmenityView, typeFilter, selectedDay])
 
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
   const week = buildWeek()
@@ -319,6 +378,43 @@ function SchedulePageInner() {
         location: session.locations?.name ?? '',
         needsHealthCheck,
       })
+    }
+    setBookingLoading(false)
+    setBookingId(null)
+  }
+
+  const handleAmenityBook = async (slot: AmenitySlot) => {
+    setBookingId(slot.starts_at)
+    setBookingLoading(true)
+    const res = await fetch('/api/bookings/amenity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: bookingToken ? `Bearer ${bookingToken}` : '',
+      },
+      body: JSON.stringify({ session_type: typeFilter, starts_at: slot.starts_at, credit_id: amenityCreditId }),
+    })
+    const result = await res.json().catch(() => ({}))
+    if (!res.ok) {
+      showToast(result.error || 'Could not complete booking', 'error')
+    } else {
+      const dismissed = localStorage.getItem('health_checkin_dismissed')
+      const dismissedRecently = dismissed && Date.now() - Number(dismissed) < 30 * 24 * 60 * 60 * 1000
+      const lastReview = healthLastUpdated ? new Date(healthLastUpdated).getTime() : 0
+      const needsHealthCheck = !dismissedRecently && lastReview < Date.now() - 30 * 24 * 60 * 60 * 1000
+      setConfirmedBooking({
+        name: SESSION_LABELS[typeFilter] ?? typeFilter,
+        starts_at: slot.starts_at,
+        location: 'Charlotte Park',
+        needsHealthCheck,
+      })
+      // Refresh slots so the booked slot drops from view
+      const d = week[selectedDay].date
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      fetch(`/api/amenity-slots?type=${typeFilter}&date=${dateStr}`)
+        .then(r => r.json())
+        .then(data => setAmenitySlots(data.slots ?? []))
+        .catch(() => {})
     }
     setBookingLoading(false)
     setBookingId(null)
@@ -443,15 +539,82 @@ function SchedulePageInner() {
         ))}
       </div>
 
-      {/* Sessions list */}
-      {loading ? (
+      {/* Neveskin — contact-only */}
+      {typeFilter === 'neveskin' && (
+        <div style={{ background: 'white', border: '1px solid #eee', borderRadius: '2px', padding: '2rem', textAlign: 'center' }}>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)', marginBottom: '0.4rem' }}>Neveskin appointments are booked directly with Ruby.</p>
+          <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: 'var(--color-text-muted)', marginBottom: '1.25rem', lineHeight: 1.65 }}>
+            30-minute sessions, no downtime, results visible from session one. She&rsquo;ll confirm within 24 hours.
+          </p>
+          <a href="/dashboard/book-neveskin" style={{ display: 'inline-block', fontFamily: "'Raleway', sans-serif", fontWeight: 700, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '0.75rem 2rem', background: 'var(--color-cta)', color: 'white', borderRadius: '2px', textDecoration: 'none' }}>
+            Request Appointment →
+          </a>
+        </div>
+      )}
+
+      {/* Amenity slot grid */}
+      {isAmenityView && typeFilter !== 'neveskin' && (
+        <>
+          {!amenityCreditId && (
+            <div style={{ background: '#fff8e6', border: '1px solid #f0ddb0', borderRadius: '2px', padding: '0.75rem 1rem', marginBottom: '1rem' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.78rem', color: '#7a5a00', margin: 0 }}>
+                No amenity credits on file. <a href="/dashboard/membership" style={{ color: '#c8860a', fontWeight: 500 }}>Add a pack →</a>
+              </p>
+            </div>
+          )}
+          {amenityLoading ? (
+            <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>Loading availability...</p>
+          ) : amenitySlots.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '4rem 0' }}>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ccc' }}>No availability</p>
+              <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem' }}>Bookings require 24hrs advance notice — try another day</p>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.6rem' }}>
+              {amenitySlots.map(slot => {
+                const isSlotBooking = bookingLoading && bookingId === slot.starts_at
+                const spotsLeft = slot.capacity - slot.booked
+                return (
+                  <button
+                    key={slot.starts_at}
+                    onClick={() => handleAmenityBook(slot)}
+                    disabled={isSlotBooking || !amenityCreditId}
+                    style={{
+                      background: isSlotBooking ? '#f5ece6' : 'white',
+                      border: `1px solid ${isSlotBooking ? 'var(--color-cta)' : '#eee'}`,
+                      borderRadius: '2px', padding: '1rem', textAlign: 'left',
+                      cursor: isSlotBooking || !amenityCreditId ? 'not-allowed' : 'pointer',
+                      transition: 'border-color 0.15s',
+                    }}
+                    onMouseEnter={e => { if (!isSlotBooking && amenityCreditId) (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-cta)' }}
+                    onMouseLeave={e => { if (!isSlotBooking) (e.currentTarget as HTMLButtonElement).style.borderColor = '#eee' }}
+                  >
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: '0.9rem', color: 'var(--color-text)', margin: '0 0 0.25rem' }}>
+                      {new Date(slot.starts_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                    </p>
+                    <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.7rem', color: spotsLeft <= 1 ? '#c8860a' : 'var(--color-text-muted)', margin: 0 }}>
+                      {isSlotBooking ? 'Booking...' : spotsLeft === 1 ? '1 spot left' : `${spotsLeft} spots`}
+                    </p>
+                    <p style={{ fontFamily: "'Raleway', sans-serif", fontWeight: 600, fontSize: '0.55rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', margin: '0.3rem 0 0' }}>
+                      {amenitySessionDuration} min
+                    </p>
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Sessions list (group + private) */}
+      {!isAmenityView && loading ? (
         <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.85rem', color: '#aaa' }}>Loading...</p>
-      ) : sessions.length === 0 ? (
+      ) : !isAmenityView && sessions.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '4rem 0' }}>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#ccc' }}>No classes</p>
           <p style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 300, fontSize: '0.8rem', color: '#aaa', marginTop: '0.5rem' }}>Try a different day or filter</p>
         </div>
-      ) : (
+      ) : !isAmenityView ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {sessions.map(s => {
             const spotsLeft = s.max_capacity - s.booking_count
@@ -505,7 +668,7 @@ function SchedulePageInner() {
             )
           })}
         </div>
-      )}
+      ) : null}
 
       {confirmedBooking && (
         <BookingConfirmedModal
