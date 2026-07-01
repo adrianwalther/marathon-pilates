@@ -1,6 +1,6 @@
 # Marathon Pilates Platform — Subscriptions & Tools
 
-Last updated: 2026-03-19
+Last updated: 2026-07-01
 
 ---
 
@@ -18,6 +18,15 @@ Last updated: 2026-03-19
 | Service | Purpose | Plan | Est. Cost |
 |---------|---------|------|-----------|
 | **Supabase** | Database, auth, storage (vvqeacukwsvbgixabdef) | Free | $0/mo |
+| **Upstash Redis** | Rate limiting — guards paid AI endpoints (`UPSTASH_REDIS_REST_URL`/`_TOKEN`). AI limiter fails CLOSED in prod if unconfigured → AI features stop | Free | $0/mo |
+
+---
+
+## Email
+
+| Service | Purpose | Plan | Est. Cost |
+|---------|---------|------|-----------|
+| **Resend** | Transactional email — booking confirmations etc. (`RESEND_API_KEY`; lib/email.ts) | Free | $0/mo |
 
 ---
 
