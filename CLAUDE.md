@@ -93,8 +93,9 @@ Brand book lives at `/Users/adrianwalther/Desktop/marathon-pilates/branding/Mara
 - **Beta cohort:** Adrian, Ruby, Jazz only — live Stripe, real bookings, minimal data
 - **Beta test client account:** `adrianwalther@me.com` (role: client) — use this to QA client-side flows
 - **Strategy:** Validate booking flow on web app first. Build native mobile app as next major phase before public launch.
-- **Jazz** still needs to sign up at marathon-pilates.vercel.app
-- **Beta started 2026-06-18** (Ruby). NOTE: booking + Build-a-Class will error until the 5 Vercel env vars are set (service-role key, Stripe ×2, Upstash ×2) — see Security Audit. Login itself works without them. Verify with `GET /api/health`.
+- **Staff accounts are live** (verified against auth.users 2026-07-02): Ruby (owner) and Jazz (admin, jazzgodard@gmail.com, created 2026-05-13) both signed in as recently as 2026-06-23. Still pending: **client-side test accounts** for Ruby (rubyramdhan@yahoo.com) and Jazz (personal email) — each self-signs-up, then seed test credits. Details in Brain `04_Platform/beta-status.md`.
+- **Beta testing has NOT actually started** (as of 2026-07-02) — accounts exist but no test rounds run yet.
+- **Prod env-var status per `GET /api/health` (2026-07-02):** database ✓ · AI ✓ · email dry-run (RESEND_API_KEY unset) · **STRIPE_SECRET_KEY missing** · **UPSTASH_* missing**. Paid checkout and AI-generation routes will fail until those are set in Vercel. (Credit-based booking should work — DB/service-role is healthy.) Note: `/api/health` sits behind the beta gate — curl needs `-H "Cookie: mp_beta=<beta password>"`.
 
 ---
 
@@ -126,7 +127,10 @@ A **Move** section (class recs) + a **Restore** section (guided breath-work / me
 |--------|-------|------|
 | Adrian Walther | adrian@marathonpilates.com | owner |
 | Ruby Ramdhan | ruby@marathonpilates.com | owner |
+| Jazz Godard | jazzgodard@gmail.com | admin |
 | Test client | adrianwalther@me.com | client |
+
+Note: `profiles` also has a second, inert `jazzgodard@gmail.com` row (2026-04-08, no auth user) — an Arketa double-import duplicate; `dedup_profiles_full.sql` will clear it.
 
 ---
 
@@ -281,7 +285,7 @@ All three views ship as one React Native + Expo app with role-based mode switchi
 - [ ] Rotate all API keys + enable 2FA on launch day
 - [ ] Migrate all service accounts to Marathon Pilates business accounts (see HANDOFF/01-ACCOUNT-MIGRATION.md)
 - [ ] Finish brand color migration — DONE so far (2026-05-28): (a) exact-match brand hexes (176 across 37 files) → `var(--color-*)` tokens, pixel-identical; (b) off-black `#1A1A1A` (188 across 33 files) → `var(--color-text)` (Deep Earth `#302D27`) — this is a deliberate VISIBLE change (harsh pure-black → warm brand dark). REMAINING (~594): non-brand grays (`#E0E0E0`), Tailwind defaults (`#6B7280` etc.), status-badge tints (red/green/amber), and a few stray darks (`#2A2A2A`, `#333`) — these need design decisions, not a mechanical swap. Note: email templates in `lib/emails/` intentionally keep literal hex (email clients can't read CSS vars).
-- [ ] Jazz to sign up at marathon-pilates.vercel.app + set role to admin
+- [x] Jazz signed up + role set to admin ✅ (verified in DB 2026-07-02; account since 2026-05-13)
 - [x] **`add_waiver_consent.sql` applied** — verified live 2026-06-02 (waiver_signed_at / waiver_version / waiver_signature columns present; consent detail saves).
 - [ ] 📌 **WAIVER — proofread verbatim (with Ruby) before launch.** The waiver in `lib/waiver.ts` was transcribed from screenshots of the Arketa copy — needs human confirmation it's word-for-word. Specific item: §1 bullet 3 reads "Company' sole discretion" (apostrophe kept exactly as original) — confirm leave verbatim vs. clean to "Company's".
 - [ ] 📌 **WAIVER — COVID-19 language refresh (with Ruby).** §1 references COVID-19 / facemasks (the studio's current Arketa wording, kept verbatim). Ruby may want to update/remove it. When the text changes, bump `WAIVER_VERSION` in `lib/waiver.ts` so consent records stay unambiguous.
@@ -354,7 +358,7 @@ Full 5-dimension audit (auth, payments, booking/credits, data/RLS, reliability).
 
 - Adrian built and owns the platform. Accessible via `adrian@marathonpilates.com`.
 - Ruby has a Claude teams account — can collaborate on the platform directly
-- Jazz has admin access for studio operations (needs to sign up)
+- Jazz has admin access for studio operations (jazzgodard@gmail.com, active)
 - HANDOFF/ docs are the source of truth for deep context
 
 ---
