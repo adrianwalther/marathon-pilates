@@ -387,3 +387,10 @@ HANDOFF/
 - **Paid fulfillment = `lib/fulfillment.ts` + the signed webhook** (source of truth, idempotent). `confirm`/`create` endpoints are best-effort and must check ownership.
 - **Supabase keys:** new format only (`sb_publishable_` / `sb_secret_`) — legacy `eyJ...` JWT keys are disabled (see Gotchas)
 - **Verify DB objects against the live database** before trusting `supabase/migrations/*.sql` — they have drifted (see Gotchas)
+- **Breadcrumb business-facing changes to the Brain.** When a session changes something
+  business-relevant (launch timing, beta status, pricing/policy decisions, new blockers),
+  also append one line to `/Users/adrianwalther/Marathon Pilates Brain/00_Start-Here/decisions-log.md`
+  (format: `YYYY-MM-DD — Decision — short why`). Engineering detail stays in this file;
+  the Brain (Adrian's ops knowledge base) just needs to know *that* something changed and
+  where to look. Beta logistics live in the Brain at `04_Platform/beta-status.md` — update
+  it there if tester accounts/limits change.

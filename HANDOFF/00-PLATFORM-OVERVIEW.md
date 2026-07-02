@@ -157,8 +157,8 @@ Sauna single, Sauna 5-pack, Cold Plunge single, Cold Plunge 5-pack, Contrast sin
 - [ ] Re-activate Bunny.net with paid plan + re-upload 23 videos + re-seed URLs in DB
 - [ ] Activate Gusto for payroll
 - [x] Set Ruby + Adrian to `owner` role ✅ 2026-05-27
-  - Ruby UID: `3a6cd143-6bae-4ba1-8d21-f67d5a50b957`
-  - Adrian UID: `63323f3e-3215-4264-ae90-bdb1dc4cd602`
+  - Ruby UID: `3a6cd143-6bae-4ba1-8d21-f67d5a50b957` (ruby@marathonpilates.com)
+  - Adrian UID: `63323f3e-3215-4264-ae90-bdb1dc4cd602` (adrian@marathonpilates.com)
 - [ ] Confirm amenity pricing with Ruby (sauna, cold plunge, contrast)
 - [ ] Set up email notifications (Ruby to choose: Google Workspace or Resend)
 - [ ] Point app.marathonpilates.com → Vercel
